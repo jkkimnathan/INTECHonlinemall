@@ -36,11 +36,14 @@ export const siteConfig = {
 
   // ─── 연락처 ───
   contact: {
-    phone: "02-0000-0000",
-    email: "info@intechonline.kr",
-    address: "서울특별시",
-    businessNumber: "000-00-00000",
-    ceo: "",
+    companyName: "(주)인텍앤컴퍼니원효직매장",
+    ceo: "조덕현",
+    businessNumber: "106-85-13284",
+    address: "서울특별시 용산구 원효로 58길 15",
+    phone: "1544-6549",
+    email: "event@intechn.com",
+    csHours: "평일 09:30 ~ 17:00",
+    csLunch: "점심 12:00 ~ 13:00",
   },
 
   // ─── SNS ───
