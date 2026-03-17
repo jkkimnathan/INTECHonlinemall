@@ -9,7 +9,7 @@ export const siteConfig = {
   // ─── 기본 정보 ───
   name: "인텍앤컴퍼니몰",
   nameEn: "INTECH & Company Mall",
-  description: "INTEL, ASUS, MANLI, ASRock 공식 수입사 직영몰",
+  description: "INTEL, ASUS, MANLI, ASRock, TOSHIBA, Microsoft, MSI 공식 수입사 직영몰",
   url: "https://intechonline.kr",
   domain: "intechonline.kr",
 
@@ -22,11 +22,16 @@ export const siteConfig = {
   },
 
   // ─── 취급 브랜드 ───
+  // logo: 브랜드 로고 이미지 (투명 배경 PNG 권장, /public/images/brands/ 에 저장)
+  // bgImage: 브랜드 카드 배경 이미지 (선택, /public/images/brands/ 에 저장)
   brands: [
-    { name: "INTEL", slug: "intel", logo: "/images/brands/intel.png" },
-    { name: "ASUS", slug: "asus", logo: "/images/brands/asus.png" },
-    { name: "MANLI", slug: "manli", logo: "/images/brands/manli.png" },
-    { name: "ASRock", slug: "asrock", logo: "/images/brands/asrock.png" },
+    { name: "INTEL", slug: "intel", logo: "/images/brands/intel.png", bgImage: "/images/brands/intel-bg.jpg" },
+    { name: "ASUS", slug: "asus", logo: "/images/brands/asus.png", bgImage: "/images/brands/asus-bg.jpg" },
+    { name: "MANLI", slug: "manli", logo: "/images/brands/manli.png", bgImage: "/images/brands/manli-bg.jpg" },
+    { name: "ASRock", slug: "asrock", logo: "/images/brands/asrock.png", bgImage: "/images/brands/asrock-bg.jpg" },
+    { name: "TOSHIBA", slug: "toshiba", logo: "/images/brands/toshiba.png", bgImage: "/images/brands/toshiba-bg.jpg" },
+    { name: "Microsoft", slug: "microsoft", logo: "/images/brands/microsoft.png", bgImage: "/images/brands/microsoft-bg.jpg" },
+    { name: "MSI", slug: "msi", logo: "/images/brands/msi.png", bgImage: "/images/brands/msi-bg.jpg" },
   ],
 
   // ─── 연락처 ───
@@ -52,7 +57,13 @@ export const siteConfig = {
     { title: "ASUS", href: "/brand/asus" },
     { title: "MANLI", href: "/brand/manli" },
     { title: "ASRock", href: "/brand/asrock" },
+    { title: "TOSHIBA", href: "/brand/toshiba" },
+    { title: "Microsoft", href: "/brand/microsoft" },
+    { title: "MSI", href: "/brand/msi" },
     { title: "특가", href: "/sale" },
+    { title: "리퍼비쉬", href: "/refurbished" },
+    { title: "이벤트", href: "/event" },
+    { title: "공지사항", href: "/notice" },
     { title: "커뮤니티", href: "/community" },
   ],
 
