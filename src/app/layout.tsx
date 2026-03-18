@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { siteConfig } from "@/config/site";
 import { getOrganizationJsonLd } from "@/lib/jsonld";
+import FloatingActions from "@/components/floating/FloatingActions";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -72,6 +73,7 @@ export default function RootLayout({
         <Header />
         <main className="min-h-screen">{children}</main>
         <Footer />
+        <FloatingActions />
       </body>
     </html>
   );

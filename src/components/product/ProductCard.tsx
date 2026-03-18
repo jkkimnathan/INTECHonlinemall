@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/types/product";
+import { ShoppingCart, Truck } from "lucide-react";
+import { useCartStore } from "@/store/cart";
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
@@ -11,6 +15,11 @@ function getDiscountRate(price: number, salePrice: number) {
 }
 
 export default function ProductCard({ product }: { product: Product }) {
+  const addToCart = useCartStore((s) => s.addItem);
+  const finalPrice = product.salePrice ?? product.price;
+  const points = Math.floor(finalPrice * 0.01);
+  const isFreeShipping = finalPrice >= 50000;
+
   return (
     <Link
       href={`/products/${product.slug}`}
@@ -22,6 +31,7 @@ export default function ProductCard({ product }: { product: Product }) {
           <p className="text-gray-400 text-xs">{product.brand}</p>
           <p className="text-gray-500 text-sm mt-1 line-clamp-2">{product.name}</p>
         </div>
+
         {/* 배지 */}
         <div className="absolute top-2 left-2 flex flex-wrap gap-1">
           {product.condition === "refurbished" && (
@@ -35,7 +45,14 @@ export default function ProductCard({ product }: { product: Product }) {
               {getDiscountRate(product.price, product.salePrice)}%
             </Badge>
           )}
+          {isFreeShipping && (
+            <Badge className="bg-green-600 text-white text-[10px]">
+              <Truck className="h-3 w-3 mr-0.5" />
+              무료배송
+            </Badge>
+          )}
         </div>
+
         {product.stock <= 3 && product.stock > 0 && (
           <div className="absolute bottom-2 right-2">
             <Badge variant="outline" className="text-[10px] text-red-500 border-red-300">
@@ -43,9 +60,27 @@ export default function ProductCard({ product }: { product: Product }) {
             </Badge>
           </div>
         )}
+
         {product.stock === 0 && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
             <span className="text-white font-bold text-lg">품절</span>
+          </div>
+        )}
+
+        {/* 호버 시 장바구니 담기 */}
+        {product.stock > 0 && (
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                addToCart(product, 1);
+              }}
+              className="bg-white text-gray-900 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 hover:bg-blue-600 hover:text-white transition-colors shadow-lg"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              장바구니 담기
+            </button>
           </div>
         )}
       </div>
@@ -78,6 +113,10 @@ export default function ProductCard({ product }: { product: Product }) {
               {formatPrice(product.price)}
             </span>
           )}
+          {/* 적립금 */}
+          <p className="text-[11px] text-orange-600 mt-1">
+            적립금 {formatPrice(points)}
+          </p>
         </div>
       </div>
     </Link>

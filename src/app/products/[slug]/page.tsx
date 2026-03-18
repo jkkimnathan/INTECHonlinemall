@@ -19,8 +19,9 @@ import {
   RotateCcw,
 } from "lucide-react";
 import ProductCard from "@/components/product/ProductCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getProductJsonLd, getBreadcrumbJsonLd } from "@/lib/jsonld";
+import { useRecentlyViewedStore } from "@/store/recentlyViewed";
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
@@ -36,6 +37,13 @@ export default function ProductDetailPage({
   const [quantity, setQuantity] = useState(1);
   const addToCart = useCartStore((s) => s.addItem);
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const addToRecentlyViewed = useRecentlyViewedStore((s) => s.addItem);
+
+  useEffect(() => {
+    if (product) {
+      addToRecentlyViewed(product);
+    }
+  }, [product, addToRecentlyViewed]);
 
   if (!product) {
     return (

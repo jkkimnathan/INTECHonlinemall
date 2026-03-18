@@ -8,6 +8,7 @@ const quickLinks = [
   { title: "1:1 문의", href: "/inquiry" },
   { title: "배송안내", href: "/shipping" },
   { title: "교환/반품 안내", href: "/returns" },
+  { title: "비회원 주문조회", href: "/order/lookup" },
 ];
 
 export default function Footer() {
