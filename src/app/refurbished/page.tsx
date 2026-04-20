@@ -1,25 +1,29 @@
 import { Metadata } from "next";
 import ProductGrid from "@/components/product/ProductGrid";
-import { getProducts } from "@/lib/dummy-products";
+import { getProducts } from "@/lib/supabase/products.server";
+import { getPageBannerServer } from "@/lib/supabase/page-banners.server";
+import PageBannerHeader from "@/components/ui/PageBannerHeader";
 
 export const metadata: Metadata = {
   title: "리퍼비쉬",
   description: "검증된 리퍼비쉬 IT 하드웨어를 합리적인 가격에 만나보세요",
 };
 
-export default function RefurbishedPage() {
-  const products = getProducts({ condition: "refurbished" });
+export default async function RefurbishedPage() {
+  const [products, banner] = await Promise.all([
+    getProducts({ condition: "refurbished" }),
+    getPageBannerServer("refurbished"),
+  ]);
 
   return (
     <div>
-      <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white">
-        <div className="container mx-auto px-4 py-10">
-          <h1 className="text-3xl font-bold">리퍼비쉬 상품</h1>
-          <p className="text-orange-100 mt-2">
-            공식 수입사가 직접 검수한 리퍼 제품 | 품질 보증 | A/S 지원
-          </p>
-        </div>
-      </div>
+      <PageBannerHeader
+        title={banner?.title || "리퍼비쉬 상품"}
+        subtitle={banner?.subtitle || "공식 수입사가 직접 검수한 리퍼 제품 | 품질 보증 | A/S 지원"}
+        imageUrl={banner?.imageUrl}
+        gradientClass="from-orange-500 to-amber-500"
+        subtitleColor="text-orange-100"
+      />
 
       {/* 리퍼비쉬 안내 */}
       <div className="container mx-auto px-4 py-6">

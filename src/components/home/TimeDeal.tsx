@@ -1,65 +1,75 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Timer, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getProducts } from "@/lib/dummy-products";
-
-interface Deal {
-  productId: string;
-  soldPercent: number;
-  hoursLeft: number;
-}
-
-const dealConfig: Deal[] = [
-  { productId: "3", soldPercent: 72, hoursLeft: 6 },
-  { productId: "7", soldPercent: 45, hoursLeft: 12 },
-  { productId: "11", soldPercent: 88, hoursLeft: 3 },
-];
+import {
+  TimeDeal as TimeDealType,
+  TimeDealItem,
+} from "@/lib/supabase/timedeals";
+import { Product } from "@/types/product";
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
 }
 
-function getDiscountRate(price: number, salePrice: number) {
-  return Math.round(((price - salePrice) / price) * 100);
+function getDiscountRate(original: number, deal: number) {
+  if (original <= 0) return 0;
+  return Math.round(((original - deal) / original) * 100);
 }
 
-export default function TimeDeal() {
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+interface Props {
+  deals?: (TimeDealType & { items: TimeDealItem[] })[];
+  products?: Product[];
+}
+
+export default function TimeDeal({ deals: initialDeals = [], products: initialProducts = [] }: Props) {
   const [mounted, setMounted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+
+  const productMap = useMemo(() => {
+    const map: Record<string, Product> = {};
+    initialProducts.forEach((p) => { map[p.id] = p; });
+    return map;
+  }, [initialProducts]);
+
+  const earliestEnd = useMemo(() => {
+    if (initialDeals.length === 0) return null;
+    return initialDeals.reduce((min, d) => {
+      const t = new Date(d.endTime);
+      return t < min ? t : min;
+    }, new Date(initialDeals[0].endTime));
+  }, [initialDeals]);
 
   useEffect(() => {
     setMounted(true);
-    const endTime = new Date();
-    endTime.setHours(endTime.getHours() + 6, 0, 0, 0);
+  }, []);
 
+  useEffect(() => {
+    if (!earliestEnd) return;
     const update = () => {
       const now = new Date();
-      const diff = Math.max(0, endTime.getTime() - now.getTime());
+      const diff = Math.max(0, earliestEnd.getTime() - now.getTime());
       setTimeLeft({
         hours: Math.floor(diff / (1000 * 60 * 60)),
         minutes: Math.floor((diff / (1000 * 60)) % 60),
         seconds: Math.floor((diff / 1000) % 60),
       });
     };
-
     update();
     const timer = setInterval(update, 1000);
     return () => clearInterval(timer);
-  }, []);
-
-  const allProducts = getProducts({});
-  const deals = dealConfig
-    .map((deal) => ({
-      ...deal,
-      product: allProducts.find((p) => p.id === deal.productId),
-    }))
-    .filter((d) => d.product && d.product.salePrice);
+  }, [earliestEnd]);
 
   const pad = (n: number) => String(n).padStart(2, "0");
+
+  // 아이템이 있는 딜만 표시
+  const activeDeals = initialDeals.filter((d) => d.items.length > 0);
+  const hasProducts = Object.keys(productMap).length > 0;
+
+  if (activeDeals.length === 0 || !hasProducts) return null;
 
   return (
     <section className="py-12 bg-gradient-to-r from-red-50 to-orange-50">
@@ -98,78 +108,139 @@ export default function TimeDeal() {
           )}
         </div>
 
-        {/* 딜 카드 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {deals.map(({ product, soldPercent }) => {
-            if (!product) return null;
-            const discount = product.salePrice
-              ? getDiscountRate(product.price, product.salePrice)
-              : 0;
+        {/* 딜 그룹들 */}
+        {activeDeals.map((deal) => (
+          <div key={deal.id} className="mb-8 last:mb-0">
+            {activeDeals.length > 1 && (
+              <h3 className="text-lg font-bold text-gray-800 mb-4">{deal.title}</h3>
+            )}
 
-            return (
-              <Link
-                key={product.id}
-                href={`/products/${product.slug}`}
-                className="bg-white rounded-xl border border-red-100 p-5 hover:shadow-lg transition-shadow group"
-              >
-                {/* 이미지 */}
-                <div className="aspect-square bg-gray-50 rounded-lg mb-4 flex items-center justify-center relative overflow-hidden">
-                  <div className="text-center p-4">
-                    <p className="text-xs text-gray-400">{product.brand}</p>
-                    <p className="text-sm text-gray-600 font-medium mt-1">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {deal.items.map((item) => {
+                const product = productMap[item.productId];
+                if (!product) return null;
+
+                const isSoldOut = item.soldCount >= item.dealQuantity;
+                const soldPercent = Math.min(
+                  100,
+                  Math.round((item.soldCount / item.dealQuantity) * 100)
+                );
+                const basePrice = product.salePrice || product.price;
+                const discount = getDiscountRate(product.price, item.dealPrice);
+
+                const cardContent = (
+                  <div
+                    className={`bg-white rounded-xl border p-4 transition-shadow group relative ${
+                      isSoldOut
+                        ? "border-gray-200 opacity-75"
+                        : "border-red-100 hover:shadow-lg"
+                    }`}
+                  >
+                    {isSoldOut && (
+                      <div className="absolute inset-0 bg-white/60 rounded-xl z-10 flex items-center justify-center">
+                        <div className="bg-gray-900 text-white px-4 py-2 rounded-lg font-bold text-sm">
+                          타임딜 완판되었습니다
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="aspect-square bg-gray-50 rounded-lg mb-3 flex items-center justify-center relative overflow-hidden">
+                      {product.images[0] ? (
+                        <Image
+                          src={product.images[0]}
+                          alt={product.name}
+                          fill
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="text-center p-4">
+                          <p className="text-xs text-gray-400">{product.brand}</p>
+                          <p className="text-sm text-gray-600 font-medium mt-1">
+                            {product.name}
+                          </p>
+                        </div>
+                      )}
+                      {!isSoldOut && (
+                        <Badge className="absolute top-2 left-2 bg-red-600 text-white text-xs">
+                          {discount}% OFF
+                        </Badge>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-blue-600 font-medium">{product.brand}</p>
+                    <p className="text-sm font-semibold text-gray-900 mt-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
                       {product.name}
                     </p>
-                  </div>
-                  <Badge className="absolute top-2 left-2 bg-red-600 text-white text-xs">
-                    {discount}% OFF
-                  </Badge>
-                </div>
 
-                {/* 상품 정보 */}
-                <p className="text-xs text-blue-600 font-medium">{product.brand}</p>
-                <p className="text-sm font-semibold text-gray-900 mt-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                  {product.name}
-                </p>
+                    <div className="mt-2">
+                      <p className="text-xs text-gray-400 line-through">
+                        {formatPrice(product.price)}
+                      </p>
+                      {product.salePrice && product.salePrice !== item.dealPrice && (
+                        <p className="text-xs text-gray-400 line-through">
+                          할인가 {formatPrice(product.salePrice)}
+                        </p>
+                      )}
+                      <div className="flex items-baseline gap-2 mt-0.5">
+                        <span className="text-lg font-bold text-red-600">
+                          {discount}%
+                        </span>
+                        <span className="text-lg font-bold text-gray-900">
+                          {formatPrice(item.dealPrice)}
+                        </span>
+                      </div>
+                      {basePrice > item.dealPrice && (
+                        <p className="text-xs text-red-500 mt-0.5">
+                          추가 {formatPrice(basePrice - item.dealPrice)} 할인
+                        </p>
+                      )}
+                    </div>
 
-                {/* 가격 */}
-                <div className="mt-3">
-                  <p className="text-xs text-gray-400 line-through">
-                    {formatPrice(product.price)}
-                  </p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-bold text-red-600">
-                      {discount}%
-                    </span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {formatPrice(product.salePrice!)}
-                    </span>
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="text-red-600 font-semibold">
+                          {isSoldOut ? "완판" : `${soldPercent}% 판매`}
+                        </span>
+                        <span className="text-gray-400">
+                          {item.dealQuantity}개 한정
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all ${
+                            isSoldOut
+                              ? "bg-gray-400"
+                              : "bg-gradient-to-r from-red-500 to-orange-500"
+                          }`}
+                          style={{ width: `${soldPercent}%` }}
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
+                );
 
-                {/* 판매 현황 바 */}
-                <div className="mt-4">
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-red-600 font-semibold">
-                      {soldPercent}% 판매
-                    </span>
-                    <span className="text-gray-400">한정 수량</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-gradient-to-r from-red-500 to-orange-500 h-2 rounded-full transition-all"
-                      style={{ width: `${soldPercent}%` }}
-                    />
-                  </div>
-                </div>
+                if (isSoldOut) {
+                  return (
+                    <div key={item.id} className="cursor-not-allowed">
+                      {cardContent}
+                    </div>
+                  );
+                }
 
-                {/* CTA */}
-                <Button className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white">
-                  구매하기
-                </Button>
-              </Link>
-            );
-          })}
-        </div>
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/products/${product.slug}`}
+                    className="block"
+                  >
+                    {cardContent}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

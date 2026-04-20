@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product/ProductCard";
-import { getProducts } from "@/lib/dummy-products";
+import { getProducts } from "@/lib/supabase/products.server";
 
-export default function FeaturedProducts() {
-  const products = getProducts({ isFeatured: true }).slice(0, 8);
+export default async function FeaturedProducts() {
+  const products = (await getProducts({ isFeatured: true })).slice(0, 8);
 
   return (
     <section className="py-12 bg-gray-50">

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useOrderStore } from "@/store/order";
-import { OrderStatus } from "@/types/order";
-import { Eye, Package } from "lucide-react";
+import { getAllOrders, updateOrderStatus } from "@/lib/supabase/orders";
+import { Order, OrderStatus } from "@/types/order";
+import { Eye, Package, Loader2 } from "lucide-react";
+import { showToast } from "@/components/ui/toast";
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
@@ -31,13 +32,40 @@ const statusOptions: OrderStatus[] = [
 ];
 
 export default function AdminOrdersPage() {
-  const { orders, updateOrderStatus } = useOrderStore();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("전체");
+
+  useEffect(() => {
+    getAllOrders().then((data) => {
+      setOrders(data);
+      setLoading(false);
+    });
+  }, []);
+
+  const handleStatusChange = async (orderId: string, status: OrderStatus) => {
+    const { error } = await updateOrderStatus(orderId, status);
+    if (error) {
+      showToast(`상태 변경 실패: ${error}`, "error");
+      return;
+    }
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, status } : o))
+    );
+  };
 
   const filtered =
     filter === "전체"
       ? orders
       : orders.filter((o) => o.status === filter);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -127,7 +155,7 @@ export default function AdminOrdersPage() {
                       <select
                         value={order.status}
                         onChange={(e) =>
-                          updateOrderStatus(
+                          handleStatusChange(
                             order.id,
                             e.target.value as OrderStatus
                           )

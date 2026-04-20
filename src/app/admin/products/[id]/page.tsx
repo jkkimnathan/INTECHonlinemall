@@ -7,15 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { getProductById, updateProduct, uploadProductImage, ProductInput } from "@/lib/supabase/products";
 import { Product } from "@/types/product";
-import { ArrowLeft, Upload, X, Loader2, ImageIcon, Star } from "lucide-react";
+import { ArrowLeft, Upload, X, Loader2, ImageIcon, Star, ToggleLeft, ToggleRight } from "lucide-react";
 import Link from "next/link";
+import BrandSubcategorySelect from "@/components/admin/BrandSubcategorySelect";
 
 const CATEGORIES: Product["category"][] = [
   "CPU", "메인보드", "그래픽카드", "메모리", "SSD", "HDD",
-  "파워서플라이", "케이스", "쿨러", "모니터", "키보드", "마우스", "기타",
+  "파워서플라이", "케이스", "쿨러", "모니터", "키보드", "마우스", "조립PC", "기타",
 ];
 
-const BRANDS = ["INTEL", "ASUS", "MANLI", "ASRock", "TOSHIBA", "Microsoft"];
+const BRANDS = ["INTEL", "ASUS", "MANLI", "ASRock", "TOSHIBA", "Microsoft", "iPC"];
 
 function slugify(text: string) {
   return text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").trim();
@@ -41,6 +42,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [detailImages, setDetailImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState<"thumbnail" | "additional" | "detail" | null>(null);
+  const [isFeatured, setIsFeatured] = useState(false);
+  const [subcategory, setSubcategory] = useState<string | null>(null);
   const [originalSlug, setOriginalSlug] = useState("");
 
   useEffect(() => {
@@ -59,6 +62,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         setAdditionalImages(p.images.slice(1));
       }
       setDetailImages(p.detailImages || []);
+      setIsFeatured(p.isFeatured);
+      setSubcategory(p.subcategory || null);
       setLoading(false);
     });
   }, [id]);
@@ -103,6 +108,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       detail_images: detailImages,
       stock: Number(stock),
       is_sale: hasSale,
+      is_featured: isFeatured,
+      subcategory: subcategory || null,
     };
 
     setSaving(true);
@@ -158,6 +165,16 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                   </select>
                 </div>
               </div>
+
+              {/* 세부 카테고리 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">세부 카테고리</label>
+                <BrandSubcategorySelect
+                  brand={finalBrand}
+                  value={subcategory}
+                  onChange={setSubcategory}
+                />
+              </div>
             </div>
           </div>
 
@@ -179,6 +196,24 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">재고 <span className="text-red-500">*</span></label>
                 <Input type="number" value={stock} onChange={(e) => setStock(e.target.value)} min={0} />
+              </div>
+            </div>
+          </div>
+
+          {/* 추천상품 설정 */}
+          <div className="bg-white rounded-xl border p-6">
+            <h2 className="font-bold text-gray-900 mb-4">노출 설정</h2>
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => setIsFeatured(!isFeatured)}>
+                {isFeatured ? (
+                  <ToggleRight className="h-6 w-6 text-green-500" />
+                ) : (
+                  <ToggleLeft className="h-6 w-6 text-gray-400" />
+                )}
+              </button>
+              <div>
+                <span className="text-sm font-medium text-gray-700">추천상품</span>
+                <p className="text-xs text-gray-400">활성화하면 메인 페이지 추천상품에 노출됩니다.</p>
               </div>
             </div>
           </div>

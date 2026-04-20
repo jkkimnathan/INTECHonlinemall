@@ -8,6 +8,12 @@ import {
   ShoppingCart,
   Users,
   ArrowLeft,
+  Megaphone,
+  CalendarDays,
+  MessageSquare,
+  ImageIcon,
+  Zap,
+  Grid3X3,
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
 
@@ -16,6 +22,13 @@ const adminNav = [
   { title: "상품 관리", href: "/admin/products", icon: Package },
   { title: "주문 관리", href: "/admin/orders", icon: ShoppingCart },
   { title: "회원 관리", href: "/admin/members", icon: Users },
+  { title: "공지 관리", href: "/admin/notices", icon: Megaphone },
+  { title: "배너 관리", href: "/admin/banners", icon: ImageIcon },
+  { title: "이벤트 관리", href: "/admin/events", icon: CalendarDays },
+  { title: "타임딜 관리", href: "/admin/timedeals", icon: Zap },
+  { title: "메인 이미지 배너", href: "/admin/main-image-banners", icon: Grid3X3 },
+  { title: "페이지 배너", href: "/admin/page-banners", icon: ImageIcon },
+  { title: "Q&A 관리", href: "/admin/qna", icon: MessageSquare },
 ];
 
 export default function AdminLayout({

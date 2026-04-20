@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "./ProductCard";
 import { Product } from "@/types/product";
-import { getCategories } from "@/lib/dummy-products";
 
 interface ProductGridProps {
   products: Product[];
@@ -31,7 +30,10 @@ export default function ProductGrid({
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [showFilterPanel, setShowFilterPanel] = useState(false);
 
-  const categories = useMemo(() => getCategories(), []);
+  const categories = useMemo(
+    () => [...new Set(products.map((p) => p.category))].sort(),
+    [products]
+  );
   const brands = useMemo(
     () => [...new Set(products.map((p) => p.brand))].sort(),
     [products]

@@ -1,73 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/store/auth";
-import { MessageSquare, ChevronDown, ChevronUp, User } from "lucide-react";
-
-interface QnaItem {
-  id: number;
-  category: "상품문의" | "배송문의" | "교환/반품" | "기타";
-  title: string;
-  content: string;
-  author: string;
-  date: string;
-  isAnswered: boolean;
-  answer?: { content: string; date: string };
-}
-
-const dummyQna: QnaItem[] = [
-  {
-    id: 1,
-    category: "상품문의",
-    title: "Intel i7-14700K 호환 메인보드 추천해주세요",
-    content: "i7-14700K를 구매하려고 하는데, 어떤 메인보드가 호환되나요? B760과 Z790 차이도 알고 싶습니다.",
-    author: "김**",
-    date: "2025-03-12",
-    isAnswered: true,
-    answer: {
-      content: "안녕하세요. i7-14700K는 LGA1700 소켓 메인보드와 호환됩니다. B760은 가성비, Z790은 오버클럭을 지원합니다. 오버클럭이 필요 없으시면 B760 추천드립니다. 감사합니다.",
-      date: "2025-03-12",
-    },
-  },
-  {
-    id: 2,
-    category: "배송문의",
-    title: "배송 기간이 어느 정도 걸리나요?",
-    content: "서울 지역인데 주문하면 보통 며칠 정도 걸릴까요?",
-    author: "이**",
-    date: "2025-03-14",
-    isAnswered: true,
-    answer: {
-      content: "안녕하세요. 평일 오후 2시 이전 주문은 당일 출고되며, 서울 지역은 출고 다음날 수령 가능합니다. 감사합니다.",
-      date: "2025-03-14",
-    },
-  },
-  {
-    id: 3,
-    category: "상품문의",
-    title: "MANLI RTX 4070 SUPER 재입고 일정 문의",
-    content: "현재 품절인데 재입고 예정일이 언제인가요?",
-    author: "박**",
-    date: "2025-03-15",
-    isAnswered: false,
-  },
-  {
-    id: 4,
-    category: "교환/반품",
-    title: "개봉 후 교환이 가능한가요?",
-    content: "메인보드를 구매했는데 다른 모델로 교환하고 싶습니다. 개봉은 했지만 사용하지 않았습니다.",
-    author: "최**",
-    date: "2025-03-16",
-    isAnswered: true,
-    answer: {
-      content: "안녕하세요. 개봉 후 미사용 제품은 수령일로부터 7일 이내 교환 가능합니다. 단, 왕복 배송비가 발생할 수 있습니다. 1:1 문의로 연락주시면 안내드리겠습니다.",
-      date: "2025-03-16",
-    },
-  },
-];
+import { getQnaList, createQna, QnaItem } from "@/lib/supabase/qna";
+import { getPageBanner, PageBanner } from "@/lib/supabase/page-banners";
+import { showToast } from "@/components/ui/toast";
+import Image from "next/image";
+import {
+  MessageSquare,
+  ChevronDown,
+  ChevronUp,
+  User,
+  Loader2,
+  X,
+  Send,
+  Lock,
+} from "lucide-react";
 
 const categoryColors: Record<string, string> = {
   상품문의: "bg-blue-100 text-blue-700",
@@ -76,22 +27,134 @@ const categoryColors: Record<string, string> = {
   기타: "bg-gray-100 text-gray-700",
 };
 
-export default function CommunityPage() {
-  const { isLoggedIn } = useAuthStore();
-  const [openId, setOpenId] = useState<number | null>(null);
-  const [filter, setFilter] = useState<string>("전체");
+const categories = ["전체", "상품문의", "배송문의", "교환/반품", "기타"];
+const writeCategories = ["상품문의", "배송문의", "교환/반품", "기타"];
 
-  const categories = ["전체", "상품문의", "배송문의", "교환/반품", "기타"];
-  const filtered = filter === "전체" ? dummyQna : dummyQna.filter((q) => q.category === filter);
+export default function CommunityPage() {
+  const { user, isLoggedIn } = useAuthStore();
+  const [items, setItems] = useState<QnaItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [filter, setFilter] = useState("전체");
+
+  // 비밀글 비밀번호 입력
+  const [passwordInput, setPasswordInput] = useState("");
+  const [unlockedIds, setUnlockedIds] = useState<Set<string>>(new Set());
+
+  // 글쓰기 상태
+  const [showForm, setShowForm] = useState(false);
+  const [formCategory, setFormCategory] = useState("상품문의");
+  const [formTitle, setFormTitle] = useState("");
+  const [formContent, setFormContent] = useState("");
+  const [formIsSecret, setFormIsSecret] = useState(false);
+  const [formPassword, setFormPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const [banner, setBanner] = useState<PageBanner | null>(null);
+
+  const loadQna = () => {
+    getQnaList().then((data) => {
+      setItems(data);
+      setLoading(false);
+    });
+  };
+
+  useEffect(() => {
+    loadQna();
+    getPageBanner("community").then(setBanner);
+  }, []);
+
+  const filtered =
+    filter === "전체" ? items : items.filter((q) => q.category === filter);
+
+  const resetForm = () => {
+    setFormTitle("");
+    setFormContent("");
+    setFormCategory("상품문의");
+    setFormIsSecret(false);
+    setFormPassword("");
+    setShowForm(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formTitle.trim() || !formContent.trim()) {
+      showToast("제목과 내용을 입력해주세요.", "warning");
+      return;
+    }
+    if (formIsSecret && !formPassword.trim()) {
+      showToast("비밀글 비밀번호를 입력해주세요.", "warning");
+      return;
+    }
+    if (!user) return;
+
+    setSubmitting(true);
+    const result = await createQna({
+      userId: user.id,
+      authorName: user.name.charAt(0) + "**",
+      category: formCategory,
+      title: formTitle,
+      content: formContent,
+      isSecret: formIsSecret,
+      password: formIsSecret ? formPassword : undefined,
+    });
+    setSubmitting(false);
+
+    if (result) {
+      showToast("질문이 등록되었습니다.");
+      resetForm();
+      loadQna();
+    } else {
+      showToast("등록에 실패했습니다.", "error");
+    }
+  };
+
+  // 비밀글 열기 시도
+  const handleOpenSecret = (item: QnaItem) => {
+    // 작성자 본인이면 바로 열기
+    if (user && item.userId === user.id) {
+      setUnlockedIds((prev) => new Set(prev).add(item.id));
+      setOpenId(item.id);
+      return;
+    }
+    // 비밀번호 확인
+    if (passwordInput === item.password) {
+      setUnlockedIds((prev) => new Set(prev).add(item.id));
+      setOpenId(item.id);
+      setPasswordInput("");
+    } else {
+      showToast("비밀번호가 일치하지 않습니다.", "error");
+    }
+  };
+
+  const canViewSecret = (item: QnaItem) => {
+    return !item.isSecret || unlockedIds.has(item.id) || (user && item.userId === user.id);
+  };
+
+  const bannerTitle = banner?.title || "커뮤니티";
+  const bannerSubtitle = banner?.subtitle || "Q&A 게시판 | 궁금한 점을 질문해주세요";
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
-        <div className="container mx-auto px-4 py-10">
-          <h1 className="text-3xl font-bold">커뮤니티</h1>
-          <p className="text-indigo-100 mt-2">Q&A 게시판 | 궁금한 점을 질문해주세요</p>
+      {banner?.imageUrl ? (
+        <div className="relative h-[200px] md:h-[300px] overflow-hidden">
+          <Image src={banner.imageUrl} alt={bannerTitle} fill className="object-cover" sizes="100vw" priority />
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 flex items-center">
+            <div className="container mx-auto px-4">
+              <h1 className="text-3xl font-bold text-white">{bannerTitle}</h1>
+              <p className="text-white/80 mt-2">{bannerSubtitle}</p>
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
+          <div className="container mx-auto px-4 py-10">
+            <h1 className="text-3xl font-bold">{bannerTitle}</h1>
+            <p className="text-indigo-100 mt-2">{bannerSubtitle}</p>
+          </div>
+        </div>
+      )}
 
       <div className="container mx-auto px-4 py-8">
         {/* 필터 + 글쓰기 */}
@@ -111,8 +174,13 @@ export default function CommunityPage() {
           </div>
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-sm"
-            disabled={!isLoggedIn}
-            onClick={() => alert(isLoggedIn ? "글쓰기 기능은 추후 구현됩니다." : "로그인이 필요합니다.")}
+            onClick={() => {
+              if (!isLoggedIn) {
+                showToast("로그인이 필요합니다.", "warning");
+                return;
+              }
+              setShowForm(true);
+            }}
           >
             <MessageSquare className="h-4 w-4 mr-1" />
             질문하기
@@ -125,70 +193,237 @@ export default function CommunityPage() {
           </div>
         )}
 
-        {/* Q&A 목록 */}
-        <div className="bg-white rounded-lg border divide-y">
-          {filtered.map((item) => (
-            <div key={item.id}>
-              <button
-                onClick={() => setOpenId(openId === item.id ? null : item.id)}
-                className="w-full text-left p-4 hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <Badge className={categoryColors[item.category]}>
-                    {item.category}
-                  </Badge>
-                  <Badge
-                    className={
-                      item.isAnswered
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-500"
-                    }
-                  >
-                    {item.isAnswered ? "답변완료" : "대기중"}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-gray-900 text-sm">
-                    {item.title}
-                  </h3>
-                  {openId === item.id ? (
-                    <ChevronUp className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                  )}
-                </div>
-                <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
-                  <span className="flex items-center gap-1">
-                    <User className="h-3 w-3" />
-                    {item.author}
-                  </span>
-                  <span>{item.date}</span>
-                </div>
+        {/* 글쓰기 폼 */}
+        {showForm && (
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white rounded-lg border p-6 mb-6 space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="font-bold text-gray-900">질문 작성</h2>
+              <button type="button" onClick={resetForm}>
+                <X className="h-5 w-5 text-gray-400" />
               </button>
-
-              {openId === item.id && (
-                <div className="px-4 pb-4">
-                  <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-700">
-                    <p className="font-medium text-gray-500 text-xs mb-2">질문</p>
-                    <p>{item.content}</p>
-                  </div>
-                  {item.answer && (
-                    <div className="bg-blue-50 rounded-lg p-4 mt-2 text-sm">
-                      <p className="font-medium text-blue-600 text-xs mb-2">
-                        관리자 답변 ({item.answer.date})
-                      </p>
-                      <p className="text-gray-700">{item.answer.content}</p>
-                    </div>
-                  )}
-                </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  카테고리
+                </label>
+                <select
+                  value={formCategory}
+                  onChange={(e) => setFormCategory(e.target.value)}
+                  className="w-full border rounded-md px-3 py-2 text-sm"
+                >
+                  {writeCategories.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="sm:col-span-3">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  제목
+                </label>
+                <Input
+                  value={formTitle}
+                  onChange={(e) => setFormTitle(e.target.value)}
+                  placeholder="질문 제목을 입력해주세요"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                내용
+              </label>
+              <textarea
+                value={formContent}
+                onChange={(e) => setFormContent(e.target.value)}
+                placeholder="궁금한 내용을 자세히 작성해주세요"
+                rows={4}
+                className="w-full border rounded-md px-3 py-2 text-sm resize-none"
+                required
+              />
+            </div>
+            {/* 비밀글 설정 */}
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formIsSecret}
+                  onChange={(e) => setFormIsSecret(e.target.checked)}
+                  className="rounded border-gray-300"
+                />
+                <Lock className="h-4 w-4 text-gray-500" />
+                <span className="text-sm text-gray-700">비밀글</span>
+              </label>
+              {formIsSecret && (
+                <Input
+                  type="password"
+                  value={formPassword}
+                  onChange={(e) => setFormPassword(e.target.value)}
+                  placeholder="비밀번호 (4자리 이상)"
+                  className="w-48"
+                  minLength={4}
+                  required
+                />
               )}
             </div>
-          ))}
-        </div>
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={resetForm}>
+                취소
+              </Button>
+              <Button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4 mr-1" />
+                )}
+                등록
+              </Button>
+            </div>
+          </form>
+        )}
 
-        {filtered.length === 0 && (
+        {/* Q&A 목록 */}
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
-            해당 카테고리의 게시글이 없습니다.
+            {filter === "전체"
+              ? "등록된 질문이 없습니다."
+              : "해당 카테고리의 게시글이 없습니다."}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg border divide-y">
+            {filtered.map((item) => (
+              <div key={item.id}>
+                <button
+                  onClick={() => {
+                    if (openId === item.id) {
+                      setOpenId(null);
+                      return;
+                    }
+                    // 비밀글이고 잠금 안 풀린 경우
+                    if (item.isSecret && !canViewSecret(item)) {
+                      setOpenId("pwd-" + item.id);
+                      return;
+                    }
+                    setOpenId(item.id);
+                  }}
+                  className="w-full text-left p-4 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge
+                      className={
+                        categoryColors[item.category] ||
+                        "bg-gray-100 text-gray-700"
+                      }
+                    >
+                      {item.category}
+                    </Badge>
+                    <Badge
+                      className={
+                        item.isAnswered
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-500"
+                      }
+                    >
+                      {item.isAnswered ? "답변완료" : "대기중"}
+                    </Badge>
+                    {item.isSecret && (
+                      <Lock className="h-3.5 w-3.5 text-gray-400" />
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium text-gray-900 text-sm">
+                      {item.isSecret && !canViewSecret(item)
+                        ? "비밀글입니다."
+                        : item.title}
+                    </h3>
+                    {openId === item.id ? (
+                      <ChevronUp className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                    <span className="flex items-center gap-1">
+                      <User className="h-3 w-3" />
+                      {item.authorName}
+                    </span>
+                    <span>
+                      {new Date(item.createdAt).toLocaleDateString("ko-KR")}
+                    </span>
+                  </div>
+                </button>
+
+                {/* 비밀번호 입력 폼 */}
+                {openId === "pwd-" + item.id && (
+                  <div className="px-4 pb-4">
+                    <div className="bg-gray-50 rounded-lg p-4 flex items-center gap-3">
+                      <Lock className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <Input
+                        type="password"
+                        value={passwordInput}
+                        onChange={(e) => setPasswordInput(e.target.value)}
+                        placeholder="비밀번호를 입력하세요"
+                        className="flex-1"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleOpenSecret(item);
+                          }
+                        }}
+                      />
+                      <Button
+                        size="sm"
+                        onClick={() => handleOpenSecret(item)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        확인
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* 내용 표시 */}
+                {openId === item.id && canViewSecret(item) && (
+                  <div className="px-4 pb-4">
+                    <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-700">
+                      <p className="font-medium text-gray-500 text-xs mb-2">
+                        질문
+                      </p>
+                      <p className="whitespace-pre-line">{item.content}</p>
+                    </div>
+                    {item.answerContent && (
+                      <div className="bg-blue-50 rounded-lg p-4 mt-2 text-sm">
+                        <p className="font-medium text-blue-600 text-xs mb-2">
+                          관리자 답변 (
+                          {item.answerDate
+                            ? new Date(item.answerDate).toLocaleDateString(
+                                "ko-KR"
+                              )
+                            : ""}
+                          )
+                        </p>
+                        <p className="text-gray-700 whitespace-pre-line">
+                          {item.answerContent}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>

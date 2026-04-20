@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Script from "next/script";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/store/cart";
 import { useAuthStore } from "@/store/auth";
-import { useOrderStore } from "@/store/order";
+import { createOrder } from "@/lib/supabase/orders";
 import { PaymentMethod, ShippingInfo } from "@/types/order";
 import {
   CreditCard,
@@ -16,7 +17,6 @@ import {
   Wallet,
   ArrowLeft,
   ShoppingBag,
-  ChevronRight,
 } from "lucide-react";
 
 function formatPrice(price: number) {
@@ -79,7 +79,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotalPrice, clearCart } = useCartStore();
   const { user, isLoggedIn } = useAuthStore();
-  const { createOrder } = useOrderStore();
+  const [submitting, setSubmitting] = useState(false);
 
   const [shipping, setShipping] = useState<ShippingInfo>({
     name: user?.name || "",
@@ -93,6 +93,20 @@ export default function CheckoutPage() {
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>("card");
   const [usePoints, setUsePoints] = useState(0);
   const [error, setError] = useState("");
+  const [daumLoaded, setDaumLoaded] = useState(false);
+
+  const openAddressSearch = () => {
+    const daum = (window as unknown as Record<string, unknown>).daum as
+      | { Postcode: new (opts: Record<string, unknown>) => { open: () => void } }
+      | undefined;
+    if (!daum?.Postcode) return;
+    new daum.Postcode({
+      oncomplete: (data: { zonecode: string; roadAddress: string; jibunAddress: string }) => {
+        updateShipping("zipcode", data.zonecode);
+        updateShipping("address", data.roadAddress || data.jibunAddress);
+      },
+    }).open();
+  };
 
   // 로그인 체크
   if (!isLoggedIn) {
@@ -122,7 +136,7 @@ export default function CheckoutPage() {
     setShipping((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleOrder = () => {
+  const handleOrder = async () => {
     setError("");
     if (!shipping.name) return setError("받는 분 이름을 입력해주세요.");
     if (!shipping.phone) return setError("연락처를 입력해주세요.");
@@ -131,7 +145,8 @@ export default function CheckoutPage() {
     const memo =
       shipping.memo === "직접 입력" ? customMemo : shipping.memo;
 
-    const order = createOrder({
+    setSubmitting(true);
+    const { order, error: orderErr } = await createOrder({
       userId: user!.id,
       items: [...items],
       shipping: { ...shipping, memo },
@@ -141,6 +156,12 @@ export default function CheckoutPage() {
       discount,
       total,
     });
+    setSubmitting(false);
+
+    if (orderErr || !order) {
+      setError(`주문 실패: ${orderErr || "알 수 없는 오류"}`);
+      return;
+    }
 
     clearCart();
     router.push(`/order/complete?orderId=${order.id}`);
@@ -148,6 +169,11 @@ export default function CheckoutPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
+      <Script
+        src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
+        strategy="lazyOnload"
+        onLoad={() => setDaumLoaded(true)}
+      />
       <div className="container mx-auto px-4 py-8">
         {/* 헤더 */}
         <div className="flex items-center gap-3 mb-6">
@@ -223,7 +249,14 @@ export default function CheckoutPage() {
                       placeholder="우편번호"
                       className="h-10 max-w-[150px]"
                     />
-                    <Button variant="outline" size="sm" className="h-10">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-10"
+                      type="button"
+                      onClick={openAddressSearch}
+                      disabled={!daumLoaded}
+                    >
                       주소 검색
                     </Button>
                   </div>
@@ -396,8 +429,9 @@ export default function CheckoutPage() {
               <Button
                 className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium text-base"
                 onClick={handleOrder}
+                disabled={submitting}
               >
-                {formatPrice(total)} 결제하기
+                {submitting ? "주문 처리 중..." : `${formatPrice(total)} 결제하기`}
               </Button>
 
               <p className="text-xs text-gray-400 mt-3 text-center leading-relaxed">

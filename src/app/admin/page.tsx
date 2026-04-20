@@ -1,10 +1,13 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useOrderStore } from "@/store/order";
-import { dummyProducts } from "@/lib/dummy-products";
+import { getAllOrders } from "@/lib/supabase/orders";
+import { getProducts } from "@/lib/supabase/products";
+import { Product } from "@/types/product";
+import { Order } from "@/types/order";
 import {
   TrendingUp,
   Package,
@@ -15,30 +18,46 @@ import {
   Eye,
 } from "lucide-react";
 
-// 임시 통계 데이터
-const stats = {
-  todaySales: 1580000,
-  monthSales: 24560000,
-  totalProducts: dummyProducts.length,
-  lowStockProducts: dummyProducts.filter((p) => p.stock <= 5).length,
-  totalMembers: 128,
-  todayVisitors: 342,
-};
-
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
 }
 
-const recentActivity = [
-  { type: "주문", message: "ORD-2025-001 결제 완료", time: "5분 전" },
-  { type: "회원", message: "신규 회원 가입 (kim@test.com)", time: "15분 전" },
-  { type: "상품", message: "Intel Core i5-14400F 재고 50개 입고", time: "1시간 전" },
-  { type: "주문", message: "ORD-2025-002 배송 완료 처리", time: "2시간 전" },
-  { type: "문의", message: "상품문의 새 글 1건", time: "3시간 전" },
-];
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "방금 전";
+  if (mins < 60) return `${mins}분 전`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}시간 전`;
+  const days = Math.floor(hours / 24);
+  return `${days}일 전`;
+}
 
 export default function AdminDashboard() {
-  const orders = useOrderStore((s) => s.orders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    getProducts({}).then(setAllProducts);
+    getAllOrders().then(setOrders);
+  }, []);
+
+  const today = new Date().toDateString();
+  const thisMonth = new Date().getMonth();
+  const todaySales = orders
+    .filter((o) => new Date(o.createdAt).toDateString() === today && o.status !== "취소")
+    .reduce((sum, o) => sum + o.total, 0);
+  const monthSales = orders
+    .filter((o) => new Date(o.createdAt).getMonth() === thisMonth && o.status !== "취소")
+    .reduce((sum, o) => sum + o.total, 0);
+
+  const stats = {
+    todaySales,
+    monthSales,
+    totalProducts: allProducts.length,
+    lowStockProducts: allProducts.filter((p) => p.stock <= 5).length,
+    totalOrders: orders.length,
+  };
 
   return (
     <div>
@@ -61,14 +80,12 @@ export default function AdminDashboard() {
           value={formatPrice(stats.todaySales)}
           icon={<DollarSign className="h-5 w-5" />}
           color="blue"
-          change="+12%"
         />
         <StatCard
           title="이번 달 매출"
           value={formatPrice(stats.monthSales)}
           icon={<TrendingUp className="h-5 w-5" />}
           color="green"
-          change="+8%"
         />
         <StatCard
           title="총 상품"
@@ -78,11 +95,10 @@ export default function AdminDashboard() {
           sub={`재고 부족: ${stats.lowStockProducts}개`}
         />
         <StatCard
-          title="총 회원"
-          value={`${stats.totalMembers}명`}
-          icon={<Users className="h-5 w-5" />}
+          title="총 주문"
+          value={`${stats.totalOrders}건`}
+          icon={<ShoppingCart className="h-5 w-5" />}
           color="orange"
-          sub={`오늘 방문: ${stats.todayVisitors}`}
         />
       </div>
 
@@ -132,37 +148,37 @@ export default function AdminDashboard() {
         {/* 최근 활동 */}
         <div className="bg-white rounded-xl border p-5">
           <h2 className="font-bold text-gray-900 mb-4">최근 활동</h2>
-          <div className="space-y-3">
-            {recentActivity.map((activity, i) => (
-              <div
-                key={i}
-                className="flex items-start gap-3 py-2 border-b last:border-0"
-              >
+          {orders.length > 0 ? (
+            <div className="space-y-3">
+              {orders.slice(0, 5).map((order) => (
                 <div
-                  className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
-                    activity.type === "주문"
-                      ? "bg-blue-500"
-                      : activity.type === "회원"
-                      ? "bg-green-500"
-                      : activity.type === "상품"
-                      ? "bg-purple-500"
-                      : "bg-orange-500"
-                  }`}
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900">{activity.message}</p>
-                  <p className="text-xs text-gray-400">{activity.time}</p>
+                  key={order.id}
+                  className="flex items-start gap-3 py-2 border-b last:border-0"
+                >
+                  <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 bg-blue-500" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-900">
+                      {order.id} — {order.status}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {timeAgo(order.createdAt)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-400 text-sm text-center py-8">
+              아직 활동 내역이 없습니다.
+            </p>
+          )}
         </div>
 
         {/* 재고 부족 상품 */}
         <div className="bg-white rounded-xl border p-5">
           <h2 className="font-bold text-gray-900 mb-4">재고 부족 상품</h2>
           <div className="space-y-2">
-            {dummyProducts
+            {allProducts
               .filter((p) => p.stock <= 5)
               .map((product) => (
                 <div
@@ -211,10 +227,10 @@ export default function AdminDashboard() {
                 <span className="text-xs">회원 관리</span>
               </Button>
             </Link>
-            <Link href="/" target="_blank">
+            <Link href="/admin/page-banners">
               <Button variant="outline" className="w-full h-auto py-4 flex-col gap-2">
-                <Eye className="h-6 w-6 text-gray-500" />
-                <span className="text-xs">사이트 보기</span>
+                <Eye className="h-6 w-6 text-orange-500" />
+                <span className="text-xs">페이지 배너</span>
               </Button>
             </Link>
           </div>

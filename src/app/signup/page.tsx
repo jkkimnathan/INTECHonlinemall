@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/store/auth";
 import { siteConfig } from "@/config/site";
-import { Eye, EyeOff, Check } from "lucide-react";
+import { Eye, EyeOff, Check, Loader2 } from "lucide-react";
+import { validatePassword, validateEmail, validatePhone } from "@/lib/security";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function SignupPage() {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   if (isLoggedIn) {
     router.push("/mypage");
@@ -33,32 +35,36 @@ export default function SignupPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!form.name) return setError("이름을 입력해주세요.");
+    if (!form.name.trim()) return setError("이름을 입력해주세요.");
     if (!form.email) return setError("이메일을 입력해주세요.");
+    if (!validateEmail(form.email)) return setError("올바른 이메일 형식을 입력해주세요.");
     if (!form.phone) return setError("연락처를 입력해주세요.");
+    if (!validatePhone(form.phone)) return setError("올바른 연락처 형식을 입력해주세요. (예: 010-1234-5678)");
     if (!form.password) return setError("비밀번호를 입력해주세요.");
-    if (form.password.length < 8)
-      return setError("비밀번호는 8자 이상이어야 합니다.");
+    const pwResult = validatePassword(form.password);
+    if (!pwResult.valid) return setError(pwResult.error!);
     if (form.password !== form.passwordConfirm)
       return setError("비밀번호가 일치하지 않습니다.");
     if (!agreeTerms) return setError("이용약관에 동의해주세요.");
     if (!agreePrivacy) return setError("개인정보처리방침에 동의해주세요.");
 
-    const success = signup({
+    setSubmitting(true);
+    const result = await signup({
       email: form.email,
       password: form.password,
       name: form.name,
       phone: form.phone,
     });
+    setSubmitting(false);
 
-    if (success) {
+    if (result.success) {
       router.push("/mypage");
     } else {
-      setError("회원가입에 실패했습니다. 다시 시도해주세요.");
+      setError(result.error || "회원가입에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -86,6 +92,7 @@ export default function SignupPage() {
                 value={form.name}
                 onChange={(e) => updateField("name", e.target.value)}
                 className="h-11"
+                disabled={submitting}
               />
             </div>
 
@@ -99,6 +106,7 @@ export default function SignupPage() {
                 value={form.email}
                 onChange={(e) => updateField("email", e.target.value)}
                 className="h-11"
+                disabled={submitting}
               />
             </div>
 
@@ -112,6 +120,7 @@ export default function SignupPage() {
                 value={form.phone}
                 onChange={(e) => updateField("phone", e.target.value)}
                 className="h-11"
+                disabled={submitting}
               />
             </div>
 
@@ -122,10 +131,11 @@ export default function SignupPage() {
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  placeholder="8자 이상"
+                  placeholder="영문+숫자+특수문자 8자 이상"
                   value={form.password}
                   onChange={(e) => updateField("password", e.target.value)}
                   className="h-11 pr-10"
+                  disabled={submitting}
                 />
                 <button
                   type="button"
@@ -151,6 +161,7 @@ export default function SignupPage() {
                 value={form.passwordConfirm}
                 onChange={(e) => updateField("passwordConfirm", e.target.value)}
                 className="h-11"
+                disabled={submitting}
               />
               {form.passwordConfirm && form.password === form.passwordConfirm && (
                 <p className="text-green-600 text-xs mt-1 flex items-center gap-1">
@@ -167,6 +178,7 @@ export default function SignupPage() {
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
                   className="mt-0.5"
+                  disabled={submitting}
                 />
                 <span className="text-sm text-gray-600">
                   <Link
@@ -184,6 +196,7 @@ export default function SignupPage() {
                   checked={agreePrivacy}
                   onChange={(e) => setAgreePrivacy(e.target.checked)}
                   className="mt-0.5"
+                  disabled={submitting}
                 />
                 <span className="text-sm text-gray-600">
                   <Link
@@ -202,8 +215,16 @@ export default function SignupPage() {
             <Button
               type="submit"
               className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={submitting}
             >
-              가입하기
+              {submitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  가입 처리 중...
+                </>
+              ) : (
+                "가입하기"
+              )}
             </Button>
           </form>
 

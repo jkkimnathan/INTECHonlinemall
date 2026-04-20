@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/store/cart";
@@ -67,10 +68,22 @@ export default function CartPage() {
                 >
                   {/* 이미지 */}
                   <Link href={`/products/${product.slug}`}>
-                    <div className="w-24 h-24 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0">
-                      <span className="text-gray-400 text-[10px] text-center">
-                        {product.brand}
-                      </span>
+                    <div className="w-24 h-24 bg-gray-100 rounded-md flex-shrink-0 relative overflow-hidden">
+                      {product.images?.[0] ? (
+                        <Image
+                          src={product.images[0]}
+                          alt={product.name}
+                          fill
+                          sizes="96px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-gray-400 text-[10px] text-center">
+                            {product.brand}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </Link>
 

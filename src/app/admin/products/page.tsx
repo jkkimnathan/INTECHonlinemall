@@ -1,23 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { dummyProducts } from "@/lib/dummy-products";
+import { getProducts, deleteProduct } from "@/lib/supabase/products";
+import { Product } from "@/types/product";
 import { Search, Plus, Pencil, Trash2 } from "lucide-react";
+import { showToast } from "@/components/ui/toast";
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
 }
 
 export default function AdminProductsPage() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
-  const products = dummyProducts.filter(
-    (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.brand.toLowerCase().includes(search.toLowerCase())
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    getProducts({}).then(setAllProducts);
+  }, []);
+
+  const products = useMemo(
+    () =>
+      allProducts.filter(
+        (p) =>
+          p.name.toLowerCase().includes(search.toLowerCase()) ||
+          p.brand.toLowerCase().includes(search.toLowerCase())
+      ),
+    [allProducts, search]
   );
+
+  async function handleDelete(product: Product) {
+    if (!confirm(`"${product.name}"을(를) 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return;
+    setDeletingId(product.id);
+    const { error } = await deleteProduct(product.id);
+    if (error) {
+      showToast(`삭제 실패: ${error}`, "error");
+    } else {
+      setAllProducts((prev) => prev.filter((p) => p.id !== product.id));
+    }
+    setDeletingId(null);
+  }
 
   return (
     <div>
@@ -25,7 +52,7 @@ export default function AdminProductsPage() {
         <h1 className="text-2xl font-bold text-gray-900">상품 관리</h1>
         <Button
           className="bg-blue-600 hover:bg-blue-700"
-          onClick={() => alert("상품 등록 기능은 Supabase 연동 후 구현됩니다.")}
+          onClick={() => router.push("/admin/products/new")}
         >
           <Plus className="h-4 w-4 mr-1" />
           상품 등록
@@ -119,10 +146,21 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex gap-1 justify-center">
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => router.push(`/admin/products/${product.id}`)}
+                      >
                         <Pencil className="h-3.5 w-3.5 text-gray-400" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        disabled={deletingId === product.id}
+                        onClick={() => handleDelete(product)}
+                      >
                         <Trash2 className="h-3.5 w-3.5 text-red-400" />
                       </Button>
                     </div>

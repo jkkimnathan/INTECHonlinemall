@@ -5,9 +5,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useOrderStore } from "@/store/order";
+import { getOrderById } from "@/lib/supabase/orders";
 import { Order } from "@/types/order";
-import { Search, Package, ArrowLeft } from "lucide-react";
+import { Search, Package, ArrowLeft, Loader2 } from "lucide-react";
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
@@ -27,9 +27,10 @@ export default function OrderLookupPage() {
   const [contact, setContact] = useState("");
   const [result, setResult] = useState<Order | null>(null);
   const [searched, setSearched] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setResult(null);
@@ -40,14 +41,11 @@ export default function OrderLookupPage() {
       return;
     }
 
-    const orders = useOrderStore.getState().orders;
-    const found = orders.find(
-      (o) =>
-        o.id === orderNumber.trim() &&
-        (o.shipping.phone === contact.trim() || o.userId === contact.trim())
-    );
+    setSearching(true);
+    const found = await getOrderById(orderNumber.trim());
+    setSearching(false);
 
-    if (found) {
+    if (found && (found.shipping.phone === contact.trim())) {
       setResult(found);
     } else {
       setError("주문을 찾을 수 없습니다. 주문번호와 연락처를 다시 확인해주세요.");
@@ -83,7 +81,7 @@ export default function OrderLookupPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              이메일 또는 전화번호
+              전화번호
             </label>
             <Input
               type="text"
@@ -92,8 +90,8 @@ export default function OrderLookupPage() {
               onChange={(e) => setContact(e.target.value)}
             />
           </div>
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-            <Search className="h-4 w-4 mr-2" />
+          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={searching}>
+            {searching ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Search className="h-4 w-4 mr-2" />}
             주문 조회
           </Button>
         </form>

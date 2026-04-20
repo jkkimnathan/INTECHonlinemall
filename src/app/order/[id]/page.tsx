@@ -1,17 +1,20 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useOrderStore } from "@/store/order";
+import { getOrderById } from "@/lib/supabase/orders";
+import { Order } from "@/types/order";
 import {
   Package,
   Truck,
   CheckCircle,
   Clock,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 
 function formatPrice(price: number) {
@@ -40,8 +43,23 @@ export default function OrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const getOrderById = useOrderStore((s) => s.getOrderById);
-  const order = getOrderById(id);
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getOrderById(id).then((o) => {
+      setOrder(o);
+      setLoading(false);
+    });
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      </div>
+    );
+  }
 
   if (!order) {
     return (
@@ -132,10 +150,12 @@ export default function OrderDetailPage({
                   key={product.id}
                   className="flex items-center gap-4 py-3 border-b last:border-0"
                 >
-                  <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0">
-                    <span className="text-gray-400 text-[10px]">
-                      {product.brand}
-                    </span>
+                  <div className="relative w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    {product.images?.[0] ? (
+                      <Image src={product.images[0]} alt={product.name} fill sizes="64px" className="object-cover" />
+                    ) : (
+                      <span className="text-gray-400 text-[10px]">{product.brand}</span>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <Link

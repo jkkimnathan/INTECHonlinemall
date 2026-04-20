@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { ArrowUp, MessageCircle, Clock, X } from "lucide-react";
+import Image from "next/image";
+import { ArrowUp, Clock, X } from "lucide-react";
 import { useRecentlyViewedStore } from "@/store/recentlyViewed";
 
 function formatPrice(price: number) {
@@ -54,10 +55,14 @@ export default function FloatingActions() {
                 className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors border-b last:border-0"
                 onClick={() => setRecentOpen(false)}
               >
-                <div className="w-12 h-12 bg-gray-100 rounded flex-shrink-0 flex items-center justify-center">
-                  <span className="text-[8px] text-gray-400 text-center leading-tight">
-                    {product.brand}
-                  </span>
+                <div className="relative w-12 h-12 bg-gray-100 rounded flex-shrink-0 flex items-center justify-center overflow-hidden">
+                  {product.images[0] ? (
+                    <Image src={product.images[0]} alt={product.name} fill sizes="48px" className="object-cover" />
+                  ) : (
+                    <span className="text-[8px] text-gray-400 text-center leading-tight">
+                      {product.brand}
+                    </span>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-gray-900 font-medium truncate">
@@ -87,16 +92,7 @@ export default function FloatingActions() {
         </button>
       )}
 
-      {/* 카카오톡 상담 */}
-      <a
-        href="https://pf.kakao.com/_placeholder"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="w-12 h-12 rounded-full bg-[#FEE500] shadow-lg flex items-center justify-center hover:brightness-95 transition-all"
-        title="카카오톡 상담"
-      >
-        <MessageCircle className="h-5 w-5 text-[#3C1E1E]" />
-      </a>
+      {/* 카카오톡 상담 - 실제 URL 설정 시 활성화 */}
 
       {/* TOP 버튼 */}
       {showTop && (

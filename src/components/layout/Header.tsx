@@ -15,16 +15,118 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { siteConfig } from "@/config/site";
+import { BRAND_SUBCATEGORIES, SubcategoryNode } from "@/config/brand-subcategories";
 import { useCartStore } from "@/store/cart";
 import { useAuthStore } from "@/store/auth";
 import { Heart } from "lucide-react";
 import { useWishlistStore } from "@/store/wishlist";
 
+/** 캐스케이딩 서브카테고리 패널 - 호버하면 다음 레벨이 오른쪽에 나타남 */
+function SubcategoryPanel({
+  nodes,
+  brandSlug,
+  pathPrefix,
+}: {
+  nodes: SubcategoryNode[];
+  brandSlug: string;
+  pathPrefix: string;
+}) {
+  const [hovered, setHovered] = useState<string | null>(null);
+  const hoveredNode = hovered ? nodes.find((n) => n.label === hovered) : null;
+
+  return (
+    <div className="flex">
+      <div className="py-2 min-w-[180px] border-r">
+        {nodes.map((node) => {
+          const fullPath = pathPrefix ? `${pathPrefix} > ${node.label}` : node.label;
+          const hasChildren = node.children && node.children.length > 0;
+          return (
+            <Link
+              key={node.label}
+              href={`/brand/${brandSlug}?sub=${encodeURIComponent(fullPath)}`}
+              onMouseEnter={() => setHovered(node.label)}
+              className={`flex items-center justify-between px-4 py-1.5 text-sm transition-colors ${
+                hovered === node.label
+                  ? "text-blue-600 bg-blue-50"
+                  : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+              }`}
+            >
+              {node.label}
+              {hasChildren && <ChevronDown className="h-3 w-3 -rotate-90 flex-shrink-0" />}
+            </Link>
+          );
+        })}
+      </div>
+      {hoveredNode?.children && hoveredNode.children.length > 0 && (
+        <SubcategoryPanel
+          nodes={hoveredNode.children}
+          brandSlug={brandSlug}
+          pathPrefix={pathPrefix ? `${pathPrefix} > ${hoveredNode.label}` : hoveredNode.label}
+        />
+      )}
+    </div>
+  );
+}
+
+/** 모바일용 서브카테고리 - 아코디언 방식 */
+function MobileSubcategoryList({
+  nodes,
+  brandSlug,
+  pathPrefix,
+  depth,
+}: {
+  nodes: SubcategoryNode[];
+  brandSlug: string;
+  pathPrefix: string;
+  depth: number;
+}) {
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  return (
+    <div className={depth > 0 ? "ml-3 border-l border-gray-200 pl-2" : ""}>
+      {nodes.map((node) => {
+        const fullPath = pathPrefix ? `${pathPrefix} > ${node.label}` : node.label;
+        const hasChildren = node.children && node.children.length > 0;
+        return (
+          <div key={node.label}>
+            <div className="flex items-center justify-between">
+              <Link
+                href={`/brand/${brandSlug}?sub=${encodeURIComponent(fullPath)}`}
+                className="flex-1 px-2 py-1 text-xs text-gray-500 hover:text-blue-600 rounded hover:bg-gray-50 transition-colors"
+              >
+                {node.label}
+              </Link>
+              {hasChildren && (
+                <button
+                  onClick={() => setExpanded(expanded === node.label ? null : node.label)}
+                  className="p-1 text-gray-400 hover:text-blue-600"
+                >
+                  <ChevronDown className={`h-3 w-3 transition-transform ${expanded === node.label ? "rotate-180" : ""}`} />
+                </button>
+              )}
+            </div>
+            {expanded === node.label && hasChildren && (
+              <MobileSubcategoryList
+                nodes={node.children!}
+                brandSlug={brandSlug}
+                pathPrefix={fullPath}
+                depth={depth + 1}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function Header() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [brandMenuOpen, setBrandMenuOpen] = useState(false);
+  const [hoveredBrand, setHoveredBrand] = useState<string | null>(null);
   const [mobileBrandOpen, setMobileBrandOpen] = useState(false);
+  const [mobileSubBrand, setMobileSubBrand] = useState<string | null>(null);
   const cartItemCount = useCartStore((s) => s.getTotalItems());
   const { isLoggedIn, user, logout } = useAuthStore();
 
@@ -65,7 +167,7 @@ export default function Header() {
                 </Link>
                 <span>|</span>
                 <button
-                  onClick={() => { logout(); router.push("/"); }}
+                  onClick={async () => { await logout(); router.push("/"); }}
                   className="hover:text-white transition-colors"
                 >
                   로그아웃
@@ -124,15 +226,39 @@ export default function Header() {
                 </button>
                 {mobileBrandOpen && (
                   <div className="ml-3 flex flex-col gap-1 border-l-2 border-blue-200 pl-3">
-                    {brandNavItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="px-3 py-1.5 text-sm text-gray-600 rounded-md hover:bg-gray-100 hover:text-blue-600 transition-colors"
-                      >
-                        {item.title}
-                      </Link>
-                    ))}
+                    {brandNavItems.map((item) => {
+                      const brandName = item.title;
+                      const subs = BRAND_SUBCATEGORIES[brandName];
+                      const slug = siteConfig.brands.find((b) => b.name === brandName)?.slug || brandName.toLowerCase();
+                      return (
+                        <div key={item.href}>
+                          <div className="flex items-center justify-between">
+                            <Link
+                              href={item.href}
+                              className="flex-1 px-3 py-1.5 text-sm text-gray-600 rounded-md hover:bg-gray-100 hover:text-blue-600 transition-colors"
+                            >
+                              {item.title}
+                            </Link>
+                            {subs && (
+                              <button
+                                onClick={() => setMobileSubBrand(mobileSubBrand === brandName ? null : brandName)}
+                                className="p-1 text-gray-400 hover:text-blue-600"
+                              >
+                                <ChevronDown className={`h-3 w-3 transition-transform ${mobileSubBrand === brandName ? "rotate-180" : ""}`} />
+                              </button>
+                            )}
+                          </div>
+                          {mobileSubBrand === brandName && subs && (
+                            <MobileSubcategoryList
+                              nodes={subs}
+                              brandSlug={slug}
+                              pathPrefix=""
+                              depth={0}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 
@@ -249,11 +375,11 @@ export default function Header() {
               </Link>
             </li>
 
-            {/* 브랜드 드롭다운 */}
+            {/* 브랜드 메가메뉴 드롭다운 */}
             <li
               className="relative"
               onMouseEnter={() => setBrandMenuOpen(true)}
-              onMouseLeave={() => setBrandMenuOpen(false)}
+              onMouseLeave={() => { setBrandMenuOpen(false); setHoveredBrand(null); }}
             >
               <button className="inline-flex items-center gap-1 px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                 브랜드
@@ -262,16 +388,37 @@ export default function Header() {
                 />
               </button>
               {brandMenuOpen && (
-                <div className="absolute top-full left-0 bg-white border rounded-lg shadow-xl py-2 min-w-[180px] z-50">
-                  {brandNavItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                    >
-                      {item.title}
-                    </Link>
-                  ))}
+                <div className="absolute top-full left-0 bg-white border rounded-lg shadow-xl z-50 flex min-w-[180px]">
+                  {/* 브랜드 목록 (왼쪽) */}
+                  <div className="py-2 border-r min-w-[160px]">
+                    {brandNavItems.map((item) => {
+                      const brandName = item.title;
+                      const hasSub = !!BRAND_SUBCATEGORIES[brandName];
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onMouseEnter={() => setHoveredBrand(brandName)}
+                          className={`flex items-center justify-between px-4 py-2 text-sm transition-colors ${
+                            hoveredBrand === brandName
+                              ? "text-blue-600 bg-blue-50"
+                              : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                          }`}
+                        >
+                          {item.title}
+                          {hasSub && <ChevronDown className="h-3 w-3 -rotate-90" />}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                  {/* 하위 카테고리 (오른쪽 - 캐스케이딩) */}
+                  {hoveredBrand && BRAND_SUBCATEGORIES[hoveredBrand] && (
+                    <SubcategoryPanel
+                      nodes={BRAND_SUBCATEGORIES[hoveredBrand]}
+                      brandSlug={siteConfig.brands.find((b) => b.name === hoveredBrand)?.slug || hoveredBrand.toLowerCase()}
+                      pathPrefix=""
+                    />
+                  )}
                 </div>
               )}
             </li>

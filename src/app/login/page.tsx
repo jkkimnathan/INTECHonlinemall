@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/store/auth";
 import { siteConfig } from "@/config/site";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,14 +16,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   // 이미 로그인한 경우
   if (isLoggedIn) {
-    router.push("/mypage");
+    router.push("/");
     return null;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -36,11 +37,14 @@ export default function LoginPage() {
       return;
     }
 
-    const success = login(email, password);
-    if (success) {
-      router.push("/mypage");
+    setSubmitting(true);
+    const result = await login(email, password);
+    setSubmitting(false);
+
+    if (result.success) {
+      router.push("/");
     } else {
-      setError("이메일 또는 비밀번호가 올바르지 않습니다.");
+      setError(result.error || "로그인에 실패했습니다.");
     }
   };
 
@@ -72,6 +76,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="h-11"
+                disabled={submitting}
               />
             </div>
 
@@ -86,6 +91,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="h-11 pr-10"
+                  disabled={submitting}
                 />
                 <button
                   type="button"
@@ -108,40 +114,20 @@ export default function LoginPage() {
             <Button
               type="submit"
               className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={submitting}
             >
-              로그인
+              {submitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  로그인 중...
+                </>
+              ) : (
+                "로그인"
+              )}
             </Button>
           </form>
 
-          {/* 구분선 */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-4 text-gray-400">또는</span>
-            </div>
-          </div>
-
-          {/* 소셜 로그인 (추후 Supabase Auth로 연결) */}
-          <div className="space-y-2">
-            <Button
-              variant="outline"
-              className="w-full h-11 text-sm"
-              disabled
-            >
-              <span className="mr-2 text-lg">💬</span>
-              카카오로 로그인 (준비 중)
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full h-11 text-sm"
-              disabled
-            >
-              <span className="mr-2 text-lg font-bold text-green-500">N</span>
-              네이버로 로그인 (준비 중)
-            </Button>
-          </div>
+          {/* 소셜 로그인은 추후 카카오/네이버 OAuth 키 발급 후 활성화 */}
 
           {/* 하단 링크 */}
           <div className="mt-6 text-center text-sm text-gray-500">
@@ -152,15 +138,6 @@ export default function LoginPage() {
             >
               회원가입
             </Link>
-          </div>
-
-          {/* 데모 안내 */}
-          <div className="mt-4 bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
-            <p className="font-semibold">테스트 안내</p>
-            <p className="mt-1">
-              아무 이메일과 비밀번호를 입력하면 데모 계정으로 로그인됩니다.
-              (추후 Supabase 연동 시 실제 인증으로 교체)
-            </p>
           </div>
         </div>
       </div>

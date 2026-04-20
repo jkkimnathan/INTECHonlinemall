@@ -1,28 +1,34 @@
 "use client";
 
-import { useState } from "react";
-import { getProducts } from "@/lib/dummy-products";
+import { useState, useEffect } from "react";
+import { getProducts } from "@/lib/supabase/products";
 import ProductCard from "@/components/product/ProductCard";
-import { ProductCategory } from "@/types/product";
+import { Product, ProductCategory } from "@/types/product";
 
 const categories: { label: string; value: ProductCategory | "전체" }[] = [
   { label: "전체", value: "전체" },
   { label: "CPU", value: "CPU" },
   { label: "그래픽카드", value: "그래픽카드" },
   { label: "메인보드", value: "메인보드" },
-  { label: "SSD", value: "SSD" },
-  { label: "메모리", value: "메모리" },
   { label: "모니터", value: "모니터" },
+  { label: "조립PC", value: "조립PC" },
   { label: "기타", value: "기타" },
 ];
 
 export default function CategoryTabs() {
   const [active, setActive] = useState<ProductCategory | "전체">("전체");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const products =
-    active === "전체"
-      ? getProducts({}).slice(0, 8)
-      : getProducts({ category: active as ProductCategory }).slice(0, 8);
+  useEffect(() => {
+    setLoading(true);
+    const opts =
+      active === "전체" ? {} : { category: active as ProductCategory };
+    getProducts(opts).then((data) => {
+      setProducts(data.slice(0, 8));
+      setLoading(false);
+    });
+  }, [active]);
 
   return (
     <section className="py-12 bg-white">
@@ -52,7 +58,11 @@ export default function CategoryTabs() {
         </div>
 
         {/* 상품 그리드 */}
-        {products.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-12 text-gray-400">
+            <p>상품을 불러오는 중...</p>
+          </div>
+        ) : products.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />

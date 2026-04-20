@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "tamfbsqtrncnmjuzjbjf.supabase.co",
+        pathname: "/storage/**",
+      },
+    ],
   },
 
   // 보안 헤더
@@ -21,6 +28,25 @@ const nextConfig: NextConfig = {
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
+          },
+          { key: "X-DNS-Prefetch-Control", value: "on" },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https://tamfbsqtrncnmjuzjbjf.supabase.co",
+              "font-src 'self' data:",
+              "connect-src 'self' https://tamfbsqtrncnmjuzjbjf.supabase.co wss://tamfbsqtrncnmjuzjbjf.supabase.co",
+              "frame-ancestors 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join("; "),
           },
         ],
       },

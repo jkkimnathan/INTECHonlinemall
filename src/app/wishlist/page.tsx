@@ -6,6 +6,7 @@ import { useWishlistStore } from "@/store/wishlist";
 import { useCartStore } from "@/store/cart";
 import ProductCard from "@/components/product/ProductCard";
 import { Heart, ShoppingCart, Trash2 } from "lucide-react";
+import { showToast } from "@/components/ui/toast";
 
 export default function WishlistPage() {
   const { items, clearWishlist } = useWishlistStore();
@@ -44,7 +45,7 @@ export default function WishlistPage() {
               className="text-xs"
               onClick={() => {
                 items.forEach((p) => addToCart(p));
-                alert("모든 관심상품이 장바구니에 담겼습니다.");
+                showToast("모든 관심상품이 장바구니에 담겼습니다.");
               }}
             >
               <ShoppingCart className="h-3 w-3 mr-1" />

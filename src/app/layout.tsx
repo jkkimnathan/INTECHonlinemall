@@ -6,6 +6,8 @@ import Footer from "@/components/layout/Footer";
 import { siteConfig } from "@/config/site";
 import { getOrganizationJsonLd } from "@/lib/jsonld";
 import FloatingActions from "@/components/floating/FloatingActions";
+import AuthProvider from "@/components/providers/AuthProvider";
+import { ToastProvider } from "@/components/ui/toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   keywords: [
     "컴퓨터 부품", "PC 하드웨어", "CPU", "그래픽카드", "메인보드",
-    "INTEL", "ASUS", "MANLI", "ASRock", "TOSHIBA", "Microsoft", "MSI",
+    "INTEL", "ASUS", "MANLI", "ASRock", "TOSHIBA", "Microsoft", "MSI", "iPC", "조립PC",
     "공식 수입사", "정품", "인텍앤컴퍼니",
   ],
   authors: [{ name: siteConfig.name }],
@@ -44,11 +46,7 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
   },
-  verification: {
-    // 추후 실제 인증 코드로 교체
-    // google: "구글서치콘솔-인증코드",
-    // other: { "naver-site-verification": "네이버-인증코드" },
-  },
+  // verification: { google: "인증코드", other: { "naver-site-verification": "인증코드" } },
   alternates: {
     canonical: siteConfig.url,
   },
@@ -70,10 +68,14 @@ export default function RootLayout({
             __html: JSON.stringify(getOrganizationJsonLd()),
           }}
         />
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-        <FloatingActions />
+        <AuthProvider>
+          <ToastProvider>
+            <Header />
+            <main className="min-h-screen">{children}</main>
+            <Footer />
+            <FloatingActions />
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );

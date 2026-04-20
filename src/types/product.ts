@@ -12,6 +12,7 @@ export type ProductCategory =
   | "모니터"
   | "키보드"
   | "마우스"
+  | "조립PC"
   | "기타";
 
 /** 상품 상태 */
@@ -30,9 +31,11 @@ export interface Product {
   price: number;
   salePrice: number | null;
   images: string[];
+  detailImages: string[];
   stock: number;
   isNew: boolean;
   isSale: boolean;
   isFeatured: boolean;
+  subcategory: string | null;
   createdAt: string;
 }

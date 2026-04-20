@@ -128,6 +128,25 @@
   }
 }
 
+/* 컨테이너 최대 너비 및 여백 */
+.container {
+  max-width: 1280px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+@media (min-width: 768px) {
+  .container {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+}
+
 /* 공지사항 티커 애니메이션 */
 @keyframes marquee {
   0% {
@@ -140,4 +159,20 @@
 
 .animate-marquee {
   animation: marquee 30s linear infinite;
+}
+
+/* Toast 슬라이드 인 */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
 }

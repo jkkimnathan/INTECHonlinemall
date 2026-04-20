@@ -1,17 +1,21 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
-import { getProductBySlug, getProducts } from "@/lib/dummy-products";
+import Image from "next/image";
+import { getProductBySlug, getProducts } from "@/lib/supabase/products";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/store/cart";
 import { useWishlistStore } from "@/store/wishlist";
+import { showToast } from "@/components/ui/toast";
 import {
   ShoppingCart,
   Heart,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Minus,
   Plus,
   Truck,
@@ -19,9 +23,42 @@ import {
   RotateCcw,
 } from "lucide-react";
 import ProductCard from "@/components/product/ProductCard";
-import { useState, useEffect } from "react";
+import ProductReviews from "@/components/product/ProductReviews";
+import { Product } from "@/types/product";
 import { getProductJsonLd, getBreadcrumbJsonLd } from "@/lib/jsonld";
 import { useRecentlyViewedStore } from "@/store/recentlyViewed";
+
+function DetailImageSection({ images, productName }: { images: string[]; productName: string }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="bg-white rounded-lg border mt-6 overflow-hidden">
+      <div className="p-6 pb-0">
+        <h2 className="text-lg font-bold text-gray-900">상세 정보</h2>
+      </div>
+      <div className={`mt-4 relative ${!expanded ? "max-h-[600px] overflow-hidden" : ""}`}>
+        {images.map((img, i) => (
+          <Image key={i} src={img} alt={`${productName} 상세 ${i + 1}`} width={0} height={0} sizes="100vw" className="w-full h-auto" />
+        ))}
+        {!expanded && (
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
+        )}
+      </div>
+      <div className="p-4 text-center border-t">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="inline-flex items-center gap-1 px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+        >
+          {expanded ? (
+            <>상세정보 접기 <ChevronUp className="h-4 w-4" /></>
+          ) : (
+            <>상세정보 더보기 <ChevronDown className="h-4 w-4" /></>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
@@ -33,17 +70,36 @@ export default function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
-  const product = getProductBySlug(slug);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [mainImage, setMainImage] = useState(0);
   const addToCart = useCartStore((s) => s.addItem);
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
   const addToRecentlyViewed = useRecentlyViewedStore((s) => s.addItem);
 
   useEffect(() => {
-    if (product) {
-      addToRecentlyViewed(product);
-    }
-  }, [product, addToRecentlyViewed]);
+    setLoading(true);
+    getProductBySlug(slug).then((p) => {
+      setProduct(p);
+      setLoading(false);
+      if (p) {
+        addToRecentlyViewed(p);
+        getProducts({ brand: p.brand }).then((related) => {
+          setRelatedProducts(related.filter((r) => r.id !== p.id).slice(0, 4));
+        });
+      }
+    });
+  }, [slug, addToRecentlyViewed]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <p className="text-gray-400">상품 정보를 불러오는 중...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -57,10 +113,6 @@ export default function ProductDetailPage({
       </div>
     );
   }
-
-  const relatedProducts = getProducts({ brand: product.brand })
-    .filter((p) => p.id !== product.id)
-    .slice(0, 4);
 
   const finalPrice = product.salePrice ?? product.price;
   const discountRate = product.salePrice
@@ -115,13 +167,32 @@ export default function ProductDetailPage({
         <div className="bg-white rounded-lg border p-6 md:p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* 이미지 영역 */}
-            <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-              <div className="text-center p-8">
-                <p className="text-gray-400 text-sm">상품 이미지</p>
-                <p className="text-gray-500 text-lg font-medium mt-2">
-                  {product.name}
-                </p>
+            <div>
+              <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                {product.images.length > 0 ? (
+                  <Image src={product.images[mainImage] || product.images[0]} alt={product.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" priority />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-center p-8">
+                    <div>
+                      <p className="text-gray-400 text-sm">상품 이미지</p>
+                      <p className="text-gray-500 text-lg font-medium mt-2">{product.name}</p>
+                    </div>
+                  </div>
+                )}
               </div>
+              {product.images.length > 1 && (
+                <div className="flex gap-2 mt-3 overflow-x-auto">
+                  {product.images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setMainImage(i)}
+                      className={`relative flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${i === mainImage ? "border-blue-600" : "border-transparent hover:border-gray-300"}`}
+                    >
+                      <Image src={img} alt={`${product.name} ${i + 1}`} fill sizes="64px" className="object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* 상품 정보 */}
@@ -231,7 +302,7 @@ export default function ProductDetailPage({
                   disabled={product.stock === 0}
                   onClick={() => {
                     addToCart(product, quantity);
-                    alert(`${product.name}이(가) 장바구니에 담겼습니다.`);
+                    showToast(`${product.name}이(가) 장바구니에 담겼습니다.`);
                   }}
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
@@ -272,33 +343,44 @@ export default function ProductDetailPage({
           </div>
         </div>
 
-        {/* 상품 설명 & 스펙 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          {/* 상품 설명 */}
-          <div className="bg-white rounded-lg border p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">상품 설명</h2>
-            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-              {product.description}
-            </p>
-          </div>
+        {/* 상세페이지 이미지 */}
+        {product.detailImages && product.detailImages.length > 0 && (
+          <DetailImageSection images={product.detailImages} productName={product.name} />
+        )}
 
-          {/* 제품 스펙 */}
-          <div className="bg-white rounded-lg border p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">제품 사양</h2>
-            <table className="w-full text-sm">
-              <tbody>
-                {Object.entries(product.specs).map(([key, value]) => (
-                  <tr key={key} className="border-b last:border-0">
-                    <td className="py-2.5 pr-4 font-medium text-gray-600 whitespace-nowrap w-1/3">
-                      {key}
-                    </td>
-                    <td className="py-2.5 text-gray-900">{value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* 상품 설명 & 스펙 - 내용이 있을 때만 표시 */}
+        {(product.description?.trim() || Object.keys(product.specs).length > 0) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {product.description?.trim() && (
+              <div className="bg-white rounded-lg border p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">상품 설명</h2>
+                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                  {product.description}
+                </p>
+              </div>
+            )}
+            {Object.keys(product.specs).length > 0 && (
+              <div className="bg-white rounded-lg border p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">제품 사양</h2>
+                <table className="w-full text-sm">
+                  <tbody>
+                    {Object.entries(product.specs).map(([key, value]) => (
+                      <tr key={key} className="border-b last:border-0">
+                        <td className="py-2.5 pr-4 font-medium text-gray-600 whitespace-nowrap w-1/3">
+                          {key}
+                        </td>
+                        <td className="py-2.5 text-gray-900">{value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        </div>
+        )}
+
+        {/* 리뷰 */}
+        <ProductReviews productId={product.id} />
 
         {/* 관련 상품 */}
         {relatedProducts.length > 0 && (

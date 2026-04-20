@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/store/auth";
 import { useCartStore } from "@/store/cart";
 import { useWishlistStore } from "@/store/wishlist";
+import { getOrdersByUserId } from "@/lib/supabase/orders";
+import { Order } from "@/types/order";
 import {
   Package,
   Heart,
@@ -22,24 +25,6 @@ import {
   RotateCcw,
 } from "lucide-react";
 
-// 임시 주문 데이터
-const dummyOrders = [
-  {
-    id: "ORD-2025-001",
-    date: "2025-03-10",
-    status: "배송완료",
-    items: "Intel Core i7-14700K 외 1건",
-    total: 628000,
-  },
-  {
-    id: "ORD-2025-002",
-    date: "2025-03-15",
-    status: "배송중",
-    items: "ASUS ROG STRIX B760-F GAMING WIFI",
-    total: 329000,
-  },
-];
-
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
 }
@@ -51,11 +36,27 @@ const gradeColors: Record<string, string> = {
   VIP: "bg-purple-100 text-purple-800",
 };
 
+const statusBadgeColors: Record<string, string> = {
+  결제완료: "bg-blue-100 text-blue-700",
+  배송준비: "bg-yellow-100 text-yellow-700",
+  배송중: "bg-orange-100 text-orange-700",
+  배송완료: "bg-green-100 text-green-700",
+  취소: "bg-red-100 text-red-700",
+  "교환/반품": "bg-gray-100 text-gray-700",
+};
+
 export default function MyPage() {
   const router = useRouter();
   const { user, isLoggedIn, logout } = useAuthStore();
   const cartItems = useCartStore((s) => s.items);
   const wishlistItems = useWishlistStore((s) => s.items);
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    if (user?.id) {
+      getOrdersByUserId(user.id).then(setOrders);
+    }
+  }, [user?.id]);
 
   if (!isLoggedIn || !user) {
     router.push("/login");
@@ -67,6 +68,13 @@ export default function MyPage() {
     router.push("/");
   };
 
+  const statusCounts = {
+    결제완료: orders.filter((o) => o.status === "결제완료").length,
+    배송중: orders.filter((o) => o.status === "배송중" || o.status === "배송준비").length,
+    배송완료: orders.filter((o) => o.status === "배송완료").length,
+    "교환/반품": orders.filter((o) => o.status === "교환/반품").length,
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 py-8">
@@ -75,7 +83,6 @@ export default function MyPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* 왼쪽: 프로필 카드 */}
           <div className="lg:col-span-1 space-y-4">
-            {/* 회원 정보 카드 */}
             <div className="bg-white rounded-xl border p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">
@@ -97,7 +104,6 @@ export default function MyPage() {
 
               <Separator className="my-4" />
 
-              {/* 적립금 */}
               <div className="flex items-center justify-between py-2">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Coins className="h-4 w-4 text-yellow-500" />
@@ -110,7 +116,6 @@ export default function MyPage() {
 
               <Separator className="my-2" />
 
-              {/* 빠른 메뉴 */}
               <nav className="space-y-1 mt-3">
                 <Link
                   href="/cart"
@@ -167,28 +172,28 @@ export default function MyPage() {
                   <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-2">
                     <Package className="h-5 w-5 text-blue-500" />
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">1</p>
+                  <p className="text-2xl font-bold text-gray-900">{statusCounts.결제완료}</p>
                   <p className="text-xs text-gray-500">결제완료</p>
                 </div>
                 <div className="p-3">
                   <div className="w-10 h-10 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-2">
                     <Truck className="h-5 w-5 text-orange-500" />
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">1</p>
+                  <p className="text-2xl font-bold text-gray-900">{statusCounts.배송중}</p>
                   <p className="text-xs text-gray-500">배송중</p>
                 </div>
                 <div className="p-3">
                   <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-2">
                     <CheckCircle className="h-5 w-5 text-green-500" />
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">1</p>
+                  <p className="text-2xl font-bold text-gray-900">{statusCounts.배송완료}</p>
                   <p className="text-xs text-gray-500">배송완료</p>
                 </div>
                 <div className="p-3">
                   <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-2">
                     <RotateCcw className="h-5 w-5 text-gray-400" />
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">0</p>
+                  <p className="text-2xl font-bold text-gray-900">{statusCounts["교환/반품"]}</p>
                   <p className="text-xs text-gray-500">교환/반품</p>
                 </div>
               </div>
@@ -197,44 +202,49 @@ export default function MyPage() {
             {/* 최근 주문 내역 */}
             <div className="bg-white rounded-xl border p-6">
               <h3 className="font-bold text-gray-900 mb-4">최근 주문 내역</h3>
-              <div className="space-y-3">
-                {dummyOrders.map((order) => (
-                  <div
-                    key={order.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-900">
-                          {order.id}
-                        </span>
-                        <Badge
-                          className={
-                            order.status === "배송완료"
-                              ? "bg-green-100 text-green-700"
-                              : order.status === "배송중"
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-gray-100 text-gray-700"
-                          }
-                        >
-                          {order.status}
-                        </Badge>
+              {orders.length === 0 ? (
+                <div className="text-center py-8">
+                  <Package className="h-10 w-10 text-gray-300 mx-auto mb-2" />
+                  <p className="text-gray-400 text-sm">아직 주문 내역이 없습니다.</p>
+                  <Link href="/products" className="mt-3 inline-block">
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">쇼핑하러 가기</Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {orders.slice(0, 5).map((order) => (
+                    <Link
+                      key={order.id}
+                      href={`/order/${order.id}`}
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-900">
+                            {order.id}
+                          </span>
+                          <Badge className={statusBadgeColors[order.status] || "bg-gray-100 text-gray-700"}>
+                            {order.status}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {order.items[0]?.product.name}
+                          {order.items.length > 1 && ` 외 ${order.items.length - 1}건`}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {new Date(order.createdAt).toLocaleDateString("ko-KR")}
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-500 mt-1">
-                        {order.items}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-0.5">
-                        {order.date}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-gray-900">
-                        {formatPrice(order.total)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                      <div className="text-right">
+                        <p className="font-bold text-gray-900">
+                          {formatPrice(order.total)}
+                        </p>
+                        <ChevronRight className="h-4 w-4 text-gray-300 ml-auto mt-1" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* 회원 정보 */}

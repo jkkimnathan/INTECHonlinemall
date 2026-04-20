@@ -9,7 +9,7 @@ export const siteConfig = {
   // ─── 기본 정보 ───
   name: "인텍앤컴퍼니몰",
   nameEn: "INTECH & Company Mall",
-  description: "INTEL, ASUS, MANLI, ASRock, TOSHIBA, Microsoft, MSI 공식 수입사 직영몰",
+  description: "INTEL, ASUS, MANLI, ASRock, TOSHIBA, Microsoft, iPC 공식 수입사 직영몰",
   url: "https://intechonline.kr",
   domain: "intechonline.kr",
 
@@ -25,13 +25,13 @@ export const siteConfig = {
   // logo: 브랜드 로고 이미지 (투명 배경 PNG 권장, /public/images/brands/ 에 저장)
   // bgImage: 브랜드 카드 배경 이미지 (선택, /public/images/brands/ 에 저장)
   brands: [
-    { name: "INTEL", slug: "intel", logo: "/images/brands/intel.png", bgImage: "/images/brands/intel-bg.jpg" },
-    { name: "ASUS", slug: "asus", logo: "/images/brands/asus.png", bgImage: "/images/brands/asus-bg.jpg" },
-    { name: "MANLI", slug: "manli", logo: "/images/brands/manli.png", bgImage: "/images/brands/manli-bg.jpg" },
-    { name: "ASRock", slug: "asrock", logo: "/images/brands/asrock.png", bgImage: "/images/brands/asrock-bg.jpg" },
-    { name: "TOSHIBA", slug: "toshiba", logo: "/images/brands/toshiba.png", bgImage: "/images/brands/toshiba-bg.jpg" },
-    { name: "Microsoft", slug: "microsoft", logo: "/images/brands/microsoft.png", bgImage: "/images/brands/microsoft-bg.jpg" },
-    { name: "MSI", slug: "msi", logo: "/images/brands/msi.png", bgImage: "/images/brands/msi-bg.jpg" },
+    { name: "INTEL", slug: "intel", logo: "/images/brands/intel.png", bgImage: "" },
+    { name: "ASUS", slug: "asus", logo: "/images/brands/asus.png", bgImage: "" },
+    { name: "MANLI", slug: "manli", logo: "/images/brands/manli.png", bgImage: "" },
+    { name: "ASRock", slug: "asrock", logo: "/images/brands/ASRock.png", bgImage: "" },
+    { name: "TOSHIBA", slug: "toshiba", logo: "/images/brands/toshiba.png", bgImage: "" },
+    { name: "Microsoft", slug: "microsoft", logo: "/images/brands/Microsoft.png", bgImage: "" },
+    { name: "iPC", slug: "ipc", logo: "/images/brands/ipc.png", bgImage: "" },
   ],
 
   // ─── 연락처 ───
@@ -62,7 +62,7 @@ export const siteConfig = {
     { title: "ASRock", href: "/brand/asrock" },
     { title: "TOSHIBA", href: "/brand/toshiba" },
     { title: "Microsoft", href: "/brand/microsoft" },
-    { title: "MSI", href: "/brand/msi" },
+    { title: "iPC", href: "/brand/ipc" },
     { title: "특가", href: "/sale" },
     { title: "리퍼비쉬", href: "/refurbished" },
     { title: "이벤트", href: "/event" },
@@ -75,7 +75,7 @@ export const siteConfig = {
     고객센터: [
       { title: "공지사항", href: "/notice" },
       { title: "자주 묻는 질문", href: "/faq" },
-      { title: "1:1 문의", href: "/inquiry" },
+      { title: "1:1 문의", href: "/community" },
     ],
     쇼핑안내: [
       { title: "이용약관", href: "/terms" },

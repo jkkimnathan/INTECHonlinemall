@@ -145,6 +145,7 @@ export interface ProductInput {
   is_new: boolean;
   is_sale: boolean;
   is_featured: boolean;
+  subcategory?: string | null;
 }
 
 /** slug 중복 시 자동으로 -2, -3 등 suffix 추가 */

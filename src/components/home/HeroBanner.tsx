@@ -16,7 +16,7 @@ export default function HeroBanner() {
             <span className="text-blue-400">최고의 가격</span>으로
           </h1>
           <p className="text-gray-300 text-lg mb-8 leading-relaxed">
-            INTEL, ASUS, MANLI, ASRock 공식 수입사에서 직접 판매합니다.
+            INTEL, ASUS, MANLI, ASRock, iPC 공식 수입사에서 직접 판매합니다.
             <br className="hidden md:block" />
             정품 보증과 최저가를 동시에 만나보세요.
           </p>

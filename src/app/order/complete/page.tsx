@@ -1,12 +1,13 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useOrderStore } from "@/store/order";
-import { CheckCircle, Package, ArrowRight } from "lucide-react";
+import { getOrderById } from "@/lib/supabase/orders";
+import { Order } from "@/types/order";
+import { CheckCircle, Package, ArrowRight, Loader2 } from "lucide-react";
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
@@ -15,8 +16,27 @@ function formatPrice(price: number) {
 function OrderCompleteContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
-  const getOrderById = useOrderStore((s) => s.getOrderById);
-  const order = orderId ? getOrderById(orderId) : null;
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (orderId) {
+      getOrderById(orderId).then((o) => {
+        setOrder(o);
+        setLoading(false);
+      });
+    } else {
+      setLoading(false);
+    }
+  }, [orderId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      </div>
+    );
+  }
 
   if (!order) {
     return (

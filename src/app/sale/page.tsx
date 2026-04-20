@@ -1,25 +1,29 @@
 import { Metadata } from "next";
 import ProductGrid from "@/components/product/ProductGrid";
-import { getProducts } from "@/lib/dummy-products";
+import { getProducts } from "@/lib/supabase/products.server";
+import { getPageBannerServer } from "@/lib/supabase/page-banners.server";
+import PageBannerHeader from "@/components/ui/PageBannerHeader";
 
 export const metadata: Metadata = {
   title: "특가 상품",
   description: "지금 할인 중인 IT 하드웨어를 만나보세요",
 };
 
-export default function SalePage() {
-  const products = getProducts({ isSale: true });
+export default async function SalePage() {
+  const [products, banner] = await Promise.all([
+    getProducts({ isSale: true }),
+    getPageBannerServer("sale"),
+  ]);
 
   return (
     <div>
-      <div className="bg-gradient-to-r from-red-600 to-orange-500 text-white">
-        <div className="container mx-auto px-4 py-10">
-          <h1 className="text-3xl font-bold">특가 상품</h1>
-          <p className="text-red-100 mt-2">
-            지금 할인 중인 IT 하드웨어를 놓치지 마세요!
-          </p>
-        </div>
-      </div>
+      <PageBannerHeader
+        title={banner?.title || "특가 상품"}
+        subtitle={banner?.subtitle || "지금 할인 중인 IT 하드웨어를 놓치지 마세요!"}
+        imageUrl={banner?.imageUrl}
+        gradientClass="from-red-600 to-orange-500"
+        subtitleColor="text-red-100"
+      />
 
       <ProductGrid
         products={products}

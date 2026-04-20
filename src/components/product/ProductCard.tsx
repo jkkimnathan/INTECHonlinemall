@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/types/product";
 import { ShoppingCart, Truck } from "lucide-react";
 import { useCartStore } from "@/store/cart";
+import { showToast } from "@/components/ui/toast";
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
@@ -26,11 +28,15 @@ export default function ProductCard({ product }: { product: Product }) {
       className="group bg-white rounded-lg border overflow-hidden hover:shadow-lg transition-shadow"
     >
       {/* 상품 이미지 */}
-      <div className="relative aspect-square bg-gray-100 flex items-center justify-center">
-        <div className="text-center p-4">
-          <p className="text-gray-400 text-xs">{product.brand}</p>
-          <p className="text-gray-500 text-sm mt-1 line-clamp-2">{product.name}</p>
-        </div>
+      <div className="relative aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
+        {product.images[0] ? (
+          <Image src={product.images[0]} alt={product.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
+        ) : (
+          <div className="text-center p-4">
+            <p className="text-gray-400 text-xs">{product.brand}</p>
+            <p className="text-gray-500 text-sm mt-1 line-clamp-2">{product.name}</p>
+          </div>
+        )}
 
         {/* 배지 */}
         <div className="absolute top-2 left-2 flex flex-wrap gap-1">
@@ -75,6 +81,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 e.preventDefault();
                 e.stopPropagation();
                 addToCart(product, 1);
+                showToast("상품이 장바구니에 담겼습니다.");
               }}
               className="bg-white text-gray-900 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 hover:bg-blue-600 hover:text-white transition-colors shadow-lg"
             >

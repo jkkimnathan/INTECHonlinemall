@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import ProductGrid from "@/components/product/ProductGrid";
-import { getProducts } from "@/lib/dummy-products";
+import { getProducts } from "@/lib/supabase/products.server";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description: `${siteConfig.name} 전체 상품 목록`,
 };
 
-export default function ProductsPage() {
-  const products = getProducts();
+export default async function ProductsPage() {
+  const products = await getProducts();
 
   return (
     <ProductGrid

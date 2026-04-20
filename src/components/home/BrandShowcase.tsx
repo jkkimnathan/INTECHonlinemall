@@ -6,13 +6,13 @@ import { siteConfig } from "@/config/site";
 
 export default function BrandShowcase() {
   const brandColors: Record<string, string> = {
-    intel: "from-blue-600 to-blue-800",
-    asus: "from-gray-700 to-gray-900",
-    manli: "from-red-600 to-red-800",
-    asrock: "from-green-600 to-green-800",
-    toshiba: "from-red-700 to-red-900",
-    microsoft: "from-sky-500 to-blue-700",
-    msi: "from-red-500 to-gray-900",
+    intel: "from-blue-500 via-blue-600 to-blue-800",
+    asus: "from-gray-600 via-gray-700 to-gray-900",
+    manli: "from-red-500 via-red-600 to-red-800",
+    asrock: "from-green-500 via-green-600 to-green-800",
+    toshiba: "from-red-600 via-red-700 to-red-900",
+    microsoft: "from-sky-400 via-blue-500 to-blue-700",
+    ipc: "from-indigo-500 via-purple-600 to-purple-800",
   };
 
   return (
@@ -31,30 +31,34 @@ export default function BrandShowcase() {
               href={`/brand/${brand.slug}`}
               className="group relative flex flex-col items-center justify-center h-40 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
             >
-              {/* 배경: 이미지가 있으면 이미지, 없으면 그라데이션 */}
-              {brand.bgImage ? (
-                <Image
-                  src={brand.bgImage}
-                  alt={`${brand.name} 배경`}
-                  fill
-                  className="object-cover brightness-50 group-hover:brightness-[0.35] group-hover:scale-110 transition-all duration-500"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  onError={(e) => {
-                    // 배경 이미지 로드 실패 시 숨기기
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              ) : null}
-              {/* 그라데이션 폴백 (이미지 없을 때 또는 로드 실패 시) */}
+              {/* 그라데이션 배경 */}
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${brandColors[brand.slug] || "from-gray-600 to-gray-800"} ${brand.bgImage ? "opacity-0" : "opacity-100"}`}
+                className={`absolute inset-0 bg-gradient-to-br ${brandColors[brand.slug] || "from-gray-600 to-gray-800"} transition-opacity duration-300`}
               />
+              {/* 오버레이 효과 */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
 
-              {/* 브랜드 로고 또는 텍스트 */}
-              <div className="relative z-10 flex flex-col items-center gap-2">
-                <span className="text-2xl font-bold text-white tracking-wider drop-shadow-lg">
-                  {brand.name}
-                </span>
+              {/* 브랜드 로고 */}
+              <div className="relative z-10 flex flex-col items-center gap-3">
+                <div className="w-28 h-16 relative flex items-center justify-center">
+                  <Image
+                    src={brand.logo}
+                    alt={brand.name}
+                    width={112}
+                    height={64}
+                    className="object-contain brightness-0 invert drop-shadow-lg"
+                    onError={(e) => {
+                      // 로고 로드 실패 시 텍스트로 대체
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = "none";
+                      const fallback = target.parentElement?.querySelector(".fallback-text");
+                      if (fallback) (fallback as HTMLElement).style.display = "block";
+                    }}
+                  />
+                  <span className="fallback-text hidden text-2xl font-bold text-white tracking-wider drop-shadow-lg">
+                    {brand.name}
+                  </span>
+                </div>
                 <span className="text-xs text-white/80 group-hover:text-white transition-colors">
                   제품 보러가기 &rarr;
                 </span>

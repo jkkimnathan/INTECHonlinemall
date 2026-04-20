@@ -1,11 +1,10 @@
 import { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
-import { getProducts } from "@/lib/dummy-products";
+import { getProducts } from "@/lib/supabase/products.server";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.url;
 
-  // 정적 페이지
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
     { url: `${baseUrl}/products`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
@@ -18,7 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/signup`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
   ];
 
-  // 브랜드 페이지
   const brandPages: MetadataRoute.Sitemap = siteConfig.brands.map((brand) => ({
     url: `${baseUrl}/brand/${brand.slug}`,
     lastModified: new Date(),
@@ -26,8 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  // 상품 페이지
-  const products = getProducts({});
+  const products = await getProducts({});
   const productPages: MetadataRoute.Sitemap = products.map((product) => ({
     url: `${baseUrl}/products/${product.slug}`,
     lastModified: new Date(),

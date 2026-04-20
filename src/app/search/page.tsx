@@ -1,14 +1,33 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import ProductGrid from "@/components/product/ProductGrid";
-import { getProducts } from "@/lib/dummy-products";
+import { getProducts } from "@/lib/supabase/products";
+import { Product } from "@/types/product";
 
 function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
-  const products = query ? getProducts({ search: query }) : getProducts();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    const opts = query ? { search: query } : {};
+    getProducts(opts).then((data) => {
+      setProducts(data);
+      setLoading(false);
+    });
+  }, [query]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center text-gray-400">
+        검색 중...
+      </div>
+    );
+  }
 
   return (
     <ProductGrid
