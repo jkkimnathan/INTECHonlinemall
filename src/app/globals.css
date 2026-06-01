@@ -8,7 +8,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-en: var(--font-en);
+  --font-mono: var(--font-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -47,39 +48,179 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ============================================================
+ * INTECH & Company — Design System tokens
+ * Source of truth: design_handoff_intechonline/design/colors_and_type.css
+ * Tone: "sophisticated finish quality". Light mode only for now.
+ * Brand colors live in logos/CTA only — never bleed into surfaces.
+ * ============================================================ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* ---- shadcn semantic tokens, remapped to the INTECH palette ---- */
+  --background: #ffffff;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-foreground: #18181b;
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+  --primary: #1a56db;            /* CTA · links — 신뢰감 블루 */
+  --primary-foreground: #ffffff;
+  --secondary: #f7f8fa;
+  --secondary-foreground: #18181b;
+  --muted: #f1f3f6;
+  --muted-foreground: #71717a;
+  --accent: #f1f3f6;             /* light hover surface (NOT the dark authority accent) */
+  --accent-foreground: #18181b;
+  --destructive: #dc2626;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #1a56db;
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.5rem;              /* 8px — design card default (radius-lg) */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #18181b;
+  --sidebar-primary: #1a56db;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f3f6;
+  --sidebar-accent-foreground: #18181b;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: #1a56db;
+
+  /* ---- Design · Color · Surfaces ---- */
+  --color-bg: #ffffff;
+  --color-surface: #f7f8fa;
+  --color-surface-2: #f1f3f6;
+  --color-border: #e5e7eb;
+  --color-border-strong: #d1d5db;
+
+  /* ---- Design · Color · Text ---- */
+  --color-fg: #18181b;
+  --color-fg-2: #3f3f46;
+  --color-fg-muted: #71717a;
+  --color-fg-subtle: #a1a1aa;
+  --color-fg-inverse: #ffffff;
+
+  /* ---- Design · Color · Brand & Authority ---- */
+  --color-primary: #1a56db;
+  --color-primary-hover: #1747b4;
+  --color-primary-active: #133d99;
+  --color-primary-50: #eef4ff;
+  --color-primary-100: #d8e6ff;
+  --color-primary-700: #1747b4;
+  --color-primary-fg: #ffffff;
+
+  --color-accent: #0f172a;       /* authority surface (header/footer dark) */
+  --color-accent-fg: #f1f5f9;
+  --color-accent-muted: #1e293b;
+
+  /* ---- Design · Color · Semantic ---- */
+  --color-sale: #dc2626;
+  --color-sale-50: #fef2f2;
+  --color-sale-fg: #ffffff;
+  --color-success: #059669;
+  --color-success-50: #ecfdf5;
+  --color-success-fg: #ffffff;
+  --color-warning: #d97706;
+  --color-warning-50: #fffbeb;
+  --color-warning-fg: #ffffff;
+  --color-info: #1a56db;
+  --color-info-50: #eef4ff;
+
+  /* ---- Design · Color · Refurbished (인텍만의 차별점) ---- */
+  --color-refurb: #ea580c;
+  --color-refurb-50: #fff7ed;
+  --color-refurb-fg: #ffffff;
+
+  /* ---- Design · Type · Family ---- */
+  --font-sans: "Pretendard Variable", "Pretendard", -apple-system,
+    BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR",
+    sans-serif;
+  --font-display: var(--font-sans);
+  --font-en: "Manrope", "Pretendard Variable", "Pretendard", -apple-system,
+    system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas,
+    monospace;
+
+  /* ---- Design · Type · Scale ---- */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 28px;
+  --text-4xl: 36px;
+  --text-5xl: 48px;
+
+  /* ---- Design · Type · Weight ---- */
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+  --w-bold: 700;
+  --w-extrabold: 800;
+
+  /* ---- Design · Type · Tracking ---- */
+  --track-display: -0.02em;
+  --track-tight: -0.01em;
+  --track-normal: 0;
+  --track-label: 0.05em;
+  --track-wider: 0.12em;
+
+  /* ---- Design · Spacing · 8px grid ---- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ---- Design · Radii ---- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-pill: 999px;
+
+  /* ---- Design · Shadow · 매우 절제. 강한 elevation 금지. ---- */
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.04),
+    0 1px 3px 0 rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 2px 4px -1px rgba(15, 23, 42, 0.06),
+    0 4px 8px -2px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 6px 12px -4px rgba(15, 23, 42, 0.08),
+    0 12px 24px -8px rgba(15, 23, 42, 0.1);
+  --shadow-card-hover: 0 1px 2px 0 rgba(15, 23, 42, 0.04),
+    0 12px 28px -8px rgba(15, 23, 42, 0.08);
+  --shadow-toast: 0 6px 12px -4px rgba(15, 23, 42, 0.18),
+    0 12px 24px -8px rgba(15, 23, 42, 0.22);
+  --shadow-drawer: -8px 0 24px -8px rgba(15, 23, 42, 0.15);
+  --shadow-focus: 0 0 0 3px rgba(26, 86, 219, 0.18);
+
+  /* ---- Design · Motion ---- */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --dur-slide: 700ms;
+
+  /* ---- Design · Layout ---- */
+  --container-max: 1280px;
+  --header-h-b2c: 112px;
+  --footer-h: 320px;
 }
 
 .dark {
@@ -122,10 +263,56 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   html {
     @apply font-sans;
   }
+}
+
+/* ============================================================
+ * Semantic type helpers — drop-in classes (design system)
+ * ============================================================ */
+.eyebrow {
+  font-family: var(--font-en);
+  font-weight: var(--w-semibold);
+  font-size: var(--text-xs);
+  letter-spacing: var(--track-wider);
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+.label-en {
+  font-family: var(--font-en);
+  font-weight: var(--w-semibold);
+  font-size: var(--text-sm);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+
+/* Price — tabular nums; 가격은 절대 흔들리면 안 됨 */
+.tabular-price {
+  font-variant-numeric: tabular-nums;
+}
+.price-strikethrough {
+  text-decoration: line-through;
+  color: var(--color-fg-subtle);
+  font-weight: var(--w-regular);
+  font-variant-numeric: tabular-nums;
+}
+.price-discount {
+  font-weight: var(--w-bold);
+  color: var(--color-sale);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Mono / code */
+.mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 /* 컨테이너 최대 너비 및 여백 */
