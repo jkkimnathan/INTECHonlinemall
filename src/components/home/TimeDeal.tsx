@@ -72,35 +72,37 @@ export default function TimeDeal({ deals: initialDeals = [], products: initialPr
   if (activeDeals.length === 0 || !hasProducts) return null;
 
   return (
-    <section className="py-12 bg-gradient-to-r from-red-50 to-orange-50">
+    <section className="py-12 bg-[#fef2f2]">
       <div className="container mx-auto px-4">
         {/* 헤더 */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#DC2626] rounded-full flex items-center justify-center">
               <Zap className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">타임딜</h2>
-              <p className="text-sm text-gray-500">한정 시간 특가 할인</p>
+              <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#dc2626]">
+                Today&apos;s Sale
+              </div>
+              <h2 className="text-[28px] font-bold text-[#1d1d1f] tracking-[-0.025em]">타임딜</h2>
             </div>
           </div>
 
           {/* 카운트다운 */}
           {mounted && (
             <div className="flex items-center gap-2">
-              <Timer className="h-4 w-4 text-red-600" />
-              <span className="text-sm text-gray-500">남은 시간</span>
+              <Timer className="h-4 w-4 text-[#DC2626]" />
+              <span className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#86868b]">Ends in</span>
               <div className="flex items-center gap-1">
-                <span className="bg-gray-900 text-white text-lg font-mono font-bold px-2 py-1 rounded">
+                <span className="bg-[#1d1d1f] text-white text-lg font-mono font-bold px-2 py-1 rounded tabular-nums">
                   {pad(timeLeft.hours)}
                 </span>
-                <span className="text-gray-900 font-bold">:</span>
-                <span className="bg-gray-900 text-white text-lg font-mono font-bold px-2 py-1 rounded">
+                <span className="text-[#1d1d1f] font-bold">:</span>
+                <span className="bg-[#1d1d1f] text-white text-lg font-mono font-bold px-2 py-1 rounded tabular-nums">
                   {pad(timeLeft.minutes)}
                 </span>
-                <span className="text-gray-900 font-bold">:</span>
-                <span className="bg-gray-900 text-white text-lg font-mono font-bold px-2 py-1 rounded">
+                <span className="text-[#1d1d1f] font-bold">:</span>
+                <span className="bg-[#1d1d1f] text-white text-lg font-mono font-bold px-2 py-1 rounded tabular-nums">
                   {pad(timeLeft.seconds)}
                 </span>
               </div>
@@ -162,14 +164,14 @@ export default function TimeDeal({ deals: initialDeals = [], products: initialPr
                         </div>
                       )}
                       {!isSoldOut && (
-                        <Badge className="absolute top-2 left-2 bg-red-600 text-white text-xs">
+                        <Badge className="absolute top-2 left-2 bg-[#DC2626] text-white text-xs rounded-full">
                           {discount}% OFF
                         </Badge>
                       )}
                     </div>
 
-                    <p className="text-xs text-blue-600 font-medium">{product.brand}</p>
-                    <p className="text-sm font-semibold text-gray-900 mt-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    <p className="font-en text-[10px] font-semibold uppercase tracking-[0.1em] text-[#86868b]">{product.brand}</p>
+                    <p className="text-sm font-semibold text-[#1d1d1f] mt-1 line-clamp-2 group-hover:text-[#1A56DB] transition-colors">
                       {product.name}
                     </p>
 

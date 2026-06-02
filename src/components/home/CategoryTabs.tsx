@@ -33,12 +33,17 @@ export default function CategoryTabs() {
   return (
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
-          카테고리별 인기상품
-        </h2>
-        <p className="text-sm text-gray-500 text-center mb-8">
-          카테고리를 선택하여 인기 상품을 확인하세요
-        </p>
+        <div className="text-center mb-8">
+          <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#a1a1aa]">
+            Categories
+          </div>
+          <h2 className="text-[28px] font-bold text-[#1d1d1f] tracking-[-0.025em] mt-2">
+            카테고리별 인기상품
+          </h2>
+          <p className="text-sm text-[#86868b] mt-1">
+            카테고리를 선택하여 인기 상품을 확인하세요
+          </p>
+        </div>
 
         {/* 탭 버튼 */}
         <div className="flex items-center justify-center gap-2 mb-8 flex-wrap">
@@ -48,8 +53,8 @@ export default function CategoryTabs() {
               onClick={() => setActive(cat.value)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 active === cat.value
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-[#1A56DB] text-white"
+                  : "bg-[#f5f5f7] text-[#3f3f46] hover:bg-[#EEF4FF] hover:text-[#1A56DB]"
               }`}
             >
               {cat.label}
