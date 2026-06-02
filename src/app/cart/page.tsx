@@ -21,16 +21,16 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-gray-50">
-        <ShoppingBag className="h-16 w-16 text-gray-300 mb-4" />
-        <h2 className="text-xl font-bold text-gray-900">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-[#fbfbfd]">
+        <ShoppingBag className="h-16 w-16 text-[#d1d5db] mb-4" />
+        <h2 className="text-xl font-bold text-[#1d1d1f]">
           장바구니가 비어있습니다
         </h2>
-        <p className="text-gray-500 mt-2 text-sm">
+        <p className="text-[#86868b] mt-2 text-sm">
           마음에 드는 상품을 담아보세요
         </p>
         <Link href="/products" className="mt-6">
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="rounded-full bg-[#1A56DB] hover:bg-[#1747b4]">
             쇼핑 계속하기
           </Button>
         </Link>
@@ -39,16 +39,21 @@ export default function CartPage() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-[#fbfbfd] min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
-            장바구니 ({items.length})
-          </h1>
+          <div>
+            <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#a1a1aa]">
+              Shopping Cart
+            </div>
+            <h1 className="text-[28px] font-bold text-[#1d1d1f] tracking-[-0.025em] mt-1.5 tabular-nums">
+              장바구니 ({items.length})
+            </h1>
+          </div>
           <Button
             variant="outline"
             size="sm"
-            className="text-xs text-red-500 hover:text-red-600"
+            className="rounded-full text-xs text-[#86868b] hover:text-[#DC2626]"
             onClick={clearCart}
           >
             <Trash2 className="h-3 w-3 mr-1" />
@@ -64,11 +69,11 @@ export default function CartPage() {
               return (
                 <div
                   key={product.id}
-                  className="bg-white rounded-lg border p-4 flex gap-4"
+                  className="bg-white rounded-2xl border border-[#f1f1f3] p-4 flex gap-4"
                 >
                   {/* 이미지 */}
                   <Link href={`/products/${product.slug}`}>
-                    <div className="w-24 h-24 bg-gray-100 rounded-md flex-shrink-0 relative overflow-hidden">
+                    <div className="w-24 h-24 bg-[#f5f5f7] rounded-xl flex-shrink-0 relative overflow-hidden">
                       {product.images?.[0] ? (
                         <Image
                           src={product.images[0]}
@@ -90,8 +95,8 @@ export default function CartPage() {
                   {/* 정보 */}
                   <div className="flex-1 min-w-0">
                     <Link href={`/products/${product.slug}`}>
-                      <p className="text-xs text-blue-600">{product.brand}</p>
-                      <h3 className="text-sm font-medium text-gray-900 truncate hover:text-blue-600">
+                      <p className="font-en text-[10px] font-semibold uppercase tracking-[0.1em] text-[#86868b]">{product.brand}</p>
+                      <h3 className="text-sm font-semibold text-[#1d1d1f] truncate hover:text-[#1A56DB] mt-0.5">
                         {product.name}
                       </h3>
                     </Link>
@@ -99,15 +104,15 @@ export default function CartPage() {
                     <div className="mt-2 flex items-center gap-2">
                       {product.salePrice ? (
                         <>
-                          <span className="text-sm font-bold text-gray-900">
+                          <span className="text-sm font-bold text-[#1d1d1f] tabular-nums">
                             {formatPrice(product.salePrice)}
                           </span>
-                          <span className="text-xs text-gray-400 line-through">
+                          <span className="text-xs text-[#a1a1aa] line-through tabular-nums">
                             {formatPrice(product.price)}
                           </span>
                         </>
                       ) : (
-                        <span className="text-sm font-bold text-gray-900">
+                        <span className="text-sm font-bold text-[#1d1d1f] tabular-nums">
                           {formatPrice(product.price)}
                         </span>
                       )}
@@ -115,16 +120,16 @@ export default function CartPage() {
 
                     {/* 수량 + 삭제 */}
                     <div className="mt-3 flex items-center justify-between">
-                      <div className="flex items-center border rounded-md">
+                      <div className="flex items-center border border-[#e5e7eb] rounded-full">
                         <button
                           onClick={() =>
                             updateQuantity(product.id, quantity - 1)
                           }
-                          className="p-1.5 hover:bg-gray-100"
+                          className="p-1.5 pl-2.5 text-[#3f3f46] hover:text-[#1A56DB]"
                         >
                           <Minus className="h-3 w-3" />
                         </button>
-                        <span className="px-3 text-sm font-medium">
+                        <span className="px-3 text-sm font-semibold tabular-nums">
                           {quantity}
                         </span>
                         <button
@@ -134,19 +139,19 @@ export default function CartPage() {
                               Math.min(product.stock, quantity + 1)
                             )
                           }
-                          className="p-1.5 hover:bg-gray-100"
+                          className="p-1.5 pr-2.5 text-[#3f3f46] hover:text-[#1A56DB]"
                         >
                           <Plus className="h-3 w-3" />
                         </button>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-bold">
+                        <span className="text-sm font-bold text-[#1d1d1f] tabular-nums">
                           {formatPrice(unitPrice * quantity)}
                         </span>
                         <button
                           onClick={() => removeItem(product.id)}
-                          className="text-gray-400 hover:text-red-500"
+                          className="text-[#a1a1aa] hover:text-[#DC2626]"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -160,26 +165,28 @@ export default function CartPage() {
 
           {/* 주문 요약 */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg border p-6 sticky top-32">
-              <h3 className="font-bold text-gray-900 mb-4">주문 요약</h3>
+            <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6 sticky top-32">
+              <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#a1a1aa] mb-4">
+                Order Summary
+              </div>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">상품 금액</span>
-                  <span className="text-gray-900">{formatPrice(totalPrice)}</span>
+                  <span className="text-[#86868b]">상품 금액</span>
+                  <span className="text-[#1d1d1f] tabular-nums">{formatPrice(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">배송비</span>
-                  <span className="text-gray-900">
+                  <span className="text-[#86868b]">배송비</span>
+                  <span className="text-[#1d1d1f] tabular-nums">
                     {shippingFee === 0 ? (
-                      <span className="text-green-600">무료</span>
+                      <span className="text-[#059669]">무료</span>
                     ) : (
                       formatPrice(shippingFee)
                     )}
                   </span>
                 </div>
                 {shippingFee > 0 && (
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-[#a1a1aa] tabular-nums">
                     * {formatPrice(50000)} 이상 구매 시 무료배송
                   </p>
                 )}
@@ -188,14 +195,14 @@ export default function CartPage() {
               <Separator className="my-4" />
 
               <div className="flex justify-between items-baseline">
-                <span className="font-bold text-gray-900">총 결제금액</span>
-                <span className="text-xl font-bold text-blue-600">
+                <span className="font-bold text-[#1d1d1f]">총 결제금액</span>
+                <span className="text-2xl font-bold text-[#1d1d1f] tabular-nums tracking-[-0.025em]">
                   {formatPrice(finalTotal)}
                 </span>
               </div>
 
               <Button
-                className="w-full mt-4 h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                className="w-full mt-5 h-12 rounded-full bg-[#1A56DB] hover:bg-[#1747b4] text-white font-semibold"
                 onClick={() => window.location.href = "/checkout"}
               >
                 주문하기
@@ -203,7 +210,7 @@ export default function CartPage() {
               </Button>
 
               <Link href="/products">
-                <Button variant="outline" className="w-full mt-2 text-sm">
+                <Button variant="outline" className="w-full mt-2 text-sm rounded-full">
                   쇼핑 계속하기
                 </Button>
               </Link>
