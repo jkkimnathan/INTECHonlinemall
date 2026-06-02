@@ -4,40 +4,47 @@ const features = [
   {
     icon: Shield,
     title: "정품 보증",
-    description: "공식 수입사 직영몰 100% 정품",
+    description: "공식 수입사 직영몰 · 100% 정품",
   },
   {
     icon: Truck,
     title: "빠른 배송",
-    description: "평일 오후 2시 이전 주문 당일 출고",
+    description: "평일 14시 이전 주문 당일 출고",
   },
   {
     icon: CreditCard,
     title: "안전한 결제",
-    description: "다양한 결제수단 & 보안 결제",
+    description: "다양한 결제수단 · 보안 결제",
   },
   {
     icon: Headphones,
     title: "A/S 보장",
-    description: "전문 기술 지원 & 빠른 A/S",
+    description: "전문 기술 지원 · 직접 A/S",
   },
 ];
 
 export default function Features() {
   return (
-    <section className="py-10 bg-white border-t">
+    <section className="py-9 bg-white border-b border-[#f1f1f3]">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {features.map((feature) => (
-            <div key={feature.title} className="flex items-center gap-3">
-              <div className="flex-shrink-0 w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                <feature.icon className="h-5 w-5 text-blue-600" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6">
+          {features.map((feature, i) => (
+            <div
+              key={feature.title}
+              className={`flex items-center gap-3.5 md:px-6 ${
+                i < features.length - 1 ? "md:border-r md:border-[#f1f1f3]" : ""
+              }`}
+            >
+              <div className="flex-shrink-0 w-9 h-9 bg-[#f5f5f7] rounded-full flex items-center justify-center text-[#1d1d1f]">
+                <feature.icon className="h-[17px] w-[17px]" strokeWidth={1.5} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-gray-900">
+                <h3 className="text-[13.5px] font-bold text-[#1d1d1f] tracking-[-0.01em]">
                   {feature.title}
                 </h3>
-                <p className="text-xs text-gray-500">{feature.description}</p>
+                <p className="text-[11.5px] text-[#86868b] mt-0.5 leading-[1.45]">
+                  {feature.description}
+                </p>
               </div>
             </div>
           ))}
