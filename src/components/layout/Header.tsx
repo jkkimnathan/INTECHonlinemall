@@ -47,8 +47,8 @@ function SubcategoryPanel({
               onMouseEnter={() => setHovered(node.label)}
               className={`flex items-center justify-between px-4 py-1.5 text-sm transition-colors ${
                 hovered === node.label
-                  ? "text-blue-600 bg-blue-50"
-                  : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                  ? "text-[#1A56DB] bg-[#EEF4FF]"
+                  : "text-gray-600 hover:text-[#1A56DB] hover:bg-[#EEF4FF]"
               }`}
             >
               {node.label}
@@ -99,7 +99,7 @@ function MobileSubcategoryList({
               {hasChildren && (
                 <button
                   onClick={() => setExpanded(expanded === node.label ? null : node.label)}
-                  className="p-1 text-gray-400 hover:text-blue-600"
+                  className="p-1 text-gray-400 hover:text-[#1A56DB]"
                 >
                   <ChevronDown className={`h-3 w-3 transition-transform ${expanded === node.label ? "rotate-180" : ""}`} />
                 </button>
@@ -147,13 +147,13 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b">
       {/* 상단 바 - 연락처, 로그인 */}
-      <div className="bg-gray-900 text-gray-300 text-xs">
+      <div className="bg-[#0F172A] text-[#cbd5e1] text-xs">
         <div className="container mx-auto px-4 flex items-center justify-between h-8">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <Phone className="h-3 w-3" />
-            <span>{siteConfig.contact.phone}</span>
-            <span className="mx-2">|</span>
-            <span>공식 수입사 직영몰</span>
+            <span className="tabular-nums">{siteConfig.contact.phone}</span>
+            <span className="mx-2 text-[#475569]">|</span>
+            <span>공식 수입사 직영몰 · Since 1981</span>
           </div>
           <div className="hidden sm:flex items-center gap-3">
             {isLoggedIn ? (
@@ -242,7 +242,7 @@ export default function Header() {
                             {subs && (
                               <button
                                 onClick={() => setMobileSubBrand(mobileSubBrand === brandName ? null : brandName)}
-                                className="p-1 text-gray-400 hover:text-blue-600"
+                                className="p-1 text-gray-400 hover:text-[#1A56DB]"
                               >
                                 <ChevronDown className={`h-3 w-3 transition-transform ${mobileSubBrand === brandName ? "rotate-180" : ""}`} />
                               </button>
@@ -300,7 +300,7 @@ export default function Header() {
 
           {/* 로고 */}
           <Link href="/" className="flex-shrink-0">
-            <span className="text-xl font-bold text-gray-900 tracking-tight">
+            <span className="text-xl font-bold text-[#1d1d1f] tracking-[-0.02em]">
               {siteConfig.name}
             </span>
           </Link>
@@ -319,7 +319,7 @@ export default function Header() {
                 placeholder="상품명, 브랜드, 모델명 검색"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-10 h-10 rounded-full border-gray-300 focus:border-blue-500"
+                className="pr-10 h-10 rounded-full border-[#D1D5DB] focus:border-[#1A56DB] focus:shadow-[0_0_0_3px_rgba(26,86,219,.18)]"
               />
               <Button
                 type="submit"
@@ -351,7 +351,7 @@ export default function Header() {
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-5 w-5" />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-[#DC2626] text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center tabular-nums">
                     {cartItemCount > 99 ? "99+" : cartItemCount}
                   </span>
                 )}
@@ -369,7 +369,7 @@ export default function Header() {
             <li>
               <Link
                 href="/products"
-                className="inline-flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                className="inline-flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-[#1A56DB] hover:bg-[#EEF4FF] transition-colors"
               >
                 전체상품
               </Link>
@@ -381,7 +381,7 @@ export default function Header() {
               onMouseEnter={() => setBrandMenuOpen(true)}
               onMouseLeave={() => { setBrandMenuOpen(false); setHoveredBrand(null); }}
             >
-              <button className="inline-flex items-center gap-1 px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+              <button className="inline-flex items-center gap-1 px-4 py-3 text-sm font-medium text-gray-700 hover:text-[#1A56DB] hover:bg-[#EEF4FF] transition-colors">
                 브랜드
                 <ChevronDown
                   className={`h-3 w-3 transition-transform ${brandMenuOpen ? "rotate-180" : ""}`}
@@ -401,8 +401,8 @@ export default function Header() {
                           onMouseEnter={() => setHoveredBrand(brandName)}
                           className={`flex items-center justify-between px-4 py-2 text-sm transition-colors ${
                             hoveredBrand === brandName
-                              ? "text-blue-600 bg-blue-50"
-                              : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                              ? "text-[#1A56DB] bg-[#EEF4FF]"
+                              : "text-gray-700 hover:text-[#1A56DB] hover:bg-[#EEF4FF]"
                           }`}
                         >
                           {item.title}
@@ -430,7 +430,7 @@ export default function Header() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="inline-flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                    className="inline-flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-[#1A56DB] hover:bg-[#EEF4FF] transition-colors"
                   >
                     {item.title}
                   </Link>
