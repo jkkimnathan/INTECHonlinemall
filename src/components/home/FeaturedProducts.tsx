@@ -7,12 +7,15 @@ export default async function FeaturedProducts() {
   const products = (await getProducts({ isFeatured: true })).slice(0, 8);
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 bg-[#fbfbfd]">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-end justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">추천 상품</h2>
-            <p className="text-gray-500 mt-1">인기 있는 IT 하드웨어를 만나보세요</p>
+            <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#a1a1aa]">
+              Recommended
+            </div>
+            <h2 className="text-[28px] font-bold text-[#1d1d1f] tracking-[-0.025em] mt-2">추천 상품</h2>
+            <p className="text-sm text-[#86868b] mt-1">인기 있는 IT 하드웨어를 만나보세요</p>
           </div>
           <Link href="/products">
             <Button variant="outline" size="sm">

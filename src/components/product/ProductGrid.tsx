@@ -86,10 +86,10 @@ export default function ProductGrid({
     <section className="py-8">
       <div className="container mx-auto px-4">
         {/* 헤더 */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+        <div className="mb-6 pb-5 border-b border-[#f1f1f3]">
+          <h1 className="text-[28px] font-bold text-[#1d1d1f] tracking-[-0.025em]">{title}</h1>
           {description && (
-            <p className="text-gray-500 mt-1">{description}</p>
+            <p className="text-[#86868b] mt-1.5">{description}</p>
           )}
         </div>
 
@@ -115,7 +115,7 @@ export default function ProductGrid({
                   variant="outline"
                   size="sm"
                   onClick={() => setShowFilterPanel(!showFilterPanel)}
-                  className={showFilterPanel ? "bg-blue-50 border-blue-300" : ""}
+                  className={showFilterPanel ? "bg-[#EEF4FF] border-[#1A56DB] text-[#1A56DB]" : ""}
                 >
                   <SlidersHorizontal className="h-4 w-4 mr-1" />
                   필터
@@ -125,7 +125,7 @@ export default function ProductGrid({
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="text-sm border rounded-md px-3 py-1.5 bg-white"
+                className="text-sm border border-[#e5e7eb] rounded-full px-4 py-1.5 bg-white text-[#3f3f46] focus:border-[#1A56DB] focus:outline-none"
               >
                 <option value="newest">최신순</option>
                 <option value="price-asc">낮은 가격순</option>
@@ -133,8 +133,8 @@ export default function ProductGrid({
                 <option value="name">이름순</option>
               </select>
 
-              <span className="text-sm text-gray-500 ml-2">
-                {filtered.length}개 상품
+              <span className="text-sm text-[#86868b] ml-2 tabular-nums">
+                총 {filtered.length}개
               </span>
             </div>
           </div>
@@ -142,11 +142,11 @@ export default function ProductGrid({
 
         {/* 필터 패널 */}
         {showFilterPanel && showFilters && (
-          <div className="bg-gray-50 rounded-lg p-4 mb-6 border">
+          <div className="bg-[#fbfbfd] rounded-xl p-4 mb-6 border border-[#f1f1f3]">
             <div className="flex flex-col sm:flex-row gap-6">
               {/* 카테고리 필터 */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                <h3 className="font-en text-[11px] font-semibold uppercase tracking-[0.05em] text-[#86868b] mb-2.5">
                   카테고리
                 </h3>
                 <div className="flex flex-wrap gap-1.5">
@@ -175,7 +175,7 @@ export default function ProductGrid({
               {/* 브랜드 필터 (브랜드 페이지가 아닐 때만) */}
               {brands.length > 1 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                  <h3 className="font-en text-[11px] font-semibold uppercase tracking-[0.05em] text-[#86868b] mb-2.5">
                     브랜드
                   </h3>
                   <div className="flex flex-wrap gap-1.5">
@@ -208,7 +208,7 @@ export default function ProductGrid({
         {/* 활성 필터 태그 */}
         {hasActiveFilters && (
           <div className="flex items-center gap-2 mb-4 flex-wrap">
-            <span className="text-xs text-gray-500">적용된 필터:</span>
+            <span className="text-xs text-[#86868b]">적용된 필터:</span>
             {search && (
               <FilterTag label={`"${search}"`} onRemove={() => setSearch("")} />
             )}
@@ -230,9 +230,9 @@ export default function ProductGrid({
                 setSelectedCategory("");
                 setSelectedBrand("");
               }}
-              className="text-xs text-red-500 hover:text-red-700 ml-2"
+              className="text-xs text-[#86868b] hover:text-[#1d1d1f] underline underline-offset-2 ml-2"
             >
-              전체 초기화
+              모두 해제
             </button>
           </div>
         )}
@@ -246,8 +246,8 @@ export default function ProductGrid({
           </div>
         ) : (
           <div className="text-center py-20">
-            <p className="text-gray-400 text-lg">검색 결과가 없습니다</p>
-            <p className="text-gray-400 text-sm mt-2">
+            <p className="text-[#86868b] text-lg">검색 결과가 없습니다</p>
+            <p className="text-[#a1a1aa] text-sm mt-2">
               다른 키워드나 필터를 시도해보세요
             </p>
           </div>
@@ -267,7 +267,7 @@ function FilterTag({
   return (
     <button
       onClick={onRemove}
-      className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full hover:bg-blue-100 transition-colors"
+      className="inline-flex items-center gap-1.5 bg-[#1d1d1f] text-white text-xs px-3 py-1 rounded-full hover:bg-[#000] transition-colors"
     >
       {label}
       <X className="h-3 w-3" />
