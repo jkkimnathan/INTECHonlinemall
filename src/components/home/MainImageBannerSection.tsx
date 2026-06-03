@@ -118,15 +118,15 @@ export default function MainImageBannerSection({ banners: initialBanners = [] }:
     <section className="pt-8 pb-4 bg-white">
       <div className="container mx-auto px-4">
         {/* 데스크탑: 7컬럼 그리드 */}
-        <div className="hidden md:grid grid-cols-7 gap-3 h-[420px]">
-          {/* Left 3 squares */}
-          <div className="col-span-2 grid grid-cols-1 gap-3">
+        <div className="hidden md:grid grid-cols-7 gap-3 h-[420px] overflow-hidden">
+          {/* Left: 큰 배너 + 작은 배너 2개 (칼럼 높이에 맞게 채움) */}
+          <div className="col-span-2 flex flex-col gap-3 h-full">
             {left1 && (
-              <div className="aspect-square">
+              <div className="flex-1 min-h-0">
                 <BannerImage banner={left1} />
               </div>
             )}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               {left2 && (
                 <div className="aspect-square">
                   <BannerImage banner={left2} />
@@ -141,18 +141,18 @@ export default function MainImageBannerSection({ banners: initialBanners = [] }:
           </div>
 
           {/* Center rolling banner */}
-          <div className="col-span-3">
+          <div className="col-span-3 h-full">
             <CenterRollingBanner banners={centerBanners} />
           </div>
 
-          {/* Right 3 squares */}
-          <div className="col-span-2 grid grid-cols-1 gap-3">
+          {/* Right: 큰 배너 + 작은 배너 2개 */}
+          <div className="col-span-2 flex flex-col gap-3 h-full">
             {right1 && (
-              <div className="aspect-square">
+              <div className="flex-1 min-h-0">
                 <BannerImage banner={right1} />
               </div>
             )}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               {right2 && (
                 <div className="aspect-square">
                   <BannerImage banner={right2} />
