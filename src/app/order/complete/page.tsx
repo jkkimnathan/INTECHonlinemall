@@ -50,25 +50,28 @@ function OrderCompleteContent() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-[#fbfbfd] min-h-screen">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
           {/* 완료 아이콘 */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="h-10 w-10 text-green-600" />
+            <div className="w-20 h-20 bg-[#ecfdf5] rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="h-10 w-10 text-[#059669]" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#a1a1aa]">
+              Order Complete
+            </div>
+            <h1 className="text-[30px] font-bold text-[#1d1d1f] tracking-[-0.025em] mt-2">
               주문이 완료되었습니다!
             </h1>
-            <p className="text-gray-500 mt-2">
-              주문번호: <span className="font-mono font-bold">{order.id}</span>
+            <p className="text-[#86868b] mt-2">
+              주문번호: <span className="font-mono font-bold text-[#1d1d1f]">{order.id}</span>
             </p>
           </div>
 
           {/* 주문 요약 */}
-          <div className="bg-white rounded-lg border p-6 mb-6">
-            <h2 className="font-bold text-gray-900 mb-4">주문 내역</h2>
+          <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6 mb-6">
+            <h2 className="font-bold text-[#1d1d1f] mb-4">주문 내역</h2>
 
             <div className="space-y-3">
               {order.items.map(({ product, quantity }) => (
@@ -77,7 +80,7 @@ function OrderCompleteContent() {
                   className="flex items-center justify-between text-sm"
                 >
                   <div>
-                    <p className="text-xs text-blue-600">{product.brand}</p>
+                    <p className="font-en text-[10px] font-semibold uppercase tracking-[0.1em] text-[#86868b]">{product.brand}</p>
                     <p className="text-gray-900">{product.name}</p>
                     <p className="text-xs text-gray-400">수량: {quantity}</p>
                   </div>
@@ -114,16 +117,16 @@ function OrderCompleteContent() {
             <Separator className="my-4" />
 
             <div className="flex justify-between items-baseline">
-              <span className="font-bold">총 결제금액</span>
-              <span className="text-xl font-bold text-blue-600">
+              <span className="font-bold text-[#1d1d1f]">총 결제금액</span>
+              <span className="text-2xl font-bold text-[#1d1d1f] tabular-nums tracking-[-0.025em]">
                 {formatPrice(order.total)}
               </span>
             </div>
           </div>
 
           {/* 배송 정보 */}
-          <div className="bg-white rounded-lg border p-6 mb-6">
-            <h2 className="font-bold text-gray-900 mb-4">배송 정보</h2>
+          <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6 mb-6">
+            <h2 className="font-bold text-[#1d1d1f] mb-4">배송 정보</h2>
             <div className="space-y-2 text-sm">
               <div className="flex">
                 <span className="text-gray-500 w-20">받는 분</span>
@@ -151,13 +154,13 @@ function OrderCompleteContent() {
           {/* 버튼 */}
           <div className="flex flex-col sm:flex-row gap-3">
             <Link href={`/order/${order.id}`} className="flex-1">
-              <Button variant="outline" className="w-full h-11">
+              <Button variant="outline" className="w-full h-11 rounded-full">
                 <Package className="h-4 w-4 mr-2" />
                 주문 상세보기
               </Button>
             </Link>
             <Link href="/products" className="flex-1">
-              <Button className="w-full h-11 bg-blue-600 hover:bg-blue-700">
+              <Button className="w-full h-11 rounded-full bg-[#1A56DB] hover:bg-[#1747b4]">
                 쇼핑 계속하기
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
