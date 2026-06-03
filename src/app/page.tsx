@@ -2,12 +2,16 @@ import dynamic from "next/dynamic";
 import HeroBannerSlider from "@/components/home/HeroBannerSlider";
 import NoticeTicker from "@/components/home/NoticeTicker";
 import Features from "@/components/home/Features";
+import IpcShowcase from "@/components/home/IpcShowcase";
 import MainImageBannerSection from "@/components/home/MainImageBannerSection";
 import { getHomePageData } from "@/lib/supabase/home-data.server";
 import { getWebSiteJsonLd } from "@/lib/jsonld";
 
 // 스크롤해야 보이는 컴포넌트는 lazy load (초기 번들 축소)
 const TimeDeal = dynamic(() => import("@/components/home/TimeDeal"), {
+  loading: () => <div className="py-12" />,
+});
+const RefurbShowcase = dynamic(() => import("@/components/home/RefurbShowcase"), {
   loading: () => <div className="py-12" />,
 });
 const CategoryTabs = dynamic(() => import("@/components/home/CategoryTabs"), {
@@ -36,8 +40,10 @@ export default async function Home() {
       <NoticeTicker notices={data.notices} events={data.events} />
       <HeroBannerSlider banners={data.banners} />
       <Features />
+      <IpcShowcase />
       <MainImageBannerSection banners={data.mainImageBanners} />
       <TimeDeal deals={data.timeDeals} products={data.timeDealProducts} />
+      <RefurbShowcase />
       <CategoryTabs />
       <BrandShowcase />
       <FeaturedProducts />
