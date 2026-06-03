@@ -83,3 +83,26 @@ INSERT INTO public.products (id, name, slug, brand, category, condition, descrip
  79000, NULL, '{}', 40, false, false, false, '2025-01-18T00:00:00Z')
 
 ON CONFLICT (id) DO NOTHING;
+
+
+-- ============================================================
+-- 홈 섹션(iPC / 리퍼몰 쇼케이스) 콘텐츠 테이블
+-- Supabase SQL Editor에서 1회 실행 (테이블이 없으면 홈은 코드 기본값으로 표시됨)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS public.home_sections (
+  key text PRIMARY KEY,
+  content jsonb NOT NULL DEFAULT '{}'::jsonb,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.home_sections ENABLE ROW LEVEL SECURITY;
+
+-- 누구나 읽기 (홈 노출용)
+DROP POLICY IF EXISTS "home_sections read" ON public.home_sections;
+CREATE POLICY "home_sections read" ON public.home_sections
+  FOR SELECT USING (true);
+
+-- 쓰기 허용 (admin 화면에서 저장 — 다른 운영 테이블과 동일 정책)
+DROP POLICY IF EXISTS "home_sections write" ON public.home_sections;
+CREATE POLICY "home_sections write" ON public.home_sections
+  FOR ALL USING (true) WITH CHECK (true);
