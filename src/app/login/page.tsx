@@ -49,17 +49,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center bg-gray-50 py-12 px-4">
+    <div className="min-h-[70vh] flex items-center justify-center bg-[#fbfbfd] py-12 px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-xl shadow-sm border p-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-[#f1f1f3] p-8">
           {/* 로고/타이틀 */}
           <div className="text-center mb-8">
+            <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#a1a1aa] mb-2">
+              Member Login
+            </div>
             <Link href="/">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-[#1d1d1f] tracking-[-0.02em]">
                 {siteConfig.name}
               </h1>
             </Link>
-            <p className="text-gray-500 text-sm mt-2">
+            <p className="text-[#86868b] text-sm mt-2">
               로그인하고 다양한 혜택을 누려보세요
             </p>
           </div>
@@ -67,7 +70,7 @@ export default function LoginPage() {
           {/* 로그인 폼 */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 이메일
               </label>
               <Input
@@ -81,7 +84,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 비밀번호
               </label>
               <div className="relative">
@@ -96,7 +99,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a1a1aa] hover:text-[#3f3f46]"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -113,7 +116,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full h-11 rounded-full bg-[#1A56DB] hover:bg-[#1747b4] text-white"
               disabled={submitting}
             >
               {submitting ? (
@@ -130,11 +133,11 @@ export default function LoginPage() {
           {/* 소셜 로그인은 추후 카카오/네이버 OAuth 키 발급 후 활성화 */}
 
           {/* 하단 링크 */}
-          <div className="mt-6 text-center text-sm text-gray-500">
+          <div className="mt-6 text-center text-sm text-[#86868b]">
             아직 회원이 아니신가요?{" "}
             <Link
               href="/signup"
-              className="text-blue-600 font-medium hover:underline"
+              className="text-[#1A56DB] font-medium hover:underline"
             >
               회원가입
             </Link>

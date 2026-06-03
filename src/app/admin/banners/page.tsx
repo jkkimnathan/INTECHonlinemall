@@ -154,7 +154,7 @@ export default function AdminBannersPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#a1a1aa]" />
       </div>
     );
   }
@@ -163,13 +163,13 @@ export default function AdminBannersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">배너 관리</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-[#1d1d1f]">배너 관리</h1>
+          <p className="text-sm text-[#86868b] mt-1">
             총 {banners.length}건 | 활성 {banners.filter((b) => b.isActive).length}건
           </p>
         </div>
         <Button
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-[#1A56DB] hover:bg-[#1747b4]"
           onClick={() => {
             resetForm();
             setShowForm(true);
@@ -193,22 +193,22 @@ export default function AdminBannersPage() {
           className="bg-white rounded-xl border p-6 mb-6 space-y-4"
         >
           <div className="flex items-center justify-between">
-            <h2 className="font-bold text-gray-900">
+            <h2 className="font-bold text-[#1d1d1f]">
               {editingId ? "배너 수정" : "배너 등록"}
             </h2>
             <button type="button" onClick={resetForm}>
-              <X className="h-5 w-5 text-gray-400" />
+              <X className="h-5 w-5 text-[#a1a1aa]" />
             </button>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-700 space-y-1">
+          <div className="bg-[#EEF4FF] border border-blue-200 rounded-lg px-4 py-3 text-sm text-[#1A56DB] space-y-1">
             <p><Monitor className="inline h-4 w-4 mr-1" /><strong>PC 배너:</strong> 1920 x 400px (4.8:1 비율) — 필수</p>
             <p><Smartphone className="inline h-4 w-4 mr-1" /><strong>모바일 배너:</strong> 750 x 600px (1.25:1 비율) — 선택 (미등록 시 PC 이미지 사용)</p>
-            <p className="text-xs text-blue-500">최대 10MB | JPG, PNG, WebP 권장</p>
+            <p className="text-xs text-[#1A56DB]">최대 10MB | JPG, PNG, WebP 권장</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#3f3f46] mb-1">
               배너 제목 <span className="text-red-500">*</span>
             </label>
             <Input
@@ -221,10 +221,10 @@ export default function AdminBannersPage() {
 
           {/* PC 이미지 업로드 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#3f3f46] mb-1">
               <Monitor className="inline h-4 w-4 mr-1" />
               PC 배너 이미지 <span className="text-red-500">*</span>
-              <span className="text-xs text-gray-400 ml-2">1920 x 400px</span>
+              <span className="text-xs text-[#a1a1aa] ml-2">1920 x 400px</span>
             </label>
             {imageUrl ? (
               <div className="relative">
@@ -243,7 +243,7 @@ export default function AdminBannersPage() {
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50">
+              <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-[#EEF4FF]">
                 <input
                   type="file"
                   accept="image/*"
@@ -252,12 +252,12 @@ export default function AdminBannersPage() {
                   disabled={uploading !== null}
                 />
                 {uploading === "pc" ? (
-                  <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+                  <Loader2 className="h-8 w-8 text-[#1A56DB] animate-spin" />
                 ) : (
                   <>
                     <Upload className="h-8 w-8 text-gray-300 mb-2" />
-                    <span className="text-sm text-gray-500">클릭하여 PC 배너 업로드</span>
-                    <span className="text-xs text-gray-400 mt-1">1920 x 400px 권장</span>
+                    <span className="text-sm text-[#86868b]">클릭하여 PC 배너 업로드</span>
+                    <span className="text-xs text-[#a1a1aa] mt-1">1920 x 400px 권장</span>
                   </>
                 )}
               </label>
@@ -266,10 +266,10 @@ export default function AdminBannersPage() {
 
           {/* 모바일 이미지 업로드 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#3f3f46] mb-1">
               <Smartphone className="inline h-4 w-4 mr-1" />
               모바일 배너 이미지
-              <span className="text-xs text-gray-400 ml-2">750 x 600px (선택)</span>
+              <span className="text-xs text-[#a1a1aa] ml-2">750 x 600px (선택)</span>
             </label>
             {mobileImageUrl ? (
               <div className="relative inline-block">
@@ -288,7 +288,7 @@ export default function AdminBannersPage() {
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50">
+              <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-[#EEF4FF]">
                 <input
                   type="file"
                   accept="image/*"
@@ -297,12 +297,12 @@ export default function AdminBannersPage() {
                   disabled={uploading !== null}
                 />
                 {uploading === "mobile" ? (
-                  <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+                  <Loader2 className="h-8 w-8 text-[#1A56DB] animate-spin" />
                 ) : (
                   <>
                     <Upload className="h-6 w-6 text-gray-300 mb-2" />
-                    <span className="text-sm text-gray-500">클릭하여 모바일 배너 업로드</span>
-                    <span className="text-xs text-gray-400 mt-1">미등록 시 PC 이미지가 자동 사용됩니다</span>
+                    <span className="text-sm text-[#86868b]">클릭하여 모바일 배너 업로드</span>
+                    <span className="text-xs text-[#a1a1aa] mt-1">미등록 시 PC 이미지가 자동 사용됩니다</span>
                   </>
                 )}
               </label>
@@ -310,7 +310,7 @@ export default function AdminBannersPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#3f3f46] mb-1">
               클릭 시 이동 URL
             </label>
             <Input
@@ -318,14 +318,14 @@ export default function AdminBannersPage() {
               onChange={(e) => setLinkUrl(e.target.value)}
               placeholder="예: /products 또는 https://example.com"
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-[#a1a1aa] mt-1">
               내부 링크는 /로 시작 (예: /products), 외부 링크는 https://로 시작
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 정렬 순서
               </label>
               <Input
@@ -337,7 +337,7 @@ export default function AdminBannersPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 활성 상태
               </label>
               <select
@@ -357,7 +357,7 @@ export default function AdminBannersPage() {
             </Button>
             <Button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-[#1A56DB] hover:bg-[#1747b4]"
               disabled={submitting}
             >
               {submitting && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
@@ -370,7 +370,7 @@ export default function AdminBannersPage() {
       {/* 목록 */}
       <div className="bg-white rounded-xl border overflow-hidden">
         {banners.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-[#a1a1aa]">
             <ImageIcon className="h-12 w-12 mx-auto mb-3 text-gray-300" />
             <p>등록된 배너가 없습니다.</p>
             <p className="text-xs mt-1">배너를 등록하면 메인 페이지에 슬라이드로 표시됩니다.</p>
@@ -391,7 +391,7 @@ export default function AdminBannersPage() {
                       alt={banner.title}
                       className="w-36 h-[30px] object-cover rounded border"
                     />
-                    <span className="text-[10px] text-gray-400">PC</span>
+                    <span className="text-[10px] text-[#a1a1aa]">PC</span>
                   </div>
                   {banner.mobileImageUrl && (
                     <div className="text-center">
@@ -401,7 +401,7 @@ export default function AdminBannersPage() {
                         alt={`${banner.title} 모바일`}
                         className="w-[25px] h-[30px] object-cover rounded border"
                       />
-                      <span className="text-[10px] text-gray-400">M</span>
+                      <span className="text-[10px] text-[#a1a1aa]">M</span>
                     </div>
                   )}
                 </div>
@@ -412,26 +412,26 @@ export default function AdminBannersPage() {
                     <Badge
                       className={
                         banner.isActive
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-500"
+                          ? "bg-[#ecfdf5] text-[#047857]"
+                          : "bg-gray-100 text-[#86868b]"
                       }
                     >
                       {banner.isActive ? "활성" : "비활성"}
                     </Badge>
-                    <Badge className="bg-gray-100 text-gray-600">
+                    <Badge className="bg-gray-100 text-[#3f3f46]">
                       순서: {banner.sortOrder}
                     </Badge>
                     {banner.mobileImageUrl ? (
                       <Badge className="bg-purple-100 text-purple-600 text-[10px]">PC+모바일</Badge>
                     ) : (
-                      <Badge className="bg-gray-100 text-gray-500 text-[10px]">PC만</Badge>
+                      <Badge className="bg-gray-100 text-[#86868b] text-[10px]">PC만</Badge>
                     )}
                   </div>
-                  <h3 className="font-medium text-gray-900 truncate">
+                  <h3 className="font-medium text-[#1d1d1f] truncate">
                     {banner.title}
                   </h3>
                   {banner.linkUrl && (
-                    <p className="text-xs text-blue-500 truncate mt-0.5">
+                    <p className="text-xs text-[#1A56DB] truncate mt-0.5">
                       {banner.linkUrl}
                     </p>
                   )}
@@ -448,7 +448,7 @@ export default function AdminBannersPage() {
                     {banner.isActive ? (
                       <Eye className="h-4 w-4 text-green-500" />
                     ) : (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
+                      <EyeOff className="h-4 w-4 text-[#a1a1aa]" />
                     )}
                   </Button>
                   <Button
@@ -456,7 +456,7 @@ export default function AdminBannersPage() {
                     size="sm"
                     onClick={() => startEdit(banner)}
                   >
-                    <Pencil className="h-4 w-4 text-gray-400" />
+                    <Pencil className="h-4 w-4 text-[#a1a1aa]" />
                   </Button>
                   <Button
                     variant="ghost"

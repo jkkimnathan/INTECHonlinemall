@@ -101,7 +101,7 @@ export default function PageBannersAdmin() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#a1a1aa]" />
       </div>
     );
   }
@@ -110,8 +110,8 @@ export default function PageBannersAdmin() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">페이지 배너 관리</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-[#1d1d1f]">페이지 배너 관리</h1>
+          <p className="text-sm text-[#86868b] mt-1">
             각 페이지 상단 배너의 제목, 설명, 배경 이미지를 설정합니다.
           </p>
         </div>
@@ -133,13 +133,13 @@ export default function PageBannersAdmin() {
           return (
             <div key={key} className="bg-white rounded-lg border p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-900">
-                  {label} 페이지 <span className="text-sm text-gray-400 font-normal">/{key}</span>
+                <h2 className="text-lg font-bold text-[#1d1d1f]">
+                  {label} 페이지 <span className="text-sm text-[#a1a1aa] font-normal">/{key}</span>
                 </h2>
                 <Button
                   onClick={() => handleSave(key)}
                   disabled={saving === key}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-[#1A56DB] hover:bg-[#1747b4]"
                   size="sm"
                 >
                   {saving === key ? (
@@ -155,7 +155,7 @@ export default function PageBannersAdmin() {
                 {/* 텍스트 설정 */}
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                       제목
                     </label>
                     <Input
@@ -165,7 +165,7 @@ export default function PageBannersAdmin() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                       설명
                     </label>
                     <Input
@@ -178,7 +178,7 @@ export default function PageBannersAdmin() {
 
                 {/* 이미지 설정 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                     배경 이미지
                   </label>
                   {form.imageUrl ? (
@@ -199,7 +199,7 @@ export default function PageBannersAdmin() {
                     </div>
                   ) : (
                     <div className="h-32 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center mb-2">
-                      <div className="text-center text-gray-400">
+                      <div className="text-center text-[#a1a1aa]">
                         <ImageIcon className="h-8 w-8 mx-auto mb-1" />
                         <p className="text-xs">이미지 없음 (단색 배경 사용)</p>
                       </div>
@@ -215,7 +215,7 @@ export default function PageBannersAdmin() {
                         if (file) handleUpload(key, file);
                       }}
                     />
-                    <span className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700">
+                    <span className="inline-flex items-center gap-1 text-sm text-[#1A56DB] hover:text-[#1A56DB]">
                       {uploading === key ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
@@ -230,7 +230,7 @@ export default function PageBannersAdmin() {
               {/* 미리보기 */}
               {form.imageUrl && (
                 <div className="mt-4">
-                  <p className="text-xs text-gray-400 mb-2">미리보기</p>
+                  <p className="text-xs text-[#a1a1aa] mb-2">미리보기</p>
                   <div
                     className="relative rounded-lg overflow-hidden h-24"
                   >

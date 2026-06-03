@@ -51,7 +51,7 @@ export default function AdminQnaPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#a1a1aa]" />
       </div>
     );
   }
@@ -60,8 +60,8 @@ export default function AdminQnaPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Q&A 관리</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-[#1d1d1f]">Q&A 관리</h1>
+          <p className="text-sm text-[#86868b] mt-1">
             총 {items.length}건 · 미답변{" "}
             <span className="text-red-500 font-semibold">{unanswered}</span>건
           </p>
@@ -70,7 +70,7 @@ export default function AdminQnaPage() {
 
       <div className="bg-white rounded-xl border overflow-hidden">
         {items.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-[#a1a1aa]">
             등록된 질문이 없습니다.
           </div>
         ) : (
@@ -80,32 +80,32 @@ export default function AdminQnaPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge className="bg-gray-100 text-gray-700 text-xs">
+                      <Badge className="bg-gray-100 text-[#3f3f46] text-xs">
                         {item.category}
                       </Badge>
                       <Badge
                         className={
                           item.isAnswered
-                            ? "bg-green-100 text-green-700 text-xs"
+                            ? "bg-[#ecfdf5] text-[#047857] text-xs"
                             : "bg-red-100 text-red-700 text-xs"
                         }
                       >
                         {item.isAnswered ? "답변완료" : "미답변"}
                       </Badge>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-[#a1a1aa]">
                         {item.authorName} ·{" "}
                         {new Date(item.createdAt).toLocaleDateString("ko-KR")}
                       </span>
                     </div>
-                    <h3 className="font-medium text-gray-900">{item.title}</h3>
-                    <p className="text-sm text-gray-500 mt-1 whitespace-pre-line">
+                    <h3 className="font-medium text-[#1d1d1f]">{item.title}</h3>
+                    <p className="text-sm text-[#86868b] mt-1 whitespace-pre-line">
                       {item.content}
                     </p>
 
                     {/* 기존 답변 */}
                     {item.answerContent && (
-                      <div className="bg-blue-50 rounded-lg p-3 mt-3 text-sm">
-                        <p className="font-medium text-blue-600 text-xs mb-1">
+                      <div className="bg-[#EEF4FF] rounded-lg p-3 mt-3 text-sm">
+                        <p className="font-medium text-[#1A56DB] text-xs mb-1">
                           답변 (
                           {item.answerDate
                             ? new Date(item.answerDate).toLocaleDateString(
@@ -114,7 +114,7 @@ export default function AdminQnaPage() {
                             : ""}
                           )
                         </p>
-                        <p className="text-gray-700 whitespace-pre-line">
+                        <p className="text-[#3f3f46] whitespace-pre-line">
                           {item.answerContent}
                         </p>
                       </div>
@@ -143,7 +143,7 @@ export default function AdminQnaPage() {
                           </Button>
                           <Button
                             size="sm"
-                            className="bg-blue-600 hover:bg-blue-700"
+                            className="bg-[#1A56DB] hover:bg-[#1747b4]"
                             disabled={submitting}
                             onClick={() => handleAnswer(item.id)}
                           >
@@ -169,7 +169,7 @@ export default function AdminQnaPage() {
                           setAnswerText(item.answerContent || "");
                         }}
                       >
-                        <MessageSquare className="h-4 w-4 text-blue-500" />
+                        <MessageSquare className="h-4 w-4 text-[#1A56DB]" />
                       </Button>
                     )}
                     <Button

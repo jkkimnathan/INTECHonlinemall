@@ -23,9 +23,9 @@ export default function ShippingPage() {
             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
               <Clock className="h-5 w-5 text-green-600" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">당일 출고 안내</h2>
+            <h2 className="text-lg font-bold text-[#1d1d1f]">당일 출고 안내</h2>
           </div>
-          <ul className="space-y-2 text-sm text-gray-600">
+          <ul className="space-y-2 text-sm text-[#3f3f46]">
             <li>- <strong>평일(월~금) 오후 2시 이전</strong> 결제 완료된 주문은 <strong className="text-green-600">당일 출고</strong>됩니다.</li>
             <li>- 오후 2시 이후 결제된 주문은 다음 영업일에 출고됩니다.</li>
             <li>- 주말 및 공휴일에는 출고가 진행되지 않으며, 다음 영업일에 순차 출고됩니다.</li>
@@ -37,34 +37,34 @@ export default function ShippingPage() {
         <div className="bg-white rounded-lg border p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-              <Truck className="h-5 w-5 text-blue-600" />
+              <Truck className="h-5 w-5 text-[#1A56DB]" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">배송비 안내</h2>
+            <h2 className="text-lg font-bold text-[#1d1d1f]">배송비 안내</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">구분</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">조건</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-500">배송비</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#86868b]">구분</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#86868b]">조건</th>
+                  <th className="text-right px-4 py-3 font-medium text-[#86868b]">배송비</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 <tr>
-                  <td className="px-4 py-3 text-gray-900">일반 배송</td>
-                  <td className="px-4 py-3 text-gray-600">50,000원 이상 구매</td>
+                  <td className="px-4 py-3 text-[#1d1d1f]">일반 배송</td>
+                  <td className="px-4 py-3 text-[#3f3f46]">50,000원 이상 구매</td>
                   <td className="px-4 py-3 text-right font-bold text-green-600">무료</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-gray-900">일반 배송</td>
-                  <td className="px-4 py-3 text-gray-600">50,000원 미만 구매</td>
-                  <td className="px-4 py-3 text-right font-bold text-gray-900">3,000원</td>
+                  <td className="px-4 py-3 text-[#1d1d1f]">일반 배송</td>
+                  <td className="px-4 py-3 text-[#3f3f46]">50,000원 미만 구매</td>
+                  <td className="px-4 py-3 text-right font-bold text-[#1d1d1f]">3,000원</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-gray-900">도서산간 지역</td>
-                  <td className="px-4 py-3 text-gray-600">제주 및 도서산간</td>
-                  <td className="px-4 py-3 text-right font-bold text-gray-900">추가 3,000원~5,000원</td>
+                  <td className="px-4 py-3 text-[#1d1d1f]">도서산간 지역</td>
+                  <td className="px-4 py-3 text-[#3f3f46]">제주 및 도서산간</td>
+                  <td className="px-4 py-3 text-right font-bold text-[#1d1d1f]">추가 3,000원~5,000원</td>
                 </tr>
               </tbody>
             </table>
@@ -77,14 +77,14 @@ export default function ShippingPage() {
             <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
               <Package className="h-5 w-5 text-purple-600" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">배송 소요 기간</h2>
+            <h2 className="text-lg font-bold text-[#1d1d1f]">배송 소요 기간</h2>
           </div>
-          <ul className="space-y-2 text-sm text-gray-600">
+          <ul className="space-y-2 text-sm text-[#3f3f46]">
             <li>- <strong>서울/수도권:</strong> 출고 다음 날 도착 (1일)</li>
             <li>- <strong>지방:</strong> 출고 후 2~3일 소요</li>
             <li>- <strong>도서산간:</strong> 출고 후 3~5일 소요</li>
           </ul>
-          <p className="text-xs text-gray-400 mt-3">* 택배사 사정, 천재지변 등으로 배송이 지연될 수 있습니다.</p>
+          <p className="text-xs text-[#a1a1aa] mt-3">* 택배사 사정, 천재지변 등으로 배송이 지연될 수 있습니다.</p>
         </div>
 
         {/* 배송 추적 */}
@@ -93,9 +93,9 @@ export default function ShippingPage() {
             <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
               <MapPin className="h-5 w-5 text-orange-600" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">배송 추적</h2>
+            <h2 className="text-lg font-bold text-[#1d1d1f]">배송 추적</h2>
           </div>
-          <ul className="space-y-2 text-sm text-gray-600">
+          <ul className="space-y-2 text-sm text-[#3f3f46]">
             <li>- 출고 완료 시 등록된 연락처로 송장번호가 발송됩니다.</li>
             <li>- <strong>마이페이지 &gt; 주문 내역</strong>에서 배송 상태를 확인할 수 있습니다.</li>
             <li>- 비회원은 <strong>비회원 주문조회</strong>에서 주문번호와 연락처로 조회 가능합니다.</li>
