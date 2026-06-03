@@ -62,8 +62,8 @@ export default function AdminDashboard() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
-        <p className="text-sm text-gray-500">
+        <h1 className="text-[28px] font-bold text-[#1d1d1f] tracking-[-0.025em]">대시보드</h1>
+        <p className="text-sm text-[#86868b]">
           {new Date().toLocaleDateString("ko-KR", {
             year: "numeric",
             month: "long",
@@ -104,9 +104,9 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 최근 주문 */}
-        <div className="bg-white rounded-xl border p-5">
+        <div className="bg-white rounded-2xl border border-[#f1f1f3] p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-gray-900">최근 주문</h2>
+            <h2 className="font-bold text-[#1d1d1f]">최근 주문</h2>
             <Link href="/admin/orders">
               <Button variant="ghost" size="sm" className="text-xs">
                 전체보기 <ArrowUpRight className="h-3 w-3 ml-1" />
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
                   className="flex items-center justify-between py-2 border-b last:border-0 text-sm"
                 >
                   <div>
-                    <p className="font-mono text-xs text-gray-500">{order.id}</p>
+                    <p className="font-mono text-xs text-[#86868b]">{order.id}</p>
                     <p className="text-gray-900">
                       {order.items[0]?.product.name}
                       {order.items.length > 1 && ` 외 ${order.items.length - 1}건`}
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="text-right">
                     <p className="font-bold">{formatPrice(order.total)}</p>
-                    <Badge className="bg-blue-100 text-blue-700 text-[10px]">
+                    <Badge className="bg-[#eef4ff] text-[#1d4ed8] text-[10px]">
                       {order.status}
                     </Badge>
                   </div>
@@ -146,8 +146,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* 최근 활동 */}
-        <div className="bg-white rounded-xl border p-5">
-          <h2 className="font-bold text-gray-900 mb-4">최근 활동</h2>
+        <div className="bg-white rounded-2xl border border-[#f1f1f3] p-5">
+          <h2 className="font-bold text-[#1d1d1f] mb-4">최근 활동</h2>
           {orders.length > 0 ? (
             <div className="space-y-3">
               {orders.slice(0, 5).map((order) => (
@@ -175,8 +175,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* 재고 부족 상품 */}
-        <div className="bg-white rounded-xl border p-5">
-          <h2 className="font-bold text-gray-900 mb-4">재고 부족 상품</h2>
+        <div className="bg-white rounded-2xl border border-[#f1f1f3] p-5">
+          <h2 className="font-bold text-[#1d1d1f] mb-4">재고 부족 상품</h2>
           <div className="space-y-2">
             {allProducts
               .filter((p) => p.stock <= 5)
@@ -186,8 +186,8 @@ export default function AdminDashboard() {
                   className="flex items-center justify-between py-2 text-sm"
                 >
                   <div>
-                    <p className="text-xs text-blue-600">{product.brand}</p>
-                    <p className="text-gray-900 truncate max-w-[250px]">
+                    <p className="font-en text-[10px] font-semibold uppercase tracking-[0.1em] text-[#86868b]">{product.brand}</p>
+                    <p className="text-[#1d1d1f] truncate max-w-[250px]">
                       {product.name}
                     </p>
                   </div>
@@ -206,8 +206,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* 빠른 링크 */}
-        <div className="bg-white rounded-xl border p-5">
-          <h2 className="font-bold text-gray-900 mb-4">빠른 관리</h2>
+        <div className="bg-white rounded-2xl border border-[#f1f1f3] p-5">
+          <h2 className="font-bold text-[#1d1d1f] mb-4">빠른 관리</h2>
           <div className="grid grid-cols-2 gap-3">
             <Link href="/admin/products">
               <Button variant="outline" className="w-full h-auto py-4 flex-col gap-2">
@@ -256,14 +256,14 @@ function StatCard({
   sub?: string;
 }) {
   const colorMap: Record<string, string> = {
-    blue: "bg-blue-50 text-blue-600",
+    blue: "bg-[#eef4ff] text-[#1A56DB]",
     green: "bg-green-50 text-green-600",
     purple: "bg-purple-50 text-purple-600",
     orange: "bg-orange-50 text-orange-600",
   };
 
   return (
-    <div className="bg-white rounded-xl border p-4">
+    <div className="bg-white rounded-2xl border border-[#f1f1f3] p-4">
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-medium text-gray-500">{title}</span>
         <div
@@ -272,7 +272,7 @@ function StatCard({
           {icon}
         </div>
       </div>
-      <p className="text-xl font-bold text-gray-900">{value}</p>
+      <p className="text-xl font-bold text-[#1d1d1f]">{value}</p>
       {change && (
         <p className="text-xs text-green-600 mt-1">
           {change} 전일 대비
