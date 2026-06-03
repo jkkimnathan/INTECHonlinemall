@@ -19,6 +19,7 @@ import { siteConfig } from "@/config/site";
 
 const adminNav = [
   { title: "대시보드", href: "/admin", icon: LayoutDashboard },
+  { title: "홈 섹션", href: "/admin/home-sections", icon: Grid3X3 },
   { title: "상품 관리", href: "/admin/products", icon: Package },
   { title: "주문 관리", href: "/admin/orders", icon: ShoppingCart },
   { title: "회원 관리", href: "/admin/members", icon: Users },
