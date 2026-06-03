@@ -117,11 +117,11 @@ export default function CheckoutPage() {
   // 장바구니 비어있음
   if (items.length === 0) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-gray-50">
-        <ShoppingBag className="h-16 w-16 text-gray-300 mb-4" />
-        <h2 className="text-xl font-bold text-gray-900">주문할 상품이 없습니다</h2>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-[#fbfbfd]">
+        <ShoppingBag className="h-16 w-16 text-[#d1d5db] mb-4" />
+        <h2 className="text-xl font-bold text-[#1d1d1f]">주문할 상품이 없습니다</h2>
         <Link href="/products" className="mt-4">
-          <Button className="bg-blue-600 hover:bg-blue-700">쇼핑하기</Button>
+          <Button className="rounded-full bg-[#1A56DB] hover:bg-[#1747b4]">쇼핑하기</Button>
         </Link>
       </div>
     );
@@ -168,7 +168,7 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-[#fbfbfd] min-h-screen">
       <Script
         src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
         strategy="lazyOnload"
@@ -180,15 +180,15 @@ export default function CheckoutPage() {
           <button onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5 text-gray-500" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">주문서 작성</h1>
+          <h1 className="text-[28px] font-bold text-[#1d1d1f] tracking-[-0.025em]">주문서 작성</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* 왼쪽: 배송정보 + 결제수단 */}
           <div className="lg:col-span-2 space-y-6">
             {/* 주문 상품 요약 */}
-            <div className="bg-white rounded-lg border p-6">
-              <h2 className="font-bold text-gray-900 mb-3">
+            <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6">
+              <h2 className="font-bold text-[#1d1d1f] mb-3">
                 주문 상품 ({items.length}개)
               </h2>
               <div className="space-y-2">
@@ -198,7 +198,7 @@ export default function CheckoutPage() {
                     className="flex items-center justify-between py-2 text-sm"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-blue-600">{product.brand}</p>
+                      <p className="font-en text-[10px] font-semibold uppercase tracking-[0.1em] text-[#86868b]">{product.brand}</p>
                       <p className="text-gray-900 truncate">{product.name}</p>
                       <p className="text-gray-400 text-xs">수량: {quantity}</p>
                     </div>
@@ -213,8 +213,8 @@ export default function CheckoutPage() {
             </div>
 
             {/* 배송 정보 */}
-            <div className="bg-white rounded-lg border p-6">
-              <h2 className="font-bold text-gray-900 mb-4">배송 정보</h2>
+            <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6">
+              <h2 className="font-bold text-[#1d1d1f] mb-4">배송 정보</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -313,8 +313,8 @@ export default function CheckoutPage() {
             </div>
 
             {/* 결제 수단 */}
-            <div className="bg-white rounded-lg border p-6">
-              <h2 className="font-bold text-gray-900 mb-4">결제 수단</h2>
+            <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6">
+              <h2 className="font-bold text-[#1d1d1f] mb-4">결제 수단</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {paymentMethods.map((method) => (
                   <button
@@ -322,14 +322,14 @@ export default function CheckoutPage() {
                     onClick={() => setSelectedPayment(method.id)}
                     className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
                       selectedPayment === method.id
-                        ? "border-blue-500 bg-blue-50"
+                        ? "border-[#1A56DB] bg-[#EEF4FF]"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
                     <div
                       className={
                         selectedPayment === method.id
-                          ? "text-blue-600"
+                          ? "text-[#1A56DB]"
                           : "text-gray-400"
                       }
                     >
@@ -338,7 +338,7 @@ export default function CheckoutPage() {
                     <span
                       className={`text-sm font-medium ${
                         selectedPayment === method.id
-                          ? "text-blue-700"
+                          ? "text-[#1A56DB]"
                           : "text-gray-700"
                       }`}
                     >
@@ -351,8 +351,8 @@ export default function CheckoutPage() {
 
             {/* 적립금 사용 */}
             {user && user.points > 0 && (
-              <div className="bg-white rounded-lg border p-6">
-                <h2 className="font-bold text-gray-900 mb-4">적립금 사용</h2>
+              <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6">
+                <h2 className="font-bold text-[#1d1d1f] mb-4">적립금 사용</h2>
                 <div className="flex items-center gap-3">
                   <Input
                     type="number"
@@ -387,8 +387,8 @@ export default function CheckoutPage() {
 
           {/* 오른쪽: 결제 요약 */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg border p-6 sticky top-32">
-              <h3 className="font-bold text-gray-900 mb-4">결제 금액</h3>
+            <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6 sticky top-32">
+              <h3 className="font-bold text-[#1d1d1f] mb-4">결제 금액</h3>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
@@ -399,7 +399,7 @@ export default function CheckoutPage() {
                   <span className="text-gray-500">배송비</span>
                   <span>
                     {shippingFee === 0 ? (
-                      <span className="text-green-600">무료</span>
+                      <span className="text-[#059669]">무료</span>
                     ) : (
                       formatPrice(shippingFee)
                     )}
@@ -416,8 +416,8 @@ export default function CheckoutPage() {
               <Separator className="my-4" />
 
               <div className="flex justify-between items-baseline mb-4">
-                <span className="font-bold">총 결제금액</span>
-                <span className="text-xl font-bold text-blue-600">
+                <span className="font-bold text-[#1d1d1f]">총 결제금액</span>
+                <span className="text-2xl font-bold text-[#1d1d1f] tabular-nums tracking-[-0.025em]">
                   {formatPrice(total)}
                 </span>
               </div>
@@ -427,7 +427,7 @@ export default function CheckoutPage() {
               )}
 
               <Button
-                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium text-base"
+                className="w-full h-12 rounded-full bg-[#1A56DB] hover:bg-[#1747b4] text-white font-semibold text-base"
                 onClick={handleOrder}
                 disabled={submitting}
               >

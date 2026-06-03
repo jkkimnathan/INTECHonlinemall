@@ -39,25 +39,36 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
 
   return (
     <div>
-      {/* 브랜드 헤더 */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-700 text-white">
-        <div className="container mx-auto px-4 py-10">
-          <div className="flex items-center gap-4">
+      {/* 브랜드 인트로 히어로 */}
+      <div className="bg-[#fbfbfd] border-b border-[#f1f1f3]">
+        <div className="container mx-auto px-4 py-12">
+          <div className="flex items-center gap-5">
             {brand?.logo && (
-              <div className="w-20 h-20 bg-white/10 rounded-xl flex items-center justify-center p-3 flex-shrink-0">
+              <div
+                className={`w-20 h-20 rounded-2xl flex items-center justify-center p-4 flex-shrink-0 border ${
+                  slug === "ipc"
+                    ? "bg-[#1d1d1f] border-transparent"
+                    : "bg-white border-[#f1f1f3]"
+                }`}
+              >
                 <Image
                   src={brand.logo}
                   alt={brandName}
                   width={64}
                   height={64}
-                  className="object-contain brightness-0 invert"
+                  className="object-contain max-h-12 w-auto"
                 />
               </div>
             )}
             <div>
-              <h1 className="text-3xl font-bold">{brandName}</h1>
-              <p className="text-gray-300 mt-2">
-                {sub ? sub : `${brandName} 공식 수입 제품 | 정품 보증 | A/S 지원`}
+              <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#a1a1aa]">
+                Official Importer · {brandName}
+              </div>
+              <h1 className="text-[32px] font-bold text-[#1d1d1f] tracking-[-0.025em] mt-2 leading-[1.1]">
+                {brandName}
+              </h1>
+              <p className="text-[#86868b] mt-2 text-sm">
+                {sub ? sub : `${brandName} 공식 수입 제품 · 정품 보증 · A/S 지원`}
               </p>
             </div>
           </div>
