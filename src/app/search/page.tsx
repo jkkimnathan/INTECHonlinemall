@@ -23,7 +23,7 @@ function SearchResults() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center text-gray-400">
+      <div className="container mx-auto px-4 py-20 text-center text-[#a1a1aa]">
         검색 중...
       </div>
     );
@@ -46,7 +46,7 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <div className="container mx-auto px-4 py-20 text-center text-gray-400">
+        <div className="container mx-auto px-4 py-20 text-center text-[#a1a1aa]">
           검색 중...
         </div>
       }

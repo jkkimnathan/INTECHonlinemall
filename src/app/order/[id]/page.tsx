@@ -29,12 +29,12 @@ const statusIcons = {
   배송완료: CheckCircle,
 };
 const statusColors: Record<string, string> = {
-  결제완료: "bg-blue-100 text-blue-700",
+  결제완료: "bg-blue-100 text-[#1A56DB]",
   배송준비: "bg-yellow-100 text-yellow-700",
-  배송중: "bg-orange-100 text-orange-700",
-  배송완료: "bg-green-100 text-green-700",
+  배송중: "bg-[#fff7ed] text-[#c2410c]",
+  배송완료: "bg-[#ecfdf5] text-[#047857]",
   취소: "bg-red-100 text-red-700",
-  "교환/반품": "bg-gray-100 text-gray-700",
+  "교환/반품": "bg-gray-100 text-[#3f3f46]",
 };
 
 export default function OrderDetailPage({
@@ -56,7 +56,7 @@ export default function OrderDetailPage({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#a1a1aa]" />
       </div>
     );
   }
@@ -64,7 +64,7 @@ export default function OrderDetailPage({
   if (!order) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-gray-50">
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 className="text-xl font-bold text-[#1d1d1f]">
           주문을 찾을 수 없습니다
         </h2>
         <Link href="/mypage" className="mt-4">
@@ -85,11 +85,11 @@ export default function OrderDetailPage({
           {/* 헤더 */}
           <div className="flex items-center gap-3 mb-6">
             <Link href="/mypage">
-              <ArrowLeft className="h-5 w-5 text-gray-500" />
+              <ArrowLeft className="h-5 w-5 text-[#86868b]" />
             </Link>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">주문 상세</h1>
-              <p className="text-sm text-gray-500 font-mono">{order.id}</p>
+              <h1 className="text-xl font-bold text-[#1d1d1f]">주문 상세</h1>
+              <p className="text-sm text-[#86868b] font-mono">{order.id}</p>
             </div>
             <Badge className={`ml-auto ${statusColors[order.status]}`}>
               {order.status}
@@ -99,7 +99,7 @@ export default function OrderDetailPage({
           {/* 배송 진행 상태 */}
           {currentStepIndex >= 0 && (
             <div className="bg-white rounded-lg border p-6 mb-6">
-              <h2 className="font-bold text-gray-900 mb-6">배송 상태</h2>
+              <h2 className="font-bold text-[#1d1d1f] mb-6">배송 상태</h2>
               <div className="flex items-center justify-between">
                 {statusSteps.map((step, index) => {
                   const Icon = statusIcons[step];
@@ -119,17 +119,17 @@ export default function OrderDetailPage({
                       <div
                         className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center ${
                           isCurrent
-                            ? "bg-blue-600 text-white"
+                            ? "bg-[#1A56DB] text-white"
                             : isActive
-                            ? "bg-blue-100 text-blue-600"
-                            : "bg-gray-100 text-gray-400"
+                            ? "bg-blue-100 text-[#1A56DB]"
+                            : "bg-gray-100 text-[#a1a1aa]"
                         }`}
                       >
                         <Icon className="h-5 w-5" />
                       </div>
                       <span
                         className={`text-xs mt-2 ${
-                          isActive ? "text-gray-900 font-medium" : "text-gray-400"
+                          isActive ? "text-[#1d1d1f] font-medium" : "text-[#a1a1aa]"
                         }`}
                       >
                         {step}
@@ -143,7 +143,7 @@ export default function OrderDetailPage({
 
           {/* 주문 상품 */}
           <div className="bg-white rounded-lg border p-6 mb-6">
-            <h2 className="font-bold text-gray-900 mb-4">주문 상품</h2>
+            <h2 className="font-bold text-[#1d1d1f] mb-4">주문 상품</h2>
             <div className="space-y-3">
               {order.items.map(({ product, quantity }) => (
                 <div
@@ -154,17 +154,17 @@ export default function OrderDetailPage({
                     {product.images?.[0] ? (
                       <Image src={product.images[0]} alt={product.name} fill sizes="64px" className="object-cover" />
                     ) : (
-                      <span className="text-gray-400 text-[10px]">{product.brand}</span>
+                      <span className="text-[#a1a1aa] text-[10px]">{product.brand}</span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <Link
                       href={`/products/${product.slug}`}
-                      className="text-sm font-medium text-gray-900 hover:text-blue-600"
+                      className="text-sm font-medium text-[#1d1d1f] hover:text-[#1A56DB]"
                     >
                       {product.name}
                     </Link>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-[#86868b]">
                       {product.brand} | 수량: {quantity}
                     </p>
                   </div>
@@ -181,11 +181,11 @@ export default function OrderDetailPage({
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-500">상품 금액</span>
+                <span className="text-[#86868b]">상품 금액</span>
                 <span>{formatPrice(order.subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">배송비</span>
+                <span className="text-[#86868b]">배송비</span>
                 <span>
                   {order.shippingFee === 0
                     ? "무료"
@@ -201,7 +201,7 @@ export default function OrderDetailPage({
               <Separator className="my-2" />
               <div className="flex justify-between font-bold text-base">
                 <span>총 결제금액</span>
-                <span className="text-blue-600">
+                <span className="text-[#1A56DB]">
                   {formatPrice(order.total)}
                 </span>
               </div>
@@ -210,31 +210,31 @@ export default function OrderDetailPage({
 
           {/* 배송 정보 */}
           <div className="bg-white rounded-lg border p-6 mb-6">
-            <h2 className="font-bold text-gray-900 mb-4">배송 정보</h2>
+            <h2 className="font-bold text-[#1d1d1f] mb-4">배송 정보</h2>
             <div className="space-y-2 text-sm">
               <div className="flex">
-                <span className="text-gray-500 w-20">받는 분</span>
+                <span className="text-[#86868b] w-20">받는 분</span>
                 <span>{order.shipping.name}</span>
               </div>
               <div className="flex">
-                <span className="text-gray-500 w-20">연락처</span>
+                <span className="text-[#86868b] w-20">연락처</span>
                 <span>{order.shipping.phone}</span>
               </div>
               <div className="flex">
-                <span className="text-gray-500 w-20">주소</span>
+                <span className="text-[#86868b] w-20">주소</span>
                 <span>
                   {order.shipping.address} {order.shipping.addressDetail}
                 </span>
               </div>
               {order.shipping.memo && (
                 <div className="flex">
-                  <span className="text-gray-500 w-20">메모</span>
+                  <span className="text-[#86868b] w-20">메모</span>
                   <span>{order.shipping.memo}</span>
                 </div>
               )}
               {order.trackingNumber && (
                 <div className="flex">
-                  <span className="text-gray-500 w-20">송장번호</span>
+                  <span className="text-[#86868b] w-20">송장번호</span>
                   <span className="font-mono">{order.trackingNumber}</span>
                 </div>
               )}
@@ -242,7 +242,7 @@ export default function OrderDetailPage({
           </div>
 
           {/* 주문일시 */}
-          <div className="text-center text-xs text-gray-400">
+          <div className="text-center text-xs text-[#a1a1aa]">
             주문일시: {new Date(order.createdAt).toLocaleString("ko-KR")}
           </div>
         </div>

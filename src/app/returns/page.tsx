@@ -21,13 +21,13 @@ export default function ReturnsPage() {
         <div className="bg-white rounded-lg border p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-              <RotateCcw className="h-5 w-5 text-blue-600" />
+              <RotateCcw className="h-5 w-5 text-[#1A56DB]" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">교환/반품 기간</h2>
+            <h2 className="text-lg font-bold text-[#1d1d1f]">교환/반품 기간</h2>
           </div>
-          <div className="bg-blue-50 rounded-lg p-4 text-center">
-            <p className="text-2xl font-bold text-blue-600">상품 수령 후 7일 이내</p>
-            <p className="text-sm text-blue-500 mt-1">고객센터로 접수 후 진행</p>
+          <div className="bg-[#EEF4FF] rounded-lg p-4 text-center">
+            <p className="text-2xl font-bold text-[#1A56DB]">상품 수령 후 7일 이내</p>
+            <p className="text-sm text-[#1A56DB] mt-1">고객센터로 접수 후 진행</p>
           </div>
         </div>
 
@@ -35,9 +35,9 @@ export default function ReturnsPage() {
         <div className="bg-white rounded-lg border p-6">
           <div className="flex items-center gap-3 mb-4">
             <CheckCircle className="h-5 w-5 text-green-600" />
-            <h2 className="text-lg font-bold text-gray-900">교환/반품이 가능한 경우</h2>
+            <h2 className="text-lg font-bold text-[#1d1d1f]">교환/반품이 가능한 경우</h2>
           </div>
-          <ul className="space-y-2 text-sm text-gray-600">
+          <ul className="space-y-2 text-sm text-[#3f3f46]">
             <li className="flex items-start gap-2">
               <span className="text-green-500 mt-0.5">&#10003;</span>
               상품 수령 후 7일 이내 미사용/미개봉 상태인 경우
@@ -61,9 +61,9 @@ export default function ReturnsPage() {
         <div className="bg-white rounded-lg border p-6">
           <div className="flex items-center gap-3 mb-4">
             <XCircle className="h-5 w-5 text-red-500" />
-            <h2 className="text-lg font-bold text-gray-900">교환/반품이 불가능한 경우</h2>
+            <h2 className="text-lg font-bold text-[#1d1d1f]">교환/반품이 불가능한 경우</h2>
           </div>
-          <ul className="space-y-2 text-sm text-gray-600">
+          <ul className="space-y-2 text-sm text-[#3f3f46]">
             <li className="flex items-start gap-2">
               <span className="text-red-500 mt-0.5">&#10007;</span>
               고객의 사용 또는 소비에 의해 상품 가치가 감소한 경우
@@ -91,28 +91,28 @@ export default function ReturnsPage() {
         <div className="bg-white rounded-lg border p-6">
           <div className="flex items-center gap-3 mb-4">
             <AlertTriangle className="h-5 w-5 text-orange-500" />
-            <h2 className="text-lg font-bold text-gray-900">배송비 부담</h2>
+            <h2 className="text-lg font-bold text-[#1d1d1f]">배송비 부담</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">사유</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">배송비 부담</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#86868b]">사유</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#86868b]">배송비 부담</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 <tr>
-                  <td className="px-4 py-3 text-gray-900">상품 불량 / 오배송</td>
+                  <td className="px-4 py-3 text-[#1d1d1f]">상품 불량 / 오배송</td>
                   <td className="px-4 py-3 font-bold text-green-600">판매자 부담 (무료)</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-gray-900">고객 변심 (단순 반품)</td>
-                  <td className="px-4 py-3 font-bold text-gray-900">구매자 부담 (왕복 6,000원)</td>
+                  <td className="px-4 py-3 text-[#1d1d1f]">고객 변심 (단순 반품)</td>
+                  <td className="px-4 py-3 font-bold text-[#1d1d1f]">구매자 부담 (왕복 6,000원)</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-gray-900">고객 변심 (교환)</td>
-                  <td className="px-4 py-3 font-bold text-gray-900">구매자 부담 (왕복 6,000원)</td>
+                  <td className="px-4 py-3 text-[#1d1d1f]">고객 변심 (교환)</td>
+                  <td className="px-4 py-3 font-bold text-[#1d1d1f]">구매자 부담 (왕복 6,000원)</td>
                 </tr>
               </tbody>
             </table>
@@ -121,40 +121,40 @@ export default function ReturnsPage() {
 
         {/* 절차 */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">교환/반품 절차</h2>
+          <h2 className="text-lg font-bold text-[#1d1d1f] mb-4">교환/반품 절차</h2>
           <div className="flex flex-col sm:flex-row items-center gap-4 text-center">
             <div className="flex-1 p-4 bg-gray-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600 mb-1">1</div>
-              <p className="text-sm font-medium text-gray-900">고객센터 접수</p>
-              <p className="text-xs text-gray-500 mt-1">1544-6549 전화 또는 커뮤니티 문의</p>
+              <div className="text-2xl font-bold text-[#1A56DB] mb-1">1</div>
+              <p className="text-sm font-medium text-[#1d1d1f]">고객센터 접수</p>
+              <p className="text-xs text-[#86868b] mt-1">1544-6549 전화 또는 커뮤니티 문의</p>
             </div>
             <div className="text-gray-300 text-xl hidden sm:block">&rarr;</div>
             <div className="flex-1 p-4 bg-gray-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600 mb-1">2</div>
-              <p className="text-sm font-medium text-gray-900">상품 회수</p>
-              <p className="text-xs text-gray-500 mt-1">안내된 주소로 상품 발송</p>
+              <div className="text-2xl font-bold text-[#1A56DB] mb-1">2</div>
+              <p className="text-sm font-medium text-[#1d1d1f]">상품 회수</p>
+              <p className="text-xs text-[#86868b] mt-1">안내된 주소로 상품 발송</p>
             </div>
             <div className="text-gray-300 text-xl hidden sm:block">&rarr;</div>
             <div className="flex-1 p-4 bg-gray-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600 mb-1">3</div>
-              <p className="text-sm font-medium text-gray-900">검수</p>
-              <p className="text-xs text-gray-500 mt-1">상품 상태 확인 (1~2일)</p>
+              <div className="text-2xl font-bold text-[#1A56DB] mb-1">3</div>
+              <p className="text-sm font-medium text-[#1d1d1f]">검수</p>
+              <p className="text-xs text-[#86868b] mt-1">상품 상태 확인 (1~2일)</p>
             </div>
             <div className="text-gray-300 text-xl hidden sm:block">&rarr;</div>
             <div className="flex-1 p-4 bg-gray-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600 mb-1">4</div>
-              <p className="text-sm font-medium text-gray-900">교환/환불 처리</p>
-              <p className="text-xs text-gray-500 mt-1">교환 발송 또는 환불 처리</p>
+              <div className="text-2xl font-bold text-[#1A56DB] mb-1">4</div>
+              <p className="text-sm font-medium text-[#1d1d1f]">교환/환불 처리</p>
+              <p className="text-xs text-[#86868b] mt-1">교환 발송 또는 환불 처리</p>
             </div>
           </div>
         </div>
 
         {/* 문의 */}
-        <div className="bg-blue-50 rounded-lg border border-blue-200 p-6 text-center">
-          <Phone className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-          <p className="font-bold text-gray-900">교환/반품 관련 문의</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">1544-6549</p>
-          <p className="text-sm text-gray-500 mt-1">평일 09:30 ~ 17:00 (점심 12:00 ~ 13:00)</p>
+        <div className="bg-[#EEF4FF] rounded-lg border border-blue-200 p-6 text-center">
+          <Phone className="h-6 w-6 text-[#1A56DB] mx-auto mb-2" />
+          <p className="font-bold text-[#1d1d1f]">교환/반품 관련 문의</p>
+          <p className="text-2xl font-bold text-[#1A56DB] mt-1">1544-6549</p>
+          <p className="text-sm text-[#86868b] mt-1">평일 09:30 ~ 17:00 (점심 12:00 ~ 13:00)</p>
         </div>
       </div>
     </div>

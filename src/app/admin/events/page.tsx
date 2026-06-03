@@ -121,7 +121,7 @@ export default function AdminEventsPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#a1a1aa]" />
       </div>
     );
   }
@@ -130,11 +130,11 @@ export default function AdminEventsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">이벤트 관리</h1>
-          <p className="text-sm text-gray-500 mt-1">총 {events.length}건</p>
+          <h1 className="text-2xl font-bold text-[#1d1d1f]">이벤트 관리</h1>
+          <p className="text-sm text-[#86868b] mt-1">총 {events.length}건</p>
         </div>
         <Button
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-[#1A56DB] hover:bg-[#1747b4]"
           onClick={() => {
             resetForm();
             setShowForm(true);
@@ -152,15 +152,15 @@ export default function AdminEventsPage() {
           className="bg-white rounded-xl border p-6 mb-6 space-y-4"
         >
           <div className="flex items-center justify-between">
-            <h2 className="font-bold text-gray-900">
+            <h2 className="font-bold text-[#1d1d1f]">
               {editingId ? "이벤트 수정" : "이벤트 등록"}
             </h2>
             <button type="button" onClick={resetForm}>
-              <X className="h-5 w-5 text-gray-400" />
+              <X className="h-5 w-5 text-[#a1a1aa]" />
             </button>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#3f3f46] mb-1">
               제목
             </label>
             <Input
@@ -171,7 +171,7 @@ export default function AdminEventsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#3f3f46] mb-1">
               설명
             </label>
             <textarea
@@ -185,7 +185,7 @@ export default function AdminEventsPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 시작일
               </label>
               <Input
@@ -196,7 +196,7 @@ export default function AdminEventsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 종료일
               </label>
               <Input
@@ -207,7 +207,7 @@ export default function AdminEventsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 상태
               </label>
               <select
@@ -226,7 +226,7 @@ export default function AdminEventsPage() {
 
           {/* 이미지 업로드 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#3f3f46] mb-1">
               이미지 (선택)
             </label>
             {imageUrl ? (
@@ -246,7 +246,7 @@ export default function AdminEventsPage() {
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50">
+              <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-[#EEF4FF]">
                 <input
                   type="file"
                   accept="image/*"
@@ -255,12 +255,12 @@ export default function AdminEventsPage() {
                   disabled={uploading}
                 />
                 {uploading ? (
-                  <Loader2 className="h-6 w-6 text-blue-500 animate-spin" />
+                  <Loader2 className="h-6 w-6 text-[#1A56DB] animate-spin" />
                 ) : (
                   <>
                     <Upload className="h-6 w-6 text-gray-300 mb-2" />
-                    <span className="text-sm text-gray-500">클릭하여 이미지 업로드</span>
-                    <span className="text-xs text-gray-400 mt-1">최대 10MB</span>
+                    <span className="text-sm text-[#86868b]">클릭하여 이미지 업로드</span>
+                    <span className="text-xs text-[#a1a1aa] mt-1">최대 10MB</span>
                   </>
                 )}
               </label>
@@ -273,7 +273,7 @@ export default function AdminEventsPage() {
             </Button>
             <Button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-[#1A56DB] hover:bg-[#1747b4]"
               disabled={submitting}
             >
               {submitting && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
@@ -286,7 +286,7 @@ export default function AdminEventsPage() {
       {/* 목록 */}
       <div className="bg-white rounded-xl border overflow-hidden">
         {events.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-[#a1a1aa]">
             등록된 이벤트가 없습니다.
           </div>
         ) : (
@@ -314,21 +314,21 @@ export default function AdminEventsPage() {
                       <Badge
                         className={
                           event.status === "진행중"
-                            ? "bg-green-100 text-green-700"
+                            ? "bg-[#ecfdf5] text-[#047857]"
                             : event.status === "예정"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-gray-100 text-gray-500"
+                            ? "bg-blue-100 text-[#1A56DB]"
+                            : "bg-gray-100 text-[#86868b]"
                         }
                       >
                         {event.status}
                       </Badge>
-                      <span className="text-xs text-gray-400 flex items-center gap-1">
+                      <span className="text-xs text-[#a1a1aa] flex items-center gap-1">
                         <CalendarDays className="h-3 w-3" />
                         {event.startDate} ~ {event.endDate}
                       </span>
                     </div>
-                    <h3 className="font-medium text-gray-900">{event.title}</h3>
-                    <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                    <h3 className="font-medium text-[#1d1d1f]">{event.title}</h3>
+                    <p className="text-sm text-[#86868b] mt-1 line-clamp-2">
                       {event.description}
                     </p>
                   </div>
@@ -339,7 +339,7 @@ export default function AdminEventsPage() {
                     size="sm"
                     onClick={() => startEdit(event)}
                   >
-                    <Pencil className="h-4 w-4 text-gray-400" />
+                    <Pencil className="h-4 w-4 text-[#a1a1aa]" />
                   </Button>
                   <Button
                     variant="ghost"

@@ -171,10 +171,10 @@ export default function AdminMainImageBannersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[#1d1d1f]">
             메인 이미지 배너 관리
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-[#86868b] mt-1">
             메인 페이지의 이미지 배너 섹션을 관리합니다. (좌 3 / 중앙 롤링 / 우 3)
           </p>
         </div>
@@ -186,7 +186,7 @@ export default function AdminMainImageBannersPage() {
               setForm({ ...emptyForm });
               setError("");
             }}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-[#1A56DB] hover:bg-[#1747b4] text-white"
           >
             <Plus className="h-4 w-4 mr-1" />
             배너 추가
@@ -202,7 +202,7 @@ export default function AdminMainImageBannersPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 위치 *
               </label>
               <select
@@ -224,7 +224,7 @@ export default function AdminMainImageBannersPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 제목 *
               </label>
               <Input
@@ -237,7 +237,7 @@ export default function AdminMainImageBannersPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 링크 URL (선택)
               </label>
               <Input
@@ -250,7 +250,7 @@ export default function AdminMainImageBannersPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 정렬 순서 (중앙 롤링 순서)
               </label>
               <Input
@@ -266,19 +266,19 @@ export default function AdminMainImageBannersPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 이미지 {editingId ? "(변경 시에만 선택)" : "*"}
               </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className="block w-full text-sm text-[#86868b] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-[#EEF4FF] file:text-[#1A56DB] hover:file:bg-blue-100"
               />
             </div>
 
             <div className="flex items-center gap-3">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-[#3f3f46]">
                 활성화
               </label>
               <button
@@ -287,7 +287,7 @@ export default function AdminMainImageBannersPage() {
                   setForm((prev) => ({ ...prev, isActive: !prev.isActive }))
                 }
                 className={`relative w-11 h-6 rounded-full transition-colors ${
-                  form.isActive ? "bg-blue-600" : "bg-gray-300"
+                  form.isActive ? "bg-[#1A56DB]" : "bg-gray-300"
                 }`}
               >
                 <span
@@ -301,7 +301,7 @@ export default function AdminMainImageBannersPage() {
 
           {form.imagePreview && (
             <div className="mt-4">
-              <p className="text-sm text-gray-500 mb-2">미리보기:</p>
+              <p className="text-sm text-[#86868b] mb-2">미리보기:</p>
               <div className="relative w-40 h-40 rounded-lg overflow-hidden border">
                 <Image
                   src={form.imagePreview}
@@ -319,7 +319,7 @@ export default function AdminMainImageBannersPage() {
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-[#1A56DB] hover:bg-[#1747b4] text-white"
             >
               {saving ? (
                 <>
@@ -341,10 +341,10 @@ export default function AdminMainImageBannersPage() {
       {/* Banner List by Position */}
       {loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+          <Loader2 className="h-6 w-6 animate-spin text-[#a1a1aa]" />
         </div>
       ) : banners.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
+        <div className="text-center py-12 text-[#a1a1aa]">
           등록된 배너가 없습니다.
         </div>
       ) : (
@@ -355,9 +355,9 @@ export default function AdminMainImageBannersPage() {
             return (
               <div key={pos} className="bg-white rounded-xl border">
                 <div className="px-4 py-3 border-b bg-gray-50 rounded-t-xl">
-                  <h3 className="text-sm font-semibold text-gray-700">
+                  <h3 className="text-sm font-semibold text-[#3f3f46]">
                     {POSITION_LABELS[pos]}{" "}
-                    <span className="text-gray-400 font-normal">({pos})</span>
+                    <span className="text-[#a1a1aa] font-normal">({pos})</span>
                   </h3>
                 </div>
                 <div className="divide-y">
@@ -375,11 +375,11 @@ export default function AdminMainImageBannersPage() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-[#1d1d1f] truncate">
                           {banner.title}
                         </p>
                         {banner.linkUrl && (
-                          <p className="text-xs text-gray-400 truncate">
+                          <p className="text-xs text-[#a1a1aa] truncate">
                             {banner.linkUrl}
                           </p>
                         )}
@@ -387,13 +387,13 @@ export default function AdminMainImageBannersPage() {
                           <span
                             className={`text-xs px-2 py-0.5 rounded-full ${
                               banner.isActive
-                                ? "bg-green-100 text-green-700"
-                                : "bg-gray-100 text-gray-500"
+                                ? "bg-[#ecfdf5] text-[#047857]"
+                                : "bg-gray-100 text-[#86868b]"
                             }`}
                           >
                             {banner.isActive ? "활성" : "비활성"}
                           </span>
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-[#a1a1aa]">
                             순서: {banner.sortOrder}
                           </span>
                         </div>

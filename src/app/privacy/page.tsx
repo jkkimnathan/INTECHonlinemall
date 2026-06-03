@@ -108,7 +108,7 @@ export default function PrivacyPage() {
             변경사항의 시행 7일 전부터 공지사항을 통하여 고지할 것입니다.
           </p>
 
-          <div className="mt-8 pt-6 border-t text-sm text-gray-500">
+          <div className="mt-8 pt-6 border-t text-sm text-[#86868b]">
             <p>시행일: 2025년 3월 1일</p>
             <p className="mt-1">{contact.companyName} | 대표: {contact.ceo}</p>
             <p>{contact.address}</p>

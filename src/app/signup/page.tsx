@@ -69,21 +69,21 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center bg-gray-50 py-12 px-4">
+    <div className="min-h-[70vh] flex items-center justify-center bg-[#fbfbfd] py-12 px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-xl shadow-sm border p-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-[#f1f1f3] p-8">
           <div className="text-center mb-8">
             <Link href="/">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-[#1d1d1f]">
                 {siteConfig.name}
               </h1>
             </Link>
-            <p className="text-gray-500 text-sm mt-2">회원가입</p>
+            <p className="text-[#86868b] text-sm mt-2">회원가입</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 이름 <span className="text-red-500">*</span>
               </label>
               <Input
@@ -97,7 +97,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 이메일 <span className="text-red-500">*</span>
               </label>
               <Input
@@ -111,7 +111,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 연락처 <span className="text-red-500">*</span>
               </label>
               <Input
@@ -125,7 +125,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 비밀번호 <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -140,7 +140,7 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a1a1aa] hover:text-[#3f3f46]"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -152,7 +152,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 비밀번호 확인 <span className="text-red-500">*</span>
               </label>
               <Input
@@ -180,10 +180,10 @@ export default function SignupPage() {
                   className="mt-0.5"
                   disabled={submitting}
                 />
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-[#3f3f46]">
                   <Link
                     href="/terms"
-                    className="text-blue-600 hover:underline"
+                    className="text-[#1A56DB] hover:underline"
                   >
                     이용약관
                   </Link>
@@ -198,10 +198,10 @@ export default function SignupPage() {
                   className="mt-0.5"
                   disabled={submitting}
                 />
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-[#3f3f46]">
                   <Link
                     href="/privacy"
-                    className="text-blue-600 hover:underline"
+                    className="text-[#1A56DB] hover:underline"
                   >
                     개인정보처리방침
                   </Link>
@@ -214,7 +214,7 @@ export default function SignupPage() {
 
             <Button
               type="submit"
-              className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full h-11 rounded-full bg-[#1A56DB] hover:bg-[#1747b4] text-white"
               disabled={submitting}
             >
               {submitting ? (
@@ -228,11 +228,11 @@ export default function SignupPage() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-gray-500">
+          <div className="mt-6 text-center text-sm text-[#86868b]">
             이미 회원이신가요?{" "}
             <Link
               href="/login"
-              className="text-blue-600 font-medium hover:underline"
+              className="text-[#1A56DB] font-medium hover:underline"
             >
               로그인
             </Link>

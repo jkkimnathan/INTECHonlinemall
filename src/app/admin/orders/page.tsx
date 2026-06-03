@@ -14,12 +14,12 @@ function formatPrice(price: number) {
 }
 
 const statusColors: Record<string, string> = {
-  결제완료: "bg-blue-100 text-blue-700",
+  결제완료: "bg-blue-100 text-[#1A56DB]",
   배송준비: "bg-yellow-100 text-yellow-700",
-  배송중: "bg-orange-100 text-orange-700",
-  배송완료: "bg-green-100 text-green-700",
+  배송중: "bg-[#fff7ed] text-[#c2410c]",
+  배송완료: "bg-[#ecfdf5] text-[#047857]",
   취소: "bg-red-100 text-red-700",
-  "교환/반품": "bg-gray-100 text-gray-700",
+  "교환/반품": "bg-gray-100 text-[#3f3f46]",
 };
 
 const statusOptions: OrderStatus[] = [
@@ -62,14 +62,14 @@ export default function AdminOrdersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#a1a1aa]" />
       </div>
     );
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">주문 관리</h1>
+      <h1 className="text-2xl font-bold text-[#1d1d1f] mb-6">주문 관리</h1>
 
       {/* 필터 */}
       <div className="flex gap-2 flex-wrap mb-4">
@@ -100,7 +100,7 @@ export default function AdminOrdersPage() {
       {filtered.length === 0 ? (
         <div className="bg-white rounded-xl border p-12 text-center">
           <Package className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">
+          <p className="text-[#86868b]">
             {filter === "전체"
               ? "아직 주문이 없습니다. 쇼핑몰에서 테스트 주문을 해보세요."
               : `'${filter}' 상태의 주문이 없습니다.`}
@@ -112,22 +112,22 @@ export default function AdminOrdersPage() {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">
+                  <th className="text-left px-4 py-3 font-medium text-[#86868b]">
                     주문번호
                   </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500 hidden md:table-cell">
+                  <th className="text-left px-4 py-3 font-medium text-[#86868b] hidden md:table-cell">
                     상품
                   </th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-500">
+                  <th className="text-right px-4 py-3 font-medium text-[#86868b]">
                     결제금액
                   </th>
-                  <th className="text-center px-4 py-3 font-medium text-gray-500">
+                  <th className="text-center px-4 py-3 font-medium text-[#86868b]">
                     상태
                   </th>
-                  <th className="text-center px-4 py-3 font-medium text-gray-500 hidden sm:table-cell">
+                  <th className="text-center px-4 py-3 font-medium text-[#86868b] hidden sm:table-cell">
                     날짜
                   </th>
-                  <th className="text-center px-4 py-3 font-medium text-gray-500">
+                  <th className="text-center px-4 py-3 font-medium text-[#86868b]">
                     관리
                   </th>
                 </tr>
@@ -137,12 +137,12 @@ export default function AdminOrdersPage() {
                   <tr key={order.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <p className="font-mono text-xs">{order.id}</p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-[#a1a1aa]">
                         {order.shipping.name}
                       </p>
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
-                      <p className="text-gray-900 truncate max-w-[200px]">
+                      <p className="text-[#1d1d1f] truncate max-w-[200px]">
                         {order.items[0]?.product.name}
                         {order.items.length > 1 &&
                           ` 외 ${order.items.length - 1}건`}
@@ -169,13 +169,13 @@ export default function AdminOrdersPage() {
                         ))}
                       </select>
                     </td>
-                    <td className="px-4 py-3 text-center hidden sm:table-cell text-xs text-gray-500">
+                    <td className="px-4 py-3 text-center hidden sm:table-cell text-xs text-[#86868b]">
                       {new Date(order.createdAt).toLocaleDateString("ko-KR")}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <Link href={`/order/${order.id}`}>
                         <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Eye className="h-3.5 w-3.5 text-gray-400" />
+                          <Eye className="h-3.5 w-3.5 text-[#a1a1aa]" />
                         </Button>
                       </Link>
                     </td>
@@ -184,7 +184,7 @@ export default function AdminOrdersPage() {
               </tbody>
             </table>
           </div>
-          <div className="px-4 py-3 bg-gray-50 border-t text-sm text-gray-500">
+          <div className="px-4 py-3 bg-gray-50 border-t text-sm text-[#86868b]">
             총 {filtered.length}건
           </div>
         </div>

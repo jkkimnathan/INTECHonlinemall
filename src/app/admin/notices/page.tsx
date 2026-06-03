@@ -121,7 +121,7 @@ export default function AdminNoticesPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#a1a1aa]" />
       </div>
     );
   }
@@ -130,11 +130,11 @@ export default function AdminNoticesPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">공지 관리</h1>
-          <p className="text-sm text-gray-500 mt-1">총 {notices.length}건</p>
+          <h1 className="text-2xl font-bold text-[#1d1d1f]">공지 관리</h1>
+          <p className="text-sm text-[#86868b] mt-1">총 {notices.length}건</p>
         </div>
         <Button
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-[#1A56DB] hover:bg-[#1747b4]"
           onClick={() => {
             resetForm();
             setShowForm(true);
@@ -152,16 +152,16 @@ export default function AdminNoticesPage() {
           className="bg-white rounded-xl border p-6 mb-6 space-y-4"
         >
           <div className="flex items-center justify-between">
-            <h2 className="font-bold text-gray-900">
+            <h2 className="font-bold text-[#1d1d1f]">
               {editingId ? "공지 수정" : "공지 등록"}
             </h2>
             <button type="button" onClick={resetForm}>
-              <X className="h-5 w-5 text-gray-400" />
+              <X className="h-5 w-5 text-[#a1a1aa]" />
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 제목
               </label>
               <Input
@@ -173,7 +173,7 @@ export default function AdminNoticesPage() {
             </div>
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                   카테고리
                 </label>
                 <select
@@ -202,7 +202,7 @@ export default function AdminNoticesPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#3f3f46] mb-1">
               내용
             </label>
             <textarea
@@ -217,7 +217,7 @@ export default function AdminNoticesPage() {
 
           {/* 이미지 업로드 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#3f3f46] mb-1">
               이미지 (선택)
             </label>
             {imageUrl ? (
@@ -237,7 +237,7 @@ export default function AdminNoticesPage() {
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50">
+              <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-[#EEF4FF]">
                 <input
                   type="file"
                   accept="image/*"
@@ -246,12 +246,12 @@ export default function AdminNoticesPage() {
                   disabled={uploading}
                 />
                 {uploading ? (
-                  <Loader2 className="h-6 w-6 text-blue-500 animate-spin" />
+                  <Loader2 className="h-6 w-6 text-[#1A56DB] animate-spin" />
                 ) : (
                   <>
                     <Upload className="h-6 w-6 text-gray-300 mb-2" />
-                    <span className="text-sm text-gray-500">클릭하여 이미지 업로드</span>
-                    <span className="text-xs text-gray-400 mt-1">최대 10MB</span>
+                    <span className="text-sm text-[#86868b]">클릭하여 이미지 업로드</span>
+                    <span className="text-xs text-[#a1a1aa] mt-1">최대 10MB</span>
                   </>
                 )}
               </label>
@@ -264,7 +264,7 @@ export default function AdminNoticesPage() {
             </Button>
             <Button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-[#1A56DB] hover:bg-[#1747b4]"
               disabled={submitting}
             >
               {submitting && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
@@ -277,7 +277,7 @@ export default function AdminNoticesPage() {
       {/* 목록 */}
       <div className="bg-white rounded-xl border overflow-hidden">
         {notices.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-[#a1a1aa]">
             등록된 공지가 없습니다.
           </div>
         ) : (
@@ -298,26 +298,26 @@ export default function AdminNoticesPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge className="bg-gray-100 text-gray-700 text-xs">
+                      <Badge className="bg-gray-100 text-[#3f3f46] text-xs">
                         {notice.category}
                       </Badge>
                       {notice.isPinned && (
-                        <Badge className="bg-blue-50 text-blue-600 text-xs">
+                        <Badge className="bg-[#EEF4FF] text-[#1A56DB] text-xs">
                           <Pin className="h-3 w-3 mr-0.5" />
                           고정
                         </Badge>
                       )}
                       {notice.imageUrl && (
-                        <ImageIcon className="h-3 w-3 text-gray-400" />
+                        <ImageIcon className="h-3 w-3 text-[#a1a1aa]" />
                       )}
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-[#a1a1aa]">
                         {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
                       </span>
                     </div>
-                    <h3 className="font-medium text-gray-900 truncate">
+                    <h3 className="font-medium text-[#1d1d1f] truncate">
                       {notice.title}
                     </h3>
-                    <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                    <p className="text-sm text-[#86868b] mt-1 line-clamp-2">
                       {notice.content}
                     </p>
                   </div>
@@ -331,7 +331,7 @@ export default function AdminNoticesPage() {
                   >
                     <Pin
                       className={`h-4 w-4 ${
-                        notice.isPinned ? "text-blue-600" : "text-gray-400"
+                        notice.isPinned ? "text-[#1A56DB]" : "text-[#a1a1aa]"
                       }`}
                     />
                   </Button>
@@ -340,7 +340,7 @@ export default function AdminNoticesPage() {
                     size="sm"
                     onClick={() => startEdit(notice)}
                   >
-                    <Pencil className="h-4 w-4 text-gray-400" />
+                    <Pencil className="h-4 w-4 text-[#a1a1aa]" />
                   </Button>
                   <Button
                     variant="ghost"

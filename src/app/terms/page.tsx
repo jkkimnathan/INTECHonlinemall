@@ -122,7 +122,7 @@ export default function TermsPage() {
             다만, 신속한 처리가 곤란한 경우에는 이용자에게 그 사유와 처리일정을 통보합니다.
           </p>
 
-          <div className="mt-8 pt-6 border-t text-sm text-gray-500">
+          <div className="mt-8 pt-6 border-t text-sm text-[#86868b]">
             <p>시행일: 2025년 3월 1일</p>
             <p className="mt-1">{contact.companyName} | 대표: {contact.ceo}</p>
             <p>{contact.address}</p>

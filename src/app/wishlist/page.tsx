@@ -16,14 +16,14 @@ export default function WishlistPage() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-gray-50">
         <Heart className="h-16 w-16 text-gray-300 mb-4" />
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 className="text-xl font-bold text-[#1d1d1f]">
           관심상품이 없습니다
         </h2>
-        <p className="text-gray-500 mt-2 text-sm">
+        <p className="text-[#86868b] mt-2 text-sm">
           마음에 드는 상품의 하트를 눌러보세요
         </p>
         <Link href="/products" className="mt-6">
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-[#1A56DB] hover:bg-[#1747b4]">
             상품 둘러보기
           </Button>
         </Link>
@@ -35,7 +35,7 @@ export default function WishlistPage() {
     <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[#1d1d1f]">
             관심상품 ({items.length})
           </h1>
           <div className="flex gap-2">

@@ -65,19 +65,19 @@ export default function FaqPage() {
                 className="w-full text-left p-4 hover:bg-gray-50 transition-colors flex items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-blue-600 font-bold text-sm flex-shrink-0">Q</span>
-                  <span className="text-sm font-medium text-gray-900">{item.q}</span>
+                  <span className="text-[#1A56DB] font-bold text-sm flex-shrink-0">Q</span>
+                  <span className="text-sm font-medium text-[#1d1d1f]">{item.q}</span>
                 </div>
                 {openIndex === i ? (
-                  <ChevronUp className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                  <ChevronUp className="h-4 w-4 text-[#a1a1aa] flex-shrink-0" />
                 ) : (
-                  <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                  <ChevronDown className="h-4 w-4 text-[#a1a1aa] flex-shrink-0" />
                 )}
               </button>
               {openIndex === i && (
                 <div className="px-4 pb-4">
-                  <div className="bg-blue-50 rounded-lg p-4 text-sm text-gray-700 flex gap-3">
-                    <span className="text-blue-600 font-bold flex-shrink-0">A</span>
+                  <div className="bg-[#EEF4FF] rounded-lg p-4 text-sm text-[#3f3f46] flex gap-3">
+                    <span className="text-[#1A56DB] font-bold flex-shrink-0">A</span>
                     <p>{item.a}</p>
                   </div>
                 </div>
@@ -87,7 +87,7 @@ export default function FaqPage() {
         </div>
 
         {filtered.length === 0 && (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-[#a1a1aa]">
             해당 카테고리의 질문이 없습니다.
           </div>
         )}
