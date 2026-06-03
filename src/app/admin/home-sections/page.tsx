@@ -184,19 +184,25 @@ export default function HomeSectionsAdmin() {
           </div>
           <div className="space-y-3">
             {ipc.tiers.map((t, i) => (
-              <div key={i} className="grid grid-cols-1 sm:grid-cols-[100px_1fr_1fr_120px_auto] gap-2 items-center bg-[#fbfbfd] border border-[#f1f1f3] rounded-lg p-3">
-                <Input placeholder="ENTRY" value={t.tier} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, tier: e.target.value }; setIpc({ ...ipc, tiers }); }} />
-                <Input placeholder="iPC Office" value={t.title} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, title: e.target.value }; setIpc({ ...ipc, tiers }); }} />
-                <Input placeholder="사양" value={t.spec} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, spec: e.target.value }; setIpc({ ...ipc, tiers }); }} />
-                <Input type="number" placeholder="가격" value={t.price} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, price: Number(e.target.value) }; setIpc({ ...ipc, tiers }); }} />
+              <div key={i} className="bg-[#fbfbfd] border border-[#f1f1f3] rounded-lg p-3 space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-[100px_1fr_1fr_120px_auto] gap-2 items-center">
+                  <Input placeholder="ENTRY" value={t.tier} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, tier: e.target.value }; setIpc({ ...ipc, tiers }); }} />
+                  <Input placeholder="iPC Office" value={t.title} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, title: e.target.value }; setIpc({ ...ipc, tiers }); }} />
+                  <Input placeholder="사양" value={t.spec} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, spec: e.target.value }; setIpc({ ...ipc, tiers }); }} />
+                  <Input type="number" placeholder="가격" value={t.price} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, price: Number(e.target.value) }; setIpc({ ...ipc, tiers }); }} />
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-1 text-xs text-[#86868b] whitespace-nowrap">
+                      <input type="checkbox" checked={!!t.featured} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, featured: e.target.checked }; setIpc({ ...ipc, tiers }); }} />
+                      인기
+                    </label>
+                    <button onClick={() => setIpc({ ...ipc, tiers: ipc.tiers.filter((_, j) => j !== i) })} className="text-[#a1a1aa] hover:text-[#DC2626]">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
                 <div className="flex items-center gap-2">
-                  <label className="flex items-center gap-1 text-xs text-[#86868b] whitespace-nowrap">
-                    <input type="checkbox" checked={!!t.featured} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, featured: e.target.checked }; setIpc({ ...ipc, tiers }); }} />
-                    인기
-                  </label>
-                  <button onClick={() => setIpc({ ...ipc, tiers: ipc.tiers.filter((_, j) => j !== i) })} className="text-[#a1a1aa] hover:text-[#DC2626]">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  <span className="text-xs text-[#86868b] whitespace-nowrap">이동 링크</span>
+                  <Input placeholder="/brand/ipc 또는 /products/슬러그" value={t.href} onChange={(e) => { const tiers = [...ipc.tiers]; tiers[i] = { ...t, href: e.target.value }; setIpc({ ...ipc, tiers }); }} />
                 </div>
               </div>
             ))}
