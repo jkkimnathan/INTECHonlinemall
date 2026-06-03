@@ -23,6 +23,7 @@ export default async function SalePage() {
         imageUrl={banner?.imageUrl}
         gradientClass="from-red-600 to-orange-500"
         subtitleColor="text-red-100"
+        eyebrow="Today's Sale"
       />
 
       <ProductGrid

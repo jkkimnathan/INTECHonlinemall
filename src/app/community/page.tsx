@@ -21,10 +21,10 @@ import {
 } from "lucide-react";
 
 const categoryColors: Record<string, string> = {
-  상품문의: "bg-blue-100 text-blue-700",
-  배송문의: "bg-green-100 text-green-700",
-  "교환/반품": "bg-orange-100 text-orange-700",
-  기타: "bg-gray-100 text-gray-700",
+  상품문의: "bg-[#eef4ff] text-[#1d4ed8]",
+  배송문의: "bg-[#ecfdf5] text-[#047857]",
+  "교환/반품": "bg-[#fff7ed] text-[#c2410c]",
+  기타: "bg-[#f5f5f7] text-[#3f3f46]",
 };
 
 const categories = ["전체", "상품문의", "배송문의", "교환/반품", "기타"];
@@ -135,22 +135,22 @@ export default function CommunityPage() {
   const bannerSubtitle = banner?.subtitle || "Q&A 게시판 | 궁금한 점을 질문해주세요";
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-[#fbfbfd] min-h-screen">
       {banner?.imageUrl ? (
         <div className="relative h-[200px] md:h-[300px] overflow-hidden">
           <Image src={banner.imageUrl} alt={bannerTitle} fill className="object-cover" sizes="100vw" priority />
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-4">
-              <h1 className="text-3xl font-bold text-white">{bannerTitle}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.025em]">{bannerTitle}</h1>
               <p className="text-white/80 mt-2">{bannerSubtitle}</p>
             </div>
           </div>
         </div>
       ) : (
-        <div className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
-          <div className="container mx-auto px-4 py-10">
-            <h1 className="text-3xl font-bold">{bannerTitle}</h1>
+        <div className="bg-[#0F172A] text-white">
+          <div className="container mx-auto px-4 py-12">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.025em]">{bannerTitle}</h1>
             <p className="text-indigo-100 mt-2">{bannerSubtitle}</p>
           </div>
         </div>
@@ -173,7 +173,7 @@ export default function CommunityPage() {
             ))}
           </div>
           <Button
-            className="bg-blue-600 hover:bg-blue-700 text-sm"
+            className="bg-[#1A56DB] hover:bg-[#1747b4] text-sm"
             onClick={() => {
               if (!isLoggedIn) {
                 showToast("로그인이 필요합니다.", "warning");
@@ -197,10 +197,10 @@ export default function CommunityPage() {
         {showForm && (
           <form
             onSubmit={handleSubmit}
-            className="bg-white rounded-lg border p-6 mb-6 space-y-4"
+            className="bg-white rounded-2xl border border-[#f1f1f3] p-6 mb-6 space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-gray-900">질문 작성</h2>
+              <h2 className="font-bold text-[#1d1d1f]">질문 작성</h2>
               <button type="button" onClick={resetForm}>
                 <X className="h-5 w-5 text-gray-400" />
               </button>
@@ -277,7 +277,7 @@ export default function CommunityPage() {
               </Button>
               <Button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-[#1A56DB] hover:bg-[#1747b4]"
                 disabled={submitting}
               >
                 {submitting ? (
@@ -303,7 +303,7 @@ export default function CommunityPage() {
               : "해당 카테고리의 게시글이 없습니다."}
           </div>
         ) : (
-          <div className="bg-white rounded-lg border divide-y">
+          <div className="bg-white rounded-2xl border border-[#f1f1f3] divide-y">
             {filtered.map((item) => (
               <div key={item.id}>
                 <button
@@ -319,13 +319,13 @@ export default function CommunityPage() {
                     }
                     setOpenId(item.id);
                   }}
-                  className="w-full text-left p-4 hover:bg-gray-50 transition-colors"
+                  className="w-full text-left p-4 hover:bg-[#fbfbfd] transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Badge
                       className={
                         categoryColors[item.category] ||
-                        "bg-gray-100 text-gray-700"
+                        "bg-[#f5f5f7] text-[#3f3f46]"
                       }
                     >
                       {item.category}
@@ -333,7 +333,7 @@ export default function CommunityPage() {
                     <Badge
                       className={
                         item.isAnswered
-                          ? "bg-green-100 text-green-700"
+                          ? "bg-[#ecfdf5] text-[#047857]"
                           : "bg-gray-100 text-gray-500"
                       }
                     >
@@ -344,7 +344,7 @@ export default function CommunityPage() {
                     )}
                   </div>
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-gray-900 text-sm">
+                    <h3 className="font-medium text-[#1d1d1f] text-sm">
                       {item.isSecret && !canViewSecret(item)
                         ? "비밀글입니다."
                         : item.title}
@@ -387,7 +387,7 @@ export default function CommunityPage() {
                       <Button
                         size="sm"
                         onClick={() => handleOpenSecret(item)}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-[#1A56DB] hover:bg-[#1747b4]"
                       >
                         확인
                       </Button>

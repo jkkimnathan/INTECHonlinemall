@@ -23,15 +23,16 @@ export default async function RefurbishedPage() {
         imageUrl={banner?.imageUrl}
         gradientClass="from-orange-500 to-amber-500"
         subtitleColor="text-orange-100"
+        eyebrow="Refurbished · Officially Inspected"
       />
 
       {/* 리퍼비쉬 안내 */}
       <div className="container mx-auto px-4 py-6">
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-          <h3 className="font-semibold text-amber-900 text-sm">
+        <div className="bg-[#fff7ed] border border-[#fed7aa] rounded-xl p-5">
+          <h3 className="font-bold text-[#9a3412] text-sm">
             리퍼비쉬 상품이란?
           </h3>
-          <p className="text-sm text-amber-800 mt-1">
+          <p className="text-sm text-[#c2410c] mt-1.5 leading-relaxed">
             공식 수입사에서 직접 수거하여 점검, 테스트, 클리닝을 완료한 제품입니다.
             외관 상태에 따라 A급/B급으로 분류되며, 모든 제품은 정상 작동이 확인된
             제품만 판매합니다. 별도의 보증 기간이 제공됩니다.

@@ -39,18 +39,18 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-[#f5f5f7]">
       {/* 상단바 */}
-      <header className="bg-gray-900 text-white h-14 flex items-center px-4 sticky top-0 z-50">
+      <header className="bg-[#0F172A] text-white h-14 flex items-center px-4 sticky top-0 z-50">
         <div className="flex items-center gap-4 w-full">
           <Link
             href="/"
-            className="flex items-center gap-2 text-gray-400 hover:text-white text-sm"
+            className="flex items-center gap-2 text-[#94A3B8] hover:text-white text-sm"
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="hidden sm:inline">사이트로</span>
           </Link>
-          <div className="h-5 w-px bg-gray-700" />
+          <div className="h-5 w-px bg-[#1E293B]" />
           <span className="font-bold text-sm">
             {siteConfig.name} 관리자
           </span>
@@ -69,10 +69,10 @@ export default function AdminLayout({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
                     isActive
-                      ? "bg-blue-50 text-blue-700 font-medium"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-[#EEF4FF] text-[#1A56DB] font-medium"
+                      : "text-[#3f3f46] hover:bg-[#fbfbfd] hover:text-[#1d1d1f]"
                   }`}
                 >
                   <item.icon className="h-4 w-4" />
@@ -95,7 +95,7 @@ export default function AdminLayout({
                   key={item.href}
                   href={item.href}
                   className={`flex-1 flex flex-col items-center py-2 text-[10px] ${
-                    isActive ? "text-blue-600" : "text-gray-400"
+                    isActive ? "text-[#1A56DB]" : "text-[#a1a1aa]"
                   }`}
                 >
                   <item.icon className="h-5 w-5" />
