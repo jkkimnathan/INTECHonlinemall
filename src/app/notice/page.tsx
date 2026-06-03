@@ -36,23 +36,23 @@ export default function NoticePage() {
   const bannerSubtitle = banner?.subtitle || "인텍앤컴퍼니몰의 새로운 소식을 알려드립니다";
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-[#fbfbfd] min-h-screen">
       {banner?.imageUrl ? (
         <div className="relative h-[200px] md:h-[300px] overflow-hidden">
           <Image src={banner.imageUrl} alt={bannerTitle} fill className="object-cover" sizes="100vw" priority />
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-4">
-              <h1 className="text-3xl font-bold text-white">{bannerTitle}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.025em]">{bannerTitle}</h1>
               <p className="text-white/80 mt-2">{bannerSubtitle}</p>
             </div>
           </div>
         </div>
       ) : (
-        <div className="bg-gradient-to-r from-gray-800 to-gray-600 text-white">
-          <div className="container mx-auto px-4 py-10">
-            <h1 className="text-3xl font-bold">{bannerTitle}</h1>
-            <p className="text-gray-300 mt-2">{bannerSubtitle}</p>
+        <div className="bg-[#0F172A] text-white">
+          <div className="container mx-auto px-4 py-12">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.025em]">{bannerTitle}</h1>
+            <p className="text-[#94A3B8] mt-2">{bannerSubtitle}</p>
           </div>
         </div>
       )}
@@ -67,11 +67,11 @@ export default function NoticePage() {
             등록된 공지사항이 없습니다.
           </div>
         ) : (
-          <div className="bg-white rounded-lg border overflow-hidden">
+          <div className="bg-white rounded-2xl border border-[#f1f1f3] overflow-hidden">
             {/* 테이블 헤더 */}
-            <div className="hidden sm:grid sm:grid-cols-[1fr_120px] bg-gray-50 border-b px-5 py-3">
-              <span className="text-sm font-medium text-gray-500">제목</span>
-              <span className="text-sm font-medium text-gray-500 text-center">등록일</span>
+            <div className="hidden sm:grid sm:grid-cols-[1fr_120px] bg-[#fbfbfd] border-b border-[#f1f1f3] px-5 py-3">
+              <span className="text-sm font-medium text-[#86868b]">제목</span>
+              <span className="text-sm font-medium text-[#86868b] text-center">등록일</span>
             </div>
 
             <div className="divide-y">
@@ -80,22 +80,22 @@ export default function NoticePage() {
                 <Link
                   key={notice.id}
                   href={`/notice/${notice.id}`}
-                  className="flex items-center px-5 py-4 hover:bg-blue-50/50 transition-colors group"
+                  className="flex items-center px-5 py-4 hover:bg-[#EEF4FF]/50 transition-colors group"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <Pin className="h-3.5 w-3.5 text-blue-500 flex-shrink-0" />
+                      <Pin className="h-3.5 w-3.5 text-[#1A56DB] flex-shrink-0" />
                       <Badge className={categoryColors[notice.category] || "bg-gray-100 text-gray-700"}>
                         {notice.category}
                       </Badge>
                       <Badge className="bg-blue-50 text-blue-600">고정</Badge>
-                      <span className="font-medium text-gray-900 truncate">{notice.title}</span>
+                      <span className="font-medium text-[#1d1d1f] truncate">{notice.title}</span>
                     </div>
-                    <span className="text-xs text-gray-400 mt-1 block sm:hidden">
+                    <span className="text-xs text-[#a1a1aa] mt-1 block sm:hidden">
                       {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
                     </span>
                   </div>
-                  <span className="hidden sm:block text-sm text-gray-400 w-[120px] text-center flex-shrink-0">
+                  <span className="hidden sm:block text-sm text-[#a1a1aa] w-[120px] text-center flex-shrink-0">
                     {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
                   </span>
                   <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-gray-500 ml-2 flex-shrink-0" />
@@ -114,13 +114,13 @@ export default function NoticePage() {
                       <Badge className={categoryColors[notice.category] || "bg-gray-100 text-gray-700"}>
                         {notice.category}
                       </Badge>
-                      <span className="font-medium text-gray-900 truncate">{notice.title}</span>
+                      <span className="font-medium text-[#1d1d1f] truncate">{notice.title}</span>
                     </div>
-                    <span className="text-xs text-gray-400 mt-1 block sm:hidden">
+                    <span className="text-xs text-[#a1a1aa] mt-1 block sm:hidden">
                       {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
                     </span>
                   </div>
-                  <span className="hidden sm:block text-sm text-gray-400 w-[120px] text-center flex-shrink-0">
+                  <span className="hidden sm:block text-sm text-[#a1a1aa] w-[120px] text-center flex-shrink-0">
                     {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
                   </span>
                   <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-gray-500 ml-2 flex-shrink-0" />

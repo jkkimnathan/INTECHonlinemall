@@ -25,23 +25,23 @@ export default function EventPage() {
   const bannerSubtitle = banner?.subtitle || "다양한 혜택과 이벤트를 확인하세요";
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-[#fbfbfd] min-h-screen">
       {banner?.imageUrl ? (
         <div className="relative h-[200px] md:h-[300px] overflow-hidden">
           <Image src={banner.imageUrl} alt={bannerTitle} fill className="object-cover" sizes="100vw" priority />
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-4">
-              <h1 className="text-3xl font-bold text-white">{bannerTitle}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.025em]">{bannerTitle}</h1>
               <p className="text-white/80 mt-2">{bannerSubtitle}</p>
             </div>
           </div>
         </div>
       ) : (
-        <div className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">
-          <div className="container mx-auto px-4 py-10">
-            <h1 className="text-3xl font-bold">{bannerTitle}</h1>
-            <p className="text-purple-100 mt-2">{bannerSubtitle}</p>
+        <div className="bg-[#0F172A] text-white">
+          <div className="container mx-auto px-4 py-12">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.025em]">{bannerTitle}</h1>
+            <p className="text-[#94A3B8] mt-2">{bannerSubtitle}</p>
           </div>
         </div>
       )}
@@ -56,12 +56,12 @@ export default function EventPage() {
             등록된 이벤트가 없습니다.
           </div>
         ) : (
-          <div className="bg-white rounded-lg border overflow-hidden">
+          <div className="bg-white rounded-2xl border border-[#f1f1f3] overflow-hidden">
             {/* 테이블 헤더 */}
-            <div className="hidden sm:grid sm:grid-cols-[1fr_140px_120px] bg-gray-50 border-b px-5 py-3">
-              <span className="text-sm font-medium text-gray-500">제목</span>
-              <span className="text-sm font-medium text-gray-500 text-center">기간</span>
-              <span className="text-sm font-medium text-gray-500 text-center">상태</span>
+            <div className="hidden sm:grid sm:grid-cols-[1fr_140px_120px] bg-[#fbfbfd] border-b border-[#f1f1f3] px-5 py-3">
+              <span className="text-sm font-medium text-[#86868b]">제목</span>
+              <span className="text-sm font-medium text-[#86868b] text-center">기간</span>
+              <span className="text-sm font-medium text-[#86868b] text-center">상태</span>
             </div>
 
             <div className="divide-y">
@@ -76,24 +76,24 @@ export default function EventPage() {
                       <Badge
                         className={
                           event.status === "진행중"
-                            ? "bg-green-100 text-green-700"
+                            ? "bg-[#ecfdf5] text-[#047857]"
                             : event.status === "예정"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-gray-100 text-gray-500"
+                            ? "bg-[#eef4ff] text-[#1d4ed8]"
+                            : "bg-[#f5f5f7] text-[#86868b]"
                         }
                       >
                         {event.status}
                       </Badge>
-                      <span className="font-medium text-gray-900 truncate">{event.title}</span>
+                      <span className="font-medium text-[#1d1d1f] truncate">{event.title}</span>
                     </div>
                     <div className="flex items-center gap-1 mt-1 sm:hidden">
                       <CalendarDays className="h-3 w-3 text-gray-400" />
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-[#a1a1aa]">
                         {event.startDate} ~ {event.endDate}
                       </span>
                     </div>
                   </div>
-                  <span className="hidden sm:flex items-center gap-1 text-xs text-gray-400 w-[140px] justify-center flex-shrink-0">
+                  <span className="hidden sm:flex items-center gap-1 text-xs text-[#a1a1aa] w-[140px] justify-center flex-shrink-0">
                     <CalendarDays className="h-3 w-3" />
                     {event.startDate} ~ {event.endDate}
                   </span>
@@ -101,10 +101,10 @@ export default function EventPage() {
                     <Badge
                       className={
                         event.status === "진행중"
-                          ? "bg-green-100 text-green-700"
+                          ? "bg-[#ecfdf5] text-[#047857]"
                           : event.status === "예정"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-gray-100 text-gray-500"
+                          ? "bg-[#eef4ff] text-[#1d4ed8]"
+                          : "bg-[#f5f5f7] text-[#86868b]"
                       }
                     >
                       {event.status}
