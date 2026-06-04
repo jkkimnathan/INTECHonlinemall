@@ -42,3 +42,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# 보안 점검 문서 (public repo에 올리지 않음)
+SECURITY_TODO.md
