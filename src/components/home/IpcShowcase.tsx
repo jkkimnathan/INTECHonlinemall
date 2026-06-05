@@ -11,9 +11,9 @@ export default function IpcShowcase({ content }: { content?: IpcContent | null }
 
   return (
     <section className="bg-white border-b border-[#f1f1f3]">
-      <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] min-h-[480px]">
+      <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] lg:min-h-[480px]">
         {/* 좌측: 제품 비주얼 */}
-        <div className="relative bg-[#f5f5f7] overflow-hidden flex items-center justify-center py-16 px-8">
+        <div className="relative bg-[#f5f5f7] overflow-hidden flex items-center justify-center py-10 px-6 lg:py-16 lg:px-8">
           {c.imageUrl ? (
             <Image
               src={c.imageUrl}
@@ -23,23 +23,23 @@ export default function IpcShowcase({ content }: { content?: IpcContent | null }
               className="max-w-[78%] max-h-[88%] w-auto h-auto object-contain mix-blend-multiply"
             />
           ) : (
-            <div className="bg-[#1d1d1f] rounded-2xl px-10 py-8 flex items-center justify-center">
+            <div className="bg-[#1d1d1f] rounded-2xl px-8 py-6 lg:px-10 lg:py-8 flex items-center justify-center">
               <Image
                 src="/images/brands/ipc.png"
                 alt="iPC"
                 width={220}
                 height={80}
-                className="h-16 w-auto object-contain"
+                className="h-11 lg:h-16 w-auto object-contain"
               />
             </div>
           )}
-          <div className="absolute left-8 bottom-7 font-en text-[11px] font-semibold uppercase tracking-[0.1em] text-[#a1a1aa]">
+          <div className="absolute left-6 lg:left-8 bottom-5 lg:bottom-7 font-en text-[11px] font-semibold uppercase tracking-[0.1em] text-[#a1a1aa]">
             {c.caption}
           </div>
         </div>
 
         {/* 우측: 카피 + 라인업 */}
-        <div className="px-8 sm:px-14 py-14 flex flex-col gap-5 justify-center">
+        <div className="px-6 sm:px-14 py-10 lg:py-14 flex flex-col gap-5 justify-center">
           <div className="flex items-center gap-3.5">
             <span className="text-xl font-bold text-[#1d1d1f] tracking-[-0.02em]">iPC</span>
             <span className="w-px h-[18px] bg-[#e5e5ea]" />
@@ -54,7 +54,7 @@ export default function IpcShowcase({ content }: { content?: IpcContent | null }
             {c.description}
           </p>
 
-          <div className="flex flex-col gap-2 mt-3">
+          <div className="flex flex-col gap-3 mt-3">
             {c.tiers.map((t) => (
               <Link
                 key={t.tier + t.title}
