@@ -42,7 +42,7 @@ export default function Features() {
                 <h3 className="text-[13.5px] font-bold text-[#1d1d1f] tracking-[-0.01em]">
                   {feature.title}
                 </h3>
-                <p className="text-[11.5px] text-[#86868b] mt-0.5 leading-[1.45]">
+                <p className="text-[11.5px] text-[#86868b] mt-0.5 leading-[1.45] break-keep">
                   {feature.description}
                 </p>
               </div>
