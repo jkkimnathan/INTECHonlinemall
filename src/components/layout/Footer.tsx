@@ -34,10 +34,10 @@ export default function Footer() {
       </div>
 
       {/* 메인 푸터 - 3컬럼 */}
-      <div className="container mx-auto px-4 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+      <div className="container mx-auto px-4 py-8 md:py-10">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8 md:gap-12">
           {/* 좌측: 회사 정보 */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h3 className="text-white font-bold text-sm mb-4">회사정보</h3>
             <div className="space-y-2.5 text-xs leading-relaxed text-[#cbd5e1]">
               <p>
