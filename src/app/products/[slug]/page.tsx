@@ -25,7 +25,7 @@ import {
 import ProductCard from "@/components/product/ProductCard";
 import ProductReviews from "@/components/product/ProductReviews";
 import { Product } from "@/types/product";
-import { getProductJsonLd, getBreadcrumbJsonLd } from "@/lib/jsonld";
+import { getProductJsonLd, getBreadcrumbJsonLd, jsonLdString } from "@/lib/jsonld";
 import { useRecentlyViewedStore } from "@/store/recentlyViewed";
 
 function DetailImageSection({ images, productName }: { images: string[]; productName: string }) {
@@ -131,13 +131,13 @@ export default function ProductDetailPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(getProductJsonLd(product)),
+          __html: jsonLdString(getProductJsonLd(product)),
         }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbJsonLd),
+          __html: jsonLdString(breadcrumbJsonLd),
         }}
       />
       {/* 브레드크럼 */}

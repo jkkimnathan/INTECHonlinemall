@@ -7,7 +7,7 @@ import MainImageBannerSection from "@/components/home/MainImageBannerSection";
 import { getHomePageData } from "@/lib/supabase/home-data.server";
 import { getHomeSectionServer } from "@/lib/supabase/home-sections.server";
 import { IpcContent, RefurbContent } from "@/lib/home-sections-defaults";
-import { getWebSiteJsonLd } from "@/lib/jsonld";
+import { getWebSiteJsonLd, jsonLdString } from "@/lib/jsonld";
 
 // 스크롤해야 보이는 컴포넌트는 lazy load (초기 번들 축소)
 const TimeDeal = dynamic(() => import("@/components/home/TimeDeal"), {
@@ -40,7 +40,7 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(getWebSiteJsonLd()),
+          __html: jsonLdString(getWebSiteJsonLd()),
         }}
       />
       <NoticeTicker notices={data.notices} events={data.events} />

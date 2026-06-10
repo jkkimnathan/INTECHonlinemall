@@ -3,7 +3,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { siteConfig } from "@/config/site";
-import { getOrganizationJsonLd } from "@/lib/jsonld";
+import { getOrganizationJsonLd, jsonLdString } from "@/lib/jsonld";
 import FloatingActions from "@/components/floating/FloatingActions";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { ToastProvider } from "@/components/ui/toast";
@@ -70,7 +70,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(getOrganizationJsonLd()),
+            __html: jsonLdString(getOrganizationJsonLd()),
           }}
         />
         <AuthProvider>

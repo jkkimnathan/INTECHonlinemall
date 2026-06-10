@@ -97,7 +97,16 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/mypage", request.url));
     }
   } catch {
-    // Supabase 연결 실패 시 그냥 통과
+    // Supabase 연결 실패 시: 보호 경로는 fail-closed (인증 확인 불가 = 차단)
+    if (pathname.startsWith("/admin")) {
+      return new NextResponse("Service temporarily unavailable", { status: 503 });
+    }
+    if (pathname.startsWith("/mypage") || pathname.startsWith("/checkout")) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    // 공개 경로만 통과
     return response;
   }
 

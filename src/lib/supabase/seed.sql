@@ -102,7 +102,9 @@ DROP POLICY IF EXISTS "home_sections read" ON public.home_sections;
 CREATE POLICY "home_sections read" ON public.home_sections
   FOR SELECT USING (true);
 
--- 쓰기 허용 (admin 화면에서 저장 — 다른 운영 테이블과 동일 정책)
+-- 쓰기는 관리자만 (JWT app_metadata.is_admin 검사 — security_migration.sql 참고)
 DROP POLICY IF EXISTS "home_sections write" ON public.home_sections;
 CREATE POLICY "home_sections write" ON public.home_sections
-  FOR ALL USING (true) WITH CHECK (true);
+  FOR ALL
+  USING (coalesce((auth.jwt()->'app_metadata'->>'is_admin')::boolean, false))
+  WITH CHECK (coalesce((auth.jwt()->'app_metadata'->>'is_admin')::boolean, false));

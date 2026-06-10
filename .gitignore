@@ -45,3 +45,4 @@ next-env.d.ts
 
 # 보안 점검 문서 (public repo에 올리지 않음)
 SECURITY_TODO.md
+SECURITY_REVIEW.md

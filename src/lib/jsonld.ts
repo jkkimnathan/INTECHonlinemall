@@ -1,6 +1,14 @@
 import { siteConfig } from "@/config/site";
 import { Product } from "@/types/product";
 
+/**
+ * JSON-LD 직렬화 — `<`를 유니코드 이스케이프해 `</script>` 주입(XSS)을 차단.
+ * dangerouslySetInnerHTML에는 반드시 이 함수를 사용할 것.
+ */
+export function jsonLdString(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 /** 조직 정보 - 모든 페이지에 삽입 */
 export function getOrganizationJsonLd() {
   return {

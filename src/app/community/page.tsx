@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/store/auth";
-import { getQnaList, createQna, QnaItem } from "@/lib/supabase/qna";
+import { getQnaList, createQna, unlockQna, QnaItem } from "@/lib/supabase/qna";
 import { getPageBanner, PageBanner } from "@/lib/supabase/page-banners";
 import { showToast } from "@/components/ui/toast";
 import Image from "next/image";
@@ -90,7 +90,6 @@ export default function CommunityPage() {
 
     setSubmitting(true);
     const result = await createQna({
-      userId: user.id,
       authorName: user.name.charAt(0) + "**",
       category: formCategory,
       title: formTitle,
@@ -109,16 +108,23 @@ export default function CommunityPage() {
     }
   };
 
-  // 비밀글 열기 시도
-  const handleOpenSecret = (item: QnaItem) => {
-    // 작성자 본인이면 바로 열기
-    if (user && item.userId === user.id) {
+  // 비밀글 열기 시도 — 서버에서 비밀번호를 검증하고 성공 시에만 본문을 받음
+  const handleOpenSecret = async (item: QnaItem) => {
+    // 작성자 본인이면 바로 열기 (본문은 이미 서버가 내려줌)
+    if (item.isMine) {
       setUnlockedIds((prev) => new Set(prev).add(item.id));
       setOpenId(item.id);
       return;
     }
-    // 비밀번호 확인
-    if (passwordInput === item.password) {
+    const result = await unlockQna(item.id, passwordInput);
+    if (result) {
+      setItems((prev) =>
+        prev.map((q) =>
+          q.id === item.id
+            ? { ...q, content: result.content, answerContent: result.answerContent }
+            : q
+        )
+      );
       setUnlockedIds((prev) => new Set(prev).add(item.id));
       setOpenId(item.id);
       setPasswordInput("");
@@ -128,7 +134,7 @@ export default function CommunityPage() {
   };
 
   const canViewSecret = (item: QnaItem) => {
-    return !item.isSecret || unlockedIds.has(item.id) || (user && item.userId === user.id);
+    return !item.isSecret || unlockedIds.has(item.id) || item.isMine;
   };
 
   const bannerTitle = banner?.title || "커뮤니티";
