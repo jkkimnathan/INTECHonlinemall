@@ -77,6 +77,7 @@ export default function AdminMainImageBannersPage() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = ""; // 같은 파일 재선택 가능하도록 초기화
     if (!file) return;
     setForm((prev) => ({
       ...prev,

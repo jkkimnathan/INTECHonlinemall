@@ -159,7 +159,7 @@ export default function HomeSectionsAdmin() {
               </div>
             )}
             <label className="cursor-pointer">
-              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); }} />
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); e.target.value = ""; }} />
               <span className="inline-flex items-center gap-1 text-sm text-[#1A56DB]">
                 {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                 이미지 업로드

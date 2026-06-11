@@ -340,7 +340,7 @@ export default function NewProductPage() {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => handleUpload(e.target.files, "thumbnail")}
+                  onChange={(e) => { handleUpload(e.target.files, "thumbnail"); e.target.value = ""; }}
                   disabled={uploading !== null}
                 />
                 {uploading === "thumbnail" ? (

@@ -213,6 +213,7 @@ export default function PageBannersAdmin() {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) handleUpload(key, file);
+                        e.target.value = ""; // 같은 파일 재선택 가능하도록 초기화
                       }}
                     />
                     <span className="inline-flex items-center gap-1 text-sm text-[#1A56DB] hover:text-[#1A56DB]">
@@ -241,10 +242,10 @@ export default function PageBannersAdmin() {
                       className="object-cover"
                       sizes="800px"
                     />
-                    <div className="absolute inset-0 bg-black/40 flex items-center">
+                    <div className="absolute inset-0 flex items-center">
                       <div className="px-6">
-                        <h3 className="text-white font-bold text-lg">{form.title}</h3>
-                        <p className="text-white/80 text-sm">{form.subtitle}</p>
+                        <h3 className="text-white font-bold text-lg [text-shadow:0_2px_10px_rgba(0,0,0,0.7)]">{form.title}</h3>
+                        <p className="text-white/90 text-sm [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">{form.subtitle}</p>
                       </div>
                     </div>
                   </div>

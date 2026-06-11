@@ -31,16 +31,15 @@ export default function PageBannerHeader({
           sizes="100vw"
           priority
         />
-        <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 flex items-center">
           <div className="container mx-auto px-4">
             {eyebrow && (
-              <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-white/70 mb-3">
+              <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-white/80 mb-3 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
                 {eyebrow}
               </div>
             )}
-            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.025em]">{title}</h1>
-            <p className="text-white/80 mt-2">{subtitle}</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.025em] [text-shadow:0_2px_12px_rgba(0,0,0,0.7)]">{title}</h1>
+            <p className="text-white/90 mt-2 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">{subtitle}</p>
           </div>
         </div>
       </div>

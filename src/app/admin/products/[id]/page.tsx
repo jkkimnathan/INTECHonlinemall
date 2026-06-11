@@ -239,7 +239,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               </div>
             ) : (
               <label className="flex flex-col items-center justify-center w-48 h-48 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50">
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(e.target.files, "thumbnail")} disabled={uploading !== null} />
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => { handleUpload(e.target.files, "thumbnail"); e.target.value = ""; }} disabled={uploading !== null} />
                 {uploading === "thumbnail" ? <Loader2 className="h-8 w-8 text-blue-500 animate-spin" /> : <><Upload className="h-8 w-8 text-gray-300 mb-2" /><span className="text-xs text-gray-500">클릭하여 업로드</span></>}
               </label>
             )}

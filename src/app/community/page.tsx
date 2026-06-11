@@ -145,11 +145,10 @@ export default function CommunityPage() {
       {banner?.imageUrl ? (
         <div className="relative h-[200px] md:h-[300px] overflow-hidden">
           <Image src={banner.imageUrl} alt={bannerTitle} fill className="object-cover" sizes="100vw" priority />
-          <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-4">
-              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.025em]">{bannerTitle}</h1>
-              <p className="text-white/80 mt-2">{bannerSubtitle}</p>
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.025em] [text-shadow:0_2px_12px_rgba(0,0,0,0.7)]">{bannerTitle}</h1>
+              <p className="text-white/90 mt-2 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">{bannerSubtitle}</p>
             </div>
           </div>
         </div>
