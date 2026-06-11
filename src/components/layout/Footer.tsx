@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
+import { siteConfig, visibleBrands } from "@/config/site";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 
 const quickLinks = [
@@ -20,7 +20,7 @@ export default function Footer() {
       <div className="border-b border-[#1E293B]">
         <div className="container mx-auto px-4 py-5">
           <div className="flex items-center justify-center gap-8 flex-wrap">
-            {siteConfig.brands.map((brand) => (
+            {visibleBrands.map((brand) => (
               <Link
                 key={brand.slug}
                 href={`/brand/${brand.slug}`}

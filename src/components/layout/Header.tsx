@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { siteConfig } from "@/config/site";
+import { siteConfig, isHiddenBrand } from "@/config/site";
 import { BRAND_SUBCATEGORIES, SubcategoryNode } from "@/config/brand-subcategories";
 import { useCartStore } from "@/store/cart";
 import { useAuthStore } from "@/store/auth";
@@ -146,8 +146,10 @@ export default function Header() {
   };
 
   // 브랜드 메뉴와 일반 메뉴 분리
-  const brandNavItems = siteConfig.mainNav.filter((item) =>
-    item.href.startsWith("/brand/")
+  const brandNavItems = siteConfig.mainNav.filter(
+    (item) =>
+      item.href.startsWith("/brand/") &&
+      !isHiddenBrand(item.href.replace("/brand/", ""))
   );
   const otherNavItems = siteConfig.mainNav.filter(
     (item) => !item.href.startsWith("/brand/")

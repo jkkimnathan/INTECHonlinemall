@@ -37,7 +37,7 @@ export default function OgImage() {
             marginBottom: 40,
           }}
         >
-          INTEL · ASUS · MANLI · ASRock · TOSHIBA · Microsoft · iPC
+          INTEL · ASUS · MANLI · ASRock · Microsoft · iPC
         </div>
         <div
           style={{

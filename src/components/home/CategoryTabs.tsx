@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getProducts } from "@/lib/supabase/products";
 import ProductCard from "@/components/product/ProductCard";
 import { Product, ProductCategory } from "@/types/product";
+import { isHiddenBrand } from "@/config/site";
 
 const categories: { label: string; value: ProductCategory | "전체" }[] = [
   { label: "전체", value: "전체" },
@@ -25,7 +26,7 @@ export default function CategoryTabs() {
     const opts =
       active === "전체" ? {} : { category: active as ProductCategory };
     getProducts(opts).then((data) => {
-      setProducts(data.slice(0, 8));
+      setProducts(data.filter((p) => !isHiddenBrand(p.brand)).slice(0, 8));
       setLoading(false);
     });
   }, [active]);

@@ -9,7 +9,7 @@ export const siteConfig = {
   // ─── 기본 정보 ───
   name: "인텍앤컴퍼니몰",
   nameEn: "INTECH & Company Mall",
-  description: "INTEL, ASUS, MANLI, ASRock, TOSHIBA, Microsoft, iPC 공식 수입사 직영몰",
+  description: "INTEL, ASUS, MANLI, ASRock, Microsoft, iPC 공식 수입사 직영몰",
   url: "https://intechonline.kr",
   domain: "intechonline.kr",
 
@@ -87,3 +87,20 @@ export const siteConfig = {
 } as const;
 
 export type SiteConfig = typeof siteConfig;
+
+// ─── 숨김 브랜드 (코드는 보존, 화면 노출만 차단) ───
+// slug 소문자 기준. 다시 노출하려면 이 배열에서 제거하면 됩니다.
+export const HIDDEN_BRAND_SLUGS: string[] = ["toshiba"];
+
+/** 브랜드명 또는 slug가 숨김 대상인지 (대소문자 무시). 상품 brand 값에도 사용 */
+export function isHiddenBrand(brand: string): boolean {
+  return HIDDEN_BRAND_SLUGS.includes(brand.toLowerCase());
+}
+
+/** 화면 노출용 브랜드 목록 (숨김 제외) */
+export const visibleBrands = siteConfig.brands.filter((b) => !isHiddenBrand(b.slug));
+
+/** 화면 노출용 브랜드 네비 항목 (숨김 제외) */
+export const visibleBrandNav = siteConfig.mainNav.filter(
+  (item) => !HIDDEN_BRAND_SLUGS.some((s) => item.href === `/brand/${s}`)
+);

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Product } from "@/types/product";
 import { toProduct } from "./product-utils";
+import { isHiddenBrand } from "@/config/site";
 
 /** 상품 목록 조회 (Server Component용) */
 export async function getProducts(options?: {
@@ -57,7 +58,8 @@ export async function getProducts(options?: {
     console.error("getProducts error:", error);
     return [];
   }
-  return (data || []).map(toProduct);
+  // 숨김 브랜드(예: 도시바) 상품은 공개 목록에서 제외
+  return (data || []).map(toProduct).filter((p) => !isHiddenBrand(p.brand));
 }
 
 /** 단일 상품 조회 (slug) */

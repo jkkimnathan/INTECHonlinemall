@@ -50,7 +50,7 @@ export default function HeroBannerSlider({ banners: initialBanners = [] }: Props
                 <span className="text-blue-300">최고의 가격으로</span>
               </h1>
               <p className="mt-4 text-gray-300 text-sm md:text-base leading-relaxed max-w-lg">
-                INTEL, ASUS, MANLI, ASRock, TOSHIBA, Microsoft, iPC 정품을 공식 수입사에서 직접 만나보세요.
+                INTEL, ASUS, MANLI, ASRock, Microsoft, iPC 정품을 공식 수입사에서 직접 만나보세요.
               </p>
             </div>
           </div>

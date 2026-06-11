@@ -1,9 +1,10 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import ProductGrid from "@/components/product/ProductGrid";
 import { getProducts } from "@/lib/supabase/products.server";
 import { getPageBannerServer } from "@/lib/supabase/page-banners.server";
-import { siteConfig } from "@/config/site";
+import { siteConfig, isHiddenBrand, visibleBrands } from "@/config/site";
 
 interface BrandPageProps {
   params: Promise<{ slug: string }>;
@@ -21,12 +22,14 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
 }
 
 export function generateStaticParams() {
-  return siteConfig.brands.map((brand) => ({ slug: brand.slug }));
+  return visibleBrands.map((brand) => ({ slug: brand.slug }));
 }
 
 export default async function BrandPage({ params, searchParams }: BrandPageProps) {
   const { slug } = await params;
   const { sub } = await searchParams;
+  // 숨김 브랜드(예: 도시바)는 직접 접근 시에도 노출하지 않음
+  if (isHiddenBrand(slug)) notFound();
   const brand = siteConfig.brands.find((b) => b.slug === slug);
   const brandName = brand?.name || slug.toUpperCase();
   const [allProducts, banner] = await Promise.all([

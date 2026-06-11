@@ -8,6 +8,7 @@ import { MainImageBanner, BannerPosition } from "./main-image-banners";
 import { TimeDeal, TimeDealItem } from "./timedeals";
 import { toProduct } from "./product-utils";
 import { Product } from "@/types/product";
+import { isHiddenBrand } from "@/config/site";
 
 // 공지/이벤트 - 티커에서 필요한 최소 필드만
 interface TickerNotice { id: string; title: string; }
@@ -111,7 +112,7 @@ export async function getHomePageData(): Promise<HomePageData> {
         .from("products")
         .select("id, name, slug, brand, category, price, sale_price, images, stock, is_featured")
         .in("id", productIds);
-      timeDealProducts = (prodsResult.data || []).map(toProduct);
+      timeDealProducts = (prodsResult.data || []).map(toProduct).filter((p) => !isHiddenBrand(p.brand));
     }
   }
 

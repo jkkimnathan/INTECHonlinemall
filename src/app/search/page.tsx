@@ -5,6 +5,7 @@ import { Suspense, useState, useEffect } from "react";
 import ProductGrid from "@/components/product/ProductGrid";
 import { getProducts } from "@/lib/supabase/products";
 import { Product } from "@/types/product";
+import { isHiddenBrand } from "@/config/site";
 
 function SearchResults() {
   const searchParams = useSearchParams();
@@ -16,7 +17,7 @@ function SearchResults() {
     setLoading(true);
     const opts = query ? { search: query } : {};
     getProducts(opts).then((data) => {
-      setProducts(data);
+      setProducts(data.filter((p) => !isHiddenBrand(p.brand)));
       setLoading(false);
     });
   }, [query]);

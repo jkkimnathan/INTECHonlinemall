@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { siteConfig } from "@/config/site";
+import { visibleBrands } from "@/config/site";
 
 export default function BrandShowcase() {
-  const brands = siteConfig.brands;
+  const brands = visibleBrands;
 
   return (
     <section className="py-16 lg:py-20 bg-white">

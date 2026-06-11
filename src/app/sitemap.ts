@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { siteConfig } from "@/config/site";
+import { siteConfig, visibleBrands } from "@/config/site";
 import { getProducts } from "@/lib/supabase/products.server";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -17,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/signup`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
   ];
 
-  const brandPages: MetadataRoute.Sitemap = siteConfig.brands.map((brand) => ({
+  const brandPages: MetadataRoute.Sitemap = visibleBrands.map((brand) => ({
     url: `${baseUrl}/brand/${brand.slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
