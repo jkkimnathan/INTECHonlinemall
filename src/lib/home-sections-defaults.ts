@@ -41,7 +41,7 @@ export interface RefurbContent {
 
 export const DEFAULT_IPC: IpcContent = {
   eyebrow: "Built by INTECH · Since 1981",
-  caption: "iPC Gaming · G500 series",
+  caption: "",
   imageUrl: null,
   headline: "공식 수입사가\n제작한 검증된 PC.",
   description:

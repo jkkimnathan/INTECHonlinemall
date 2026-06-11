@@ -33,9 +33,6 @@ export default function IpcShowcase({ content }: { content?: IpcContent | null }
               />
             </div>
           )}
-          <div className="absolute left-6 lg:left-8 bottom-5 lg:bottom-7 font-en text-[11px] font-semibold uppercase tracking-[0.1em] text-[#a1a1aa]">
-            {c.caption}
-          </div>
         </div>
 
         {/* 우측: 카피 + 라인업 */}

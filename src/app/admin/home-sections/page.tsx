@@ -138,10 +138,6 @@ export default function HomeSectionsAdmin() {
                 <Input value={ipc.ctaHref} onChange={(e) => setIpc({ ...ipc, ctaHref: e.target.value })} />
               </div>
             </div>
-            <div>
-              <label className={labelCls}>좌측 하단 캡션</label>
-              <Input value={ipc.caption} onChange={(e) => setIpc({ ...ipc, caption: e.target.value })} />
-            </div>
           </div>
 
           <div>
