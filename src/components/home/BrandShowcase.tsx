@@ -7,6 +7,16 @@ import { visibleBrands } from "@/config/site";
 export default function BrandShowcase() {
   const brands = visibleBrands;
 
+  // 브랜드 개수에 맞춰 데스크탑 칸 수를 맞춤 (도시바 숨김 등으로 개수가 바뀌어도 빈칸 없이 균형)
+  const lgColsClass =
+    ({
+      4: "lg:grid-cols-4",
+      5: "lg:grid-cols-5",
+      6: "lg:grid-cols-6",
+      7: "lg:grid-cols-7",
+      8: "lg:grid-cols-8",
+    } as Record<number, string>)[brands.length] ?? "lg:grid-cols-7";
+
   return (
     <section className="py-16 lg:py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -20,7 +30,7 @@ export default function BrandShowcase() {
         </div>
 
         {/* 브랜드 로고 스트립 — 원본 컬러, 호버 페이드만 (그라데이션·invert 금지) */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 border-y border-[#f1f1f3]">
+        <div className={`grid grid-cols-3 sm:grid-cols-3 ${lgColsClass} border-y border-[#f1f1f3]`}>
           {brands.map((brand, i) => {
             const isIpc = brand.slug === "ipc";
             return (
