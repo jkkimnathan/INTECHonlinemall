@@ -9,6 +9,9 @@ import { getHomeSectionServer } from "@/lib/supabase/home-sections.server";
 import { IpcContent, RefurbContent } from "@/lib/home-sections-defaults";
 import { getWebSiteJsonLd, jsonLdString } from "@/lib/jsonld";
 
+// 홈 ISR 캐싱 (120초마다 갱신) — 응답 속도 개선
+export const revalidate = 120;
+
 // 스크롤해야 보이는 컴포넌트는 lazy load (초기 번들 축소)
 const TimeDeal = dynamic(() => import("@/components/home/TimeDeal"), {
   loading: () => <div className="py-12" />,

@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   description: `${siteConfig.name} 전체 상품 목록`,
 };
 
+// 공개 페이지 ISR 캐싱 (120초마다 갱신) — 응답 속도 개선
+export const revalidate = 120;
+
 export default async function ProductsPage() {
   const products = await getProducts();
 

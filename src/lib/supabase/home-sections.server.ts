@@ -1,9 +1,9 @@
-import { createClient } from "./server";
+import { createPublicClient } from "./server-public";
 
 /** 서버 컴포넌트에서 홈 섹션 콘텐츠(JSON) 조회. 없으면 null → 컴포넌트 기본값 사용 */
 export async function getHomeSectionServer<T>(key: string): Promise<T | null> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("home_sections")
       .select("content")

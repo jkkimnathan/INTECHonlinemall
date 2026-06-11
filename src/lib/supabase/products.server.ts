@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server-public";
 import { Product } from "@/types/product";
 import { toProduct } from "./product-utils";
 import { isHiddenBrand } from "@/config/site";
@@ -13,7 +13,7 @@ export async function getProducts(options?: {
   search?: string;
   sortBy?: "price-asc" | "price-desc" | "newest" | "name";
 }): Promise<Product[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   let query = supabase.from("products").select("*");
 
   if (options?.brand) {
@@ -64,7 +64,7 @@ export async function getProducts(options?: {
 
 /** 단일 상품 조회 (slug) */
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -77,7 +77,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 /** 카테고리 목록 */
 export async function getCategories(): Promise<string[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase.from("products").select("category");
 
   if (error || !data) return [];

@@ -2,7 +2,7 @@
  * 홈페이지 데이터를 서버에서 병렬로 프리페칭
  * 클라이언트 워터폴을 제거하여 로딩 속도 개선
  */
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server-public";
 import { Banner } from "./banners";
 import { MainImageBanner, BannerPosition } from "./main-image-banners";
 import { TimeDeal, TimeDealItem } from "./timedeals";
@@ -24,7 +24,7 @@ interface HomePageData {
 }
 
 export async function getHomePageData(): Promise<HomePageData> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   // 모든 데이터를 병렬로 가져오기
   const [
