@@ -44,19 +44,13 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
         <div className="container mx-auto px-4 py-12">
           <div className="flex items-center gap-5">
             {brand?.logo && (
-              <div
-                className={`w-20 h-20 rounded-2xl flex items-center justify-center p-4 flex-shrink-0 border ${
-                  slug === "ipc"
-                    ? "bg-[#1d1d1f] border-transparent"
-                    : "bg-white border-[#f1f1f3]"
-                }`}
-              >
+              <div className="w-20 h-20 rounded-2xl flex items-center justify-center p-4 flex-shrink-0 border bg-white border-[#f1f1f3]">
                 <Image
                   src={brand.logo}
                   alt={brandName}
                   width={64}
                   height={64}
-                  className="object-contain max-h-12 w-auto"
+                  className={`object-contain max-h-12 w-auto ${slug === "ipc" ? "brightness-0" : ""}`}
                 />
               </div>
             )}

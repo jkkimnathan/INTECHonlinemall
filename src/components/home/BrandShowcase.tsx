@@ -32,25 +32,13 @@ export default function BrandShowcase() {
                   i < brands.length - 1 ? "lg:border-r border-[#f1f1f3]" : ""
                 }`}
               >
-                {isIpc ? (
-                  <span className="inline-flex items-center bg-[#1d1d1f] rounded-md px-3.5 py-[7px]">
-                    <Image
-                      src={brand.logo}
-                      alt={brand.name}
-                      width={88}
-                      height={22}
-                      className="h-[22px] w-auto object-contain"
-                    />
-                  </span>
-                ) : (
-                  <Image
-                    src={brand.logo}
-                    alt={brand.name}
-                    width={120}
-                    height={36}
-                    className="max-h-9 w-auto object-contain opacity-100 group-hover:opacity-70 transition-opacity duration-200"
-                  />
-                )}
+                <Image
+                  src={brand.logo}
+                  alt={brand.name}
+                  width={120}
+                  height={36}
+                  className={`max-h-9 w-auto object-contain opacity-100 group-hover:opacity-70 transition-opacity duration-200 ${isIpc ? "brightness-0" : ""}`}
+                />
               </Link>
             );
           })}

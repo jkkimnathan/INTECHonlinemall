@@ -30,34 +30,13 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* 상품 이미지 */}
       <div className="relative aspect-square bg-[#f5f5f7] flex items-center justify-center overflow-hidden">
         {product.images[0] ? (
-          <Image src={product.images[0]} alt={product.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
+          <Image src={product.images[0]} alt={product.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-contain p-5 group-hover:scale-105 transition-transform duration-300" />
         ) : (
           <div className="text-center p-4">
             <p className="font-en text-[10px] font-semibold uppercase tracking-[0.1em] text-[#86868b]">{product.brand}</p>
             <p className="text-[#3f3f46] text-sm mt-1 line-clamp-2">{product.name}</p>
           </div>
         )}
-
-        {/* 배지 */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1">
-          {product.condition === "refurbished" && (
-            <Badge className="rounded-full bg-[#fff7ed] text-[#c2410c] text-[11px] font-semibold border-transparent">리퍼</Badge>
-          )}
-          {product.isNew && (
-            <Badge className="rounded-full bg-[#eef4ff] text-[#1d4ed8] text-[11px] font-semibold border-transparent">NEW</Badge>
-          )}
-          {product.isSale && product.salePrice && (
-            <Badge className="rounded-full bg-[#DC2626] text-white text-[11px] font-semibold border-transparent">
-              {getDiscountRate(product.price, product.salePrice)}%
-            </Badge>
-          )}
-          {isFreeShipping && (
-            <Badge className="rounded-full bg-[#ecfdf5] text-[#047857] text-[11px] font-semibold border-transparent">
-              <Truck className="h-3 w-3 mr-0.5" />
-              무료배송
-            </Badge>
-          )}
-        </div>
 
         {product.stock <= 3 && product.stock > 0 && (
           <div className="absolute bottom-3 right-3">
@@ -98,7 +77,31 @@ export default function ProductCard({ product }: { product: Product }) {
         <h3 className="text-[13.5px] font-semibold text-[#1d1d1f] mt-1.5 line-clamp-2 leading-[1.4] tracking-[-0.01em] min-h-[38px]">
           {product.name}
         </h3>
-        <p className="text-[11px] text-[#86868b] mt-1">{product.category}</p>
+
+        {/* 배지 — 모델명 아래 (이미지를 가리지 않도록) */}
+        {(product.condition === "refurbished" || product.isNew || (product.isSale && product.salePrice) || isFreeShipping) && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {product.condition === "refurbished" && (
+              <Badge className="rounded-full bg-[#fff7ed] text-[#c2410c] text-[11px] font-semibold border-transparent">리퍼</Badge>
+            )}
+            {product.isNew && (
+              <Badge className="rounded-full bg-[#eef4ff] text-[#1d4ed8] text-[11px] font-semibold border-transparent">NEW</Badge>
+            )}
+            {product.isSale && product.salePrice && (
+              <Badge className="rounded-full bg-[#DC2626] text-white text-[11px] font-semibold border-transparent">
+                {getDiscountRate(product.price, product.salePrice)}%
+              </Badge>
+            )}
+            {isFreeShipping && (
+              <Badge className="rounded-full bg-[#ecfdf5] text-[#047857] text-[11px] font-semibold border-transparent">
+                <Truck className="h-3 w-3 mr-0.5" />
+                무료배송
+              </Badge>
+            )}
+          </div>
+        )}
+
+        <p className="text-[11px] text-[#86868b] mt-1.5">{product.category}</p>
 
         <div className="mt-3">
           {product.salePrice ? (
