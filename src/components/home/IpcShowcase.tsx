@@ -12,27 +12,15 @@ export default function IpcShowcase({ content }: { content?: IpcContent | null }
   return (
     <section className="bg-white border-b border-[#f1f1f3]">
       <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] lg:min-h-[480px]">
-        {/* 좌측: 제품 비주얼 */}
-        <div className="relative bg-[#f5f5f7] overflow-hidden flex items-center justify-center py-10 px-6 lg:py-16 lg:px-8">
-          {c.imageUrl ? (
-            <Image
-              src={c.imageUrl}
-              alt="iPC"
-              width={720}
-              height={480}
-              className="max-w-[78%] max-h-[88%] w-auto h-auto object-contain mix-blend-multiply"
-            />
-          ) : (
-            <div className="bg-[#1d1d1f] rounded-2xl px-8 py-6 lg:px-10 lg:py-8 flex items-center justify-center">
-              <Image
-                src="/images/brands/ipc.png"
-                alt="iPC"
-                width={220}
-                height={80}
-                className="h-11 lg:h-16 w-auto object-contain"
-              />
-            </div>
-          )}
+        {/* 좌측: iPC 로고 (검은색, 배경 없음) */}
+        <div className="relative overflow-hidden flex items-center justify-center py-10 px-6 lg:py-16 lg:px-8">
+          <Image
+            src="/images/brands/ipc.png"
+            alt="iPC"
+            width={220}
+            height={80}
+            className="h-16 lg:h-28 w-auto object-contain brightness-0"
+          />
         </div>
 
         {/* 우측: 카피 + 라인업 */}

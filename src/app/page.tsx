@@ -44,15 +44,23 @@ export default async function Home() {
         }}
       />
       <NoticeTicker notices={data.notices} events={data.events} />
+      {/* 1. 히어로 배너 */}
       <HeroBannerSlider banners={data.banners} />
       <Features />
-      <IpcShowcase content={ipcContent} />
+      {/* 2. 메인 이미지 배너 */}
       <MainImageBannerSection banners={data.mainImageBanners} />
+      {/* 3. iPC 섹션 */}
+      <IpcShowcase content={ipcContent} />
+      {/* 4. 타임딜 */}
       <TimeDeal deals={data.timeDeals} products={data.timeDealProducts} />
-      <RefurbShowcase content={refurbContent} />
-      <CategoryTabs />
-      <BrandShowcase />
+      {/* 5. 추천 상품 */}
       <FeaturedProducts />
+      {/* 6. 카테고리별 인기 상품 */}
+      <CategoryTabs />
+      {/* 7. 리퍼몰 */}
+      <RefurbShowcase content={refurbContent} />
+      {/* 8. 공식 취급 브랜드 */}
+      <BrandShowcase />
     </>
   );
 }
