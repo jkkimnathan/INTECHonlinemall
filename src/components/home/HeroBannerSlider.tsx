@@ -104,7 +104,7 @@ export default function HeroBannerSlider({ banners: initialBanners = [] }: Props
               <img
                 src={banner.imageUrl}
                 alt={banner.title}
-                className="w-full h-[300px] md:h-[400px] object-cover"
+                className="w-full h-[230px] sm:h-[300px] md:h-[400px] object-cover"
               />
             </picture>
           );

@@ -145,13 +145,13 @@ export default function CartPage() {
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-bold text-[#1d1d1f] tabular-nums">
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-sm font-bold text-[#1d1d1f] tabular-nums whitespace-nowrap">
                           {formatPrice(unitPrice * quantity)}
                         </span>
                         <button
                           onClick={() => removeItem(product.id)}
-                          className="text-[#a1a1aa] hover:text-[#DC2626]"
+                          className="text-[#a1a1aa] hover:text-[#DC2626] flex-shrink-0"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>

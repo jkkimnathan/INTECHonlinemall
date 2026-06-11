@@ -27,7 +27,7 @@ interface Props {
 
 export default function TimeDeal({ deals: initialDeals = [], products: initialProducts = [] }: Props) {
   const [mounted, setMounted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   const productMap = useMemo(() => {
     const map: Record<string, Product> = {};
@@ -53,7 +53,8 @@ export default function TimeDeal({ deals: initialDeals = [], products: initialPr
       const now = new Date();
       const diff = Math.max(0, earliestEnd.getTime() - now.getTime());
       setTimeLeft({
-        hours: Math.floor(diff / (1000 * 60 * 60)),
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
         minutes: Math.floor((diff / (1000 * 60)) % 60),
         seconds: Math.floor((diff / 1000) % 60),
       });
@@ -94,6 +95,14 @@ export default function TimeDeal({ deals: initialDeals = [], products: initialPr
               <Timer className="h-4 w-4 text-[#DC2626]" />
               <span className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#86868b]">Ends in</span>
               <div className="flex items-center gap-1">
+                {timeLeft.days > 0 && (
+                  <>
+                    <span className="bg-[#1d1d1f] text-white text-lg font-mono font-bold px-2 py-1 rounded tabular-nums">
+                      {timeLeft.days}일
+                    </span>
+                    <span className="text-[#1d1d1f] font-bold">:</span>
+                  </>
+                )}
                 <span className="bg-[#1d1d1f] text-white text-lg font-mono font-bold px-2 py-1 rounded tabular-nums">
                   {pad(timeLeft.hours)}
                 </span>

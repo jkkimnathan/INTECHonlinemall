@@ -73,7 +73,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
       {/* 상품 정보 */}
       <div className="p-4">
-        <p className="font-en text-[10px] font-semibold uppercase tracking-[0.1em] text-[#86868b]">{product.brand}</p>
+        <p className="font-en text-[11px] font-semibold uppercase tracking-[0.1em] text-[#86868b]">{product.brand}</p>
         <h3 className="text-[13.5px] font-semibold text-[#1d1d1f] mt-1.5 line-clamp-2 leading-[1.4] tracking-[-0.01em] min-h-[38px]">
           {product.name}
         </h3>
@@ -101,7 +101,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         )}
 
-        <p className="text-[11px] text-[#86868b] mt-1.5">{product.category}</p>
+        <p className="text-[12px] text-[#86868b] mt-1.5">{product.category}</p>
 
         <div className="mt-3">
           {product.salePrice ? (
@@ -124,7 +124,7 @@ export default function ProductCard({ product }: { product: Product }) {
             </span>
           )}
           {/* 적립금 */}
-          <p className="text-[10.5px] text-[#86868b] mt-1.5 tabular-nums">
+          <p className="text-[11.5px] text-[#86868b] mt-1.5 tabular-nums">
             적립금 {formatPrice(points)}
           </p>
         </div>

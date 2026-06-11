@@ -59,7 +59,7 @@ export default function IpcShowcase({ content }: { content?: IpcContent | null }
                 }`}
               >
                 {t.featured && (
-                  <span className="absolute -top-2.5 right-3.5 bg-[#1d1d1f] text-white font-en text-[9px] font-bold uppercase tracking-[0.1em] px-2 py-[3px] rounded-full">
+                  <span className="absolute -top-2 left-4 bg-[#1d1d1f] text-white font-en text-[9px] font-bold uppercase tracking-[0.1em] px-2 py-[3px] rounded-full z-10">
                     Popular
                   </span>
                 )}

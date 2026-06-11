@@ -3,6 +3,7 @@
 import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { getProductBySlug, getProducts } from "@/lib/supabase/products";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,6 +71,7 @@ export default function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
+  const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -143,19 +145,19 @@ export default function ProductDetailPage({
       {/* 브레드크럼 */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center gap-1 text-sm text-[#86868b]">
-            <Link href="/" className="hover:text-[#1A56DB]">홈</Link>
-            <ChevronRight className="h-3 w-3" />
-            <Link href="/products" className="hover:text-[#1A56DB]">전체상품</Link>
-            <ChevronRight className="h-3 w-3" />
+          <nav className="flex items-center gap-1 text-sm text-[#86868b] whitespace-nowrap">
+            <Link href="/" className="hover:text-[#1A56DB] flex-shrink-0">홈</Link>
+            <ChevronRight className="h-3 w-3 hidden sm:block flex-shrink-0" />
+            <Link href="/products" className="hover:text-[#1A56DB] hidden sm:block flex-shrink-0">전체상품</Link>
+            <ChevronRight className="h-3 w-3 flex-shrink-0" />
             <Link
               href={`/brand/${product.brand.toLowerCase()}`}
-              className="hover:text-[#1A56DB]"
+              className="hover:text-[#1A56DB] flex-shrink-0"
             >
               {product.brand}
             </Link>
-            <ChevronRight className="h-3 w-3" />
-            <span className="text-[#1d1d1f] truncate max-w-[200px]">
+            <ChevronRight className="h-3 w-3 flex-shrink-0" />
+            <span className="text-[#1d1d1f] truncate max-w-[150px] sm:max-w-[200px] md:max-w-none">
               {product.name}
             </span>
           </nav>
@@ -163,7 +165,7 @@ export default function ProductDetailPage({
       </div>
 
       {/* 상품 상세 */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pb-28 md:pb-8">
         <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6 md:p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             {/* 이미지 영역 */}
@@ -268,7 +270,7 @@ export default function ProductDetailPage({
               <Separator className="my-4" />
 
               {/* 수량 선택 */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-sm font-medium text-[#3f3f46]">수량</span>
                 <div className="flex items-center border border-[#e5e7eb] rounded-full">
                   <button
@@ -398,6 +400,35 @@ export default function ProductDetailPage({
             </div>
           </div>
         )}
+      </div>
+
+      {/* 모바일 하단 고정 구매바 */}
+      <div
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#f1f1f3] px-3 pt-3 flex gap-2"
+        style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+      >
+        <Button
+          variant="outline"
+          className="flex-1 h-12 rounded-full"
+          disabled={product.stock === 0}
+          onClick={() => {
+            addToCart(product, quantity);
+            showToast(`${product.name}이(가) 장바구니에 담겼습니다.`);
+          }}
+        >
+          <ShoppingCart className="h-4 w-4 mr-1.5" />
+          장바구니
+        </Button>
+        <Button
+          className="flex-1 h-12 rounded-full bg-[#1A56DB] hover:bg-[#1747b4]"
+          disabled={product.stock === 0}
+          onClick={() => {
+            addToCart(product, quantity);
+            router.push("/checkout");
+          }}
+        >
+          {product.stock === 0 ? "품절" : "바로 구매"}
+        </Button>
       </div>
     </div>
   );

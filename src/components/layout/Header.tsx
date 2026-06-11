@@ -209,7 +209,7 @@ export default function Header() {
           {/* 모바일 메뉴 버튼 */}
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger
-              render={<Button variant="ghost" size="icon" className="lg:hidden" />}
+              render={<Button variant="ghost" size="icon" className="lg:hidden h-11 w-11" />}
             >
               <Menu className="h-5 w-5" />
             </SheetTrigger>
@@ -355,24 +355,24 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="sm:hidden"
+              className="sm:hidden h-11 w-11"
               aria-label="검색"
               onClick={() => setMobileSearchOpen((v) => !v)}
             >
               <Search className="h-5 w-5" />
             </Button>
-            <Link href="/mypage">
-              <Button variant="ghost" size="icon">
+            <Link href="/mypage" aria-label="마이페이지">
+              <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9">
                 <User className="h-5 w-5" />
               </Button>
             </Link>
-            <Link href="/wishlist">
-              <Button variant="ghost" size="icon">
+            <Link href="/wishlist" aria-label="위시리스트">
+              <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9">
                 <Heart className="h-5 w-5" />
               </Button>
             </Link>
-            <Link href="/cart" className="relative">
-              <Button variant="ghost" size="icon">
+            <Link href="/cart" className="relative" aria-label="장바구니">
+              <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9">
                 <ShoppingCart className="h-5 w-5" />
                 {cartItemCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-[#DC2626] text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center tabular-nums">
