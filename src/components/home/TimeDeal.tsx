@@ -153,7 +153,7 @@ export default function TimeDeal({ deals: initialDeals = [], products: initialPr
                           alt={product.name}
                           fill
                           sizes="(max-width: 768px) 50vw, 25vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         <div className="text-center p-4">
@@ -163,17 +163,19 @@ export default function TimeDeal({ deals: initialDeals = [], products: initialPr
                           </p>
                         </div>
                       )}
-                      {!isSoldOut && (
-                        <Badge className="absolute top-2 left-2 bg-[#DC2626] text-white text-xs rounded-full">
-                          {discount}% OFF
-                        </Badge>
-                      )}
                     </div>
 
                     <p className="font-en text-[10px] font-semibold uppercase tracking-[0.1em] text-[#86868b]">{product.brand}</p>
                     <p className="text-sm font-semibold text-[#1d1d1f] mt-1 line-clamp-2 group-hover:text-[#1A56DB] transition-colors">
                       {product.name}
                     </p>
+                    {!isSoldOut && (
+                      <div className="mt-1.5">
+                        <Badge className="bg-[#DC2626] text-white text-xs rounded-full">
+                          {discount}% OFF
+                        </Badge>
+                      </div>
+                    )}
 
                     <div className="mt-2">
                       <p className="text-xs text-gray-400 line-through">
