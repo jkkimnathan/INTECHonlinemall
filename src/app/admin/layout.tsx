@@ -29,6 +29,7 @@ const adminNav = [
   { title: "타임딜 관리", href: "/admin/timedeals", icon: Zap },
   { title: "메인 이미지 배너", href: "/admin/main-image-banners", icon: Grid3X3 },
   { title: "페이지 배너", href: "/admin/page-banners", icon: ImageIcon },
+  { title: "브랜드 배너", href: "/admin/brand-banners", icon: ImageIcon },
   { title: "Q&A 관리", href: "/admin/qna", icon: MessageSquare },
 ];
 
