@@ -269,6 +269,9 @@ export default function AdminMainImageBannersPage() {
               <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 이미지 {editingId ? "(변경 시에만 선택)" : "*"}
               </label>
+              <p className="text-xs text-[#a1a1aa] mb-1">
+                권장(위치별): 중앙 롤링 600×480px (5:4) · 좌우 큰 배너 640×480px (4:3) · 작은 배너 400×400px (정사각형) · 최대 10MB
+              </p>
               <input
                 type="file"
                 accept="image/*"

@@ -314,6 +314,7 @@ export default function NewProductPage() {
             </div>
             <p className="text-xs text-gray-400 mb-4">
               상품 목록, 검색 결과에 표시되는 메인 이미지입니다. 1장만 등록됩니다.
+              <br />권장: 800 × 800px (1:1 정사각형) · JPG/PNG/WebP · 최대 5MB
             </p>
 
             {thumbnail ? (

@@ -224,7 +224,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               <Star className="h-4 w-4 text-yellow-500" />
               <h2 className="font-bold text-gray-900">대표 이미지 (썸네일)</h2>
             </div>
-            <p className="text-xs text-gray-400 mb-4">상품 목록에 표시되는 메인 이미지</p>
+            <p className="text-xs text-gray-400 mb-4">
+              상품 목록에 표시되는 메인 이미지
+              <br />권장: 800 × 800px (1:1 정사각형) · JPG/PNG/WebP · 최대 5MB
+            </p>
             {thumbnail ? (
               <div className="relative inline-block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

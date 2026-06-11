@@ -220,6 +220,9 @@ export default function AdminNoticesPage() {
             <label className="block text-sm font-medium text-[#3f3f46] mb-1">
               이미지 (선택)
             </label>
+            <p className="text-xs text-[#a1a1aa] mb-2">
+              권장: 가로 900px 이상 · 세로 길이 자유 (본문 상세 이미지) · 최대 10MB · JPG/PNG/WebP
+            </p>
             {imageUrl ? (
               <div className="relative inline-block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -146,6 +146,7 @@ export default function HomeSectionsAdmin() {
 
           <div>
             <label className={labelCls}>좌측 제품 이미지 (없으면 iPC 로고)</label>
+            <p className="text-xs text-[#a1a1aa] mb-2">권장: 720 × 480px (3:2 비율) · JPG/PNG/WebP</p>
             {ipc.imageUrl ? (
               <div className="relative h-40 rounded-lg overflow-hidden bg-[#f5f5f7] mb-2">
                 <Image src={ipc.imageUrl} alt="iPC" fill className="object-contain" sizes="400px" />
