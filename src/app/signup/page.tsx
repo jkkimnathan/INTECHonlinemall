@@ -25,10 +25,40 @@ export default function SignupPage() {
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [confirmSent, setConfirmSent] = useState(false);
 
   if (isLoggedIn) {
     router.push("/mypage");
     return null;
+  }
+
+  if (confirmSent) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center bg-[#fbfbfd] py-12 px-4">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-[#f1f1f3] p-8 text-center">
+          <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#a1a1aa] mb-2">
+            Check your email
+          </div>
+          <h1 className="text-2xl font-bold text-[#1d1d1f] tracking-[-0.02em]">
+            인증 메일을 보냈어요
+          </h1>
+          <p className="text-[#86868b] text-sm mt-3 leading-relaxed">
+            <b className="text-[#1d1d1f]">{form.email}</b> 으로 인증 메일을 발송했습니다.
+            <br />
+            메일의 링크를 클릭해 가입을 완료한 뒤 로그인해 주세요.
+          </p>
+          <p className="text-[#a1a1aa] text-xs mt-4">
+            메일이 안 보이면 스팸함도 확인해 주세요.
+          </p>
+          <Button
+            className="w-full h-11 rounded-full bg-[#1A56DB] hover:bg-[#1747b4] text-white mt-6"
+            onClick={() => router.push("/login")}
+          >
+            로그인 화면으로
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   const updateField = (field: string, value: string) => {
@@ -62,7 +92,11 @@ export default function SignupPage() {
     setSubmitting(false);
 
     if (result.success) {
-      router.push("/mypage");
+      if (result.needsConfirm) {
+        setConfirmSent(true); // 이메일 인증 필요 — 안내 화면 표시
+      } else {
+        router.push("/mypage");
+      }
     } else {
       setError(result.error || "회원가입에 실패했습니다. 다시 시도해주세요.");
     }

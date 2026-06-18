@@ -23,7 +23,7 @@ interface AuthStore {
     password: string;
     name: string;
     phone: string;
-  }) => Promise<{ success: boolean; error?: string }>;
+  }) => Promise<{ success: boolean; error?: string; needsConfirm?: boolean }>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
   initialize: () => Promise<void>;
@@ -264,9 +264,12 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         },
         isLoggedIn: true,
       });
+      return { success: true };
     }
 
-    return { success: true };
+    // 세션이 없으면 = 이메일 확인이 필요한 설정(Confirm email ON).
+    // 확인 메일을 보냈으므로 자동 로그인하지 않고 안내가 필요함을 알린다.
+    return { success: true, needsConfirm: true };
   },
 
   logout: async () => {
