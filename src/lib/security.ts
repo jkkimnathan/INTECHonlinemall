@@ -49,6 +49,30 @@ export function validateQuantity(qty: number): boolean {
 }
 
 /**
+ * 이미지 업로드 검증 — 래스터 이미지만 허용.
+ * SVG/HTML 등 스크립트 실행 가능한 형식이 공개 스토리지에 올라가는 것을 차단한다.
+ * 통과 시 안전한 소문자 확장자를 반환, 실패 시 에러 메시지를 반환.
+ */
+const ALLOWED_IMAGE_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/avif": "avif",
+};
+
+export function validateImageFile(file: File): { ext: string | null; error: string | null } {
+  const ext = ALLOWED_IMAGE_TYPES[file.type];
+  if (!ext) {
+    return { ext: null, error: "JPG/PNG/WebP/GIF/AVIF 이미지만 업로드할 수 있습니다." };
+  }
+  if (file.size > 20 * 1024 * 1024) {
+    return { ext: null, error: "파일 크기는 20MB 이하여야 합니다." };
+  }
+  return { ext, error: null };
+}
+
+/**
  * 검색어 sanitize — PostgREST `.or()` 필터 인젝션 방지.
  * 콤마/괄호/점/별표 등 PostgREST·LIKE 특수문자를 제거하고 길이를 제한한다.
  */

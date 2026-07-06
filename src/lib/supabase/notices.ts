@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { validateImageFile } from "@/lib/security";
 
 export interface Notice {
   id: string;
@@ -105,7 +106,9 @@ export async function deleteNotice(id: string): Promise<boolean> {
 /** 공지 이미지 업로드 */
 export async function uploadNoticeImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
+  // 래스터 이미지만 허용 (SVG/HTML 등 스크립트 실행 가능 파일 차단)
+  const { ext, error: fileErr } = validateImageFile(file);
+  if (fileErr) return { url: null, error: fileErr };
   const path = `notices/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
