@@ -1,10 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/store/cart";
+import { getProductsByIds } from "@/lib/supabase/products";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 
 function formatPrice(price: number) {
@@ -12,12 +15,40 @@ function formatPrice(price: number) {
 }
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, getTotalPrice } =
+  const router = useRouter();
+  const { items, removeItem, updateQuantity, clearCart, getTotalPrice, refreshProducts } =
     useCartStore();
+  // persist 스토어는 SSR HTML(빈 장바구니)과 첫 클라이언트 렌더가 달라질 수 있어 마운트 후 렌더
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  // 담아둔 스냅샷이 낡지 않도록 서버의 최신 가격·재고로 갱신
+  useEffect(() => {
+    if (!mounted) return;
+    const ids = useCartStore.getState().items.map((i) => i.product.id);
+    if (ids.length === 0) return;
+    getProductsByIds(ids)
+      .then((fresh) => {
+        if (fresh.length > 0) refreshProducts(fresh);
+      })
+      .catch(() => {});
+  }, [mounted, refreshProducts]);
 
   const totalPrice = getTotalPrice();
   const shippingFee = totalPrice >= 50000 ? 0 : 3000;
   const finalTotal = totalPrice + shippingFee;
+
+  if (!mounted) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#fbfbfd]">
+        <p className="text-sm text-[#86868b]">장바구니를 불러오는 중...</p>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -47,7 +78,7 @@ export default function CartPage() {
               Shopping Cart
             </div>
             <h1 className="text-[28px] font-bold text-[#1d1d1f] tracking-[-0.025em] mt-1.5 tabular-nums">
-              장바구니 ({items.length})
+              장바구니 ({items.length}종)
             </h1>
           </div>
           <Button
@@ -203,7 +234,7 @@ export default function CartPage() {
 
               <Button
                 className="w-full mt-5 h-12 rounded-full bg-[#1A56DB] hover:bg-[#1747b4] text-white font-semibold"
-                onClick={() => window.location.href = "/checkout"}
+                onClick={() => router.push("/checkout")}
               >
                 주문하기
                 <ArrowRight className="h-4 w-4 ml-2" />

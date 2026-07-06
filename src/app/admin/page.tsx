@@ -42,13 +42,18 @@ export default function AdminDashboard() {
     getAllOrders().then(setOrders);
   }, []);
 
-  const today = new Date().toDateString();
-  const thisMonth = new Date().getMonth();
+  const now = new Date();
+  const today = now.toDateString();
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
   const todaySales = orders
     .filter((o) => new Date(o.createdAt).toDateString() === today && o.status !== "취소")
     .reduce((sum, o) => sum + o.total, 0);
   const monthSales = orders
-    .filter((o) => new Date(o.createdAt).getMonth() === thisMonth && o.status !== "취소")
+    .filter((o) => {
+      const d = new Date(o.createdAt);
+      return d.getMonth() === thisMonth && d.getFullYear() === thisYear && o.status !== "취소";
+    })
     .reduce((sum, o) => sum + o.total, 0);
 
   const stats = {

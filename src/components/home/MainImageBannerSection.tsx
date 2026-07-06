@@ -48,7 +48,9 @@ function CenterRollingBanner({ banners }: { banners: MainImageBanner[] }) {
 
   if (banners.length === 0) return null;
 
-  const banner = banners[currentIndex];
+  // 배열이 줄어들어도 인덱스가 범위를 벗어나지 않도록 보정
+  const safeIndex = currentIndex % banners.length;
+  const banner = banners[safeIndex];
 
   const img = (
     <div className="relative w-full h-full overflow-hidden rounded-lg bg-gray-100">
@@ -81,7 +83,7 @@ function CenterRollingBanner({ banners }: { banners: MainImageBanner[] }) {
               key={i}
               onClick={() => setCurrentIndex(i)}
               className={`w-2 h-2 rounded-full transition-colors ${
-                i === currentIndex ? "bg-white" : "bg-white/50"
+                i === safeIndex ? "bg-white" : "bg-white/50"
               }`}
             />
           ))}

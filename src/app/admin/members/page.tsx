@@ -52,15 +52,20 @@ export default function AdminMembersPage() {
       });
   }, []);
 
+  const keyword = search.toLowerCase();
   const members = allMembers.filter(
     (m) =>
-      m.name.includes(search) ||
-      m.email.includes(search) ||
+      m.name.toLowerCase().includes(keyword) ||
+      m.email.toLowerCase().includes(keyword) ||
       m.phone.includes(search)
   );
 
   const now = new Date();
-  const thisMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const newThisMonth = allMembers.filter((m) => {
+    if (!m.createdAt) return false;
+    const d = new Date(m.createdAt);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
 
   if (loading) {
     return (
@@ -94,7 +99,7 @@ export default function AdminMembersPage() {
         </div>
         <div className="bg-white rounded-lg border p-4 text-center">
           <p className="text-2xl font-bold text-green-600">
-            {allMembers.filter((m) => m.createdAt.startsWith(thisMonthStr)).length}
+            {newThisMonth}
           </p>
           <p className="text-xs text-[#86868b]">이번 달 신규</p>
         </div>

@@ -164,8 +164,8 @@ export async function updateTimeDeal(
   if (input.isActive !== undefined) updates.is_active = input.isActive;
   if (input.sortOrder !== undefined) updates.sort_order = input.sortOrder;
 
-  const { error } = await supabase.from("time_deals").update(updates).eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("time_deals").update(updates).eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 /** 타임딜 삭제 (아이템도 cascade 삭제) */
@@ -173,8 +173,8 @@ export async function deleteTimeDeal(id: string): Promise<boolean> {
   const supabase = createClient();
   // 먼저 아이템 삭제
   await supabase.from("time_deal_items").delete().eq("deal_id", id);
-  const { error } = await supabase.from("time_deals").delete().eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("time_deals").delete().eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 /** 딜 아이템 추가 */
@@ -213,13 +213,13 @@ export async function updateTimeDealItem(
   if (input.dealQuantity !== undefined) updates.deal_quantity = input.dealQuantity;
   if (input.soldCount !== undefined) updates.sold_count = input.soldCount;
 
-  const { error } = await supabase.from("time_deal_items").update(updates).eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("time_deal_items").update(updates).eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 /** 딜 아이템 삭제 */
 export async function removeTimeDealItem(id: string): Promise<boolean> {
   const supabase = createClient();
-  const { error } = await supabase.from("time_deal_items").delete().eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("time_deal_items").delete().eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }

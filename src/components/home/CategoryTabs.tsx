@@ -18,18 +18,35 @@ const categories: { label: string; value: ProductCategory | "전체" }[] = [
 
 export default function CategoryTabs() {
   const [active, setActive] = useState<ProductCategory | "전체">("전체");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [result, setResult] = useState<{
+    category: ProductCategory | "전체";
+    products: Product[];
+  } | null>(null);
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
     const opts =
       active === "전체" ? {} : { category: active as ProductCategory };
-    getProducts(opts).then((data) => {
-      setProducts(data.filter((p) => !isHiddenBrand(p.brand)).slice(0, 8));
-      setLoading(false);
-    });
+    getProducts(opts)
+      .then((data) => {
+        if (cancelled) return;
+        setResult({
+          category: active,
+          products: data.filter((p) => !isHiddenBrand(p.brand)).slice(0, 8),
+        });
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setResult({ category: active, products: [] });
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [active]);
+
+  // 현재 탭의 응답이 아직 도착하지 않았으면 로딩 상태
+  const loading = result?.category !== active;
+  const products = result?.products ?? [];
 
   return (
     <section className="py-12 bg-white">

@@ -25,13 +25,13 @@ export default function AdminQnaPage() {
     loadQna();
   }, []);
 
-  const handleAnswer = async (id: string) => {
+  const handleAnswer = async (id: string, isEditing: boolean) => {
     if (!answerText.trim()) return;
     setSubmitting(true);
     const ok = await answerQna(id, answerText);
     setSubmitting(false);
     if (ok) {
-      showToast("답변이 등록되었습니다.");
+      showToast(isEditing ? "답변이 수정되었습니다." : "답변이 등록되었습니다.");
       setAnsweringId(null);
       setAnswerText("");
       loadQna();
@@ -42,7 +42,8 @@ export default function AdminQnaPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("정말 삭제하시겠습니까?")) return;
-    await deleteQna(id);
+    const ok = await deleteQna(id);
+    if (!ok) showToast("삭제에 실패했습니다. 다시 시도해주세요.", "error");
     loadQna();
   };
 
@@ -145,14 +146,14 @@ export default function AdminQnaPage() {
                             size="sm"
                             className="bg-[#1A56DB] hover:bg-[#1747b4]"
                             disabled={submitting}
-                            onClick={() => handleAnswer(item.id)}
+                            onClick={() => handleAnswer(item.id, item.isAnswered)}
                           >
                             {submitting ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                               <Send className="h-4 w-4 mr-1" />
                             )}
-                            답변 등록
+                            {item.isAnswered ? "답변 수정" : "답변 등록"}
                           </Button>
                         </div>
                       </div>
@@ -160,10 +161,11 @@ export default function AdminQnaPage() {
                   </div>
 
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    {!item.isAnswered && answeringId !== item.id && (
+                    {answeringId !== item.id && (
                       <Button
                         variant="ghost"
                         size="sm"
+                        title={item.isAnswered ? "답변 수정" : "답변 작성"}
                         onClick={() => {
                           setAnsweringId(item.id);
                           setAnswerText(item.answerContent || "");

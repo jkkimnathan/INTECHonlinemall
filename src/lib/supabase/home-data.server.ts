@@ -110,7 +110,7 @@ export async function getHomePageData(): Promise<HomePageData> {
     if (productIds.length > 0) {
       const prodsResult = await supabase
         .from("products")
-        .select("id, name, slug, brand, category, price, sale_price, images, stock, is_featured")
+        .select("id, name, slug, brand, category, condition, price, sale_price, images, stock, is_sale, is_featured")
         .in("id", productIds);
       timeDealProducts = (prodsResult.data || []).map(toProduct).filter((p) => !isHiddenBrand(p.brand));
     }

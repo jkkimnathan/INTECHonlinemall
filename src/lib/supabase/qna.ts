@@ -97,19 +97,20 @@ export async function answerQna(
   answerContent: string
 ): Promise<boolean> {
   const supabase = createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("qna")
     .update({
       is_answered: true,
       answer_content: answerContent,
       answer_date: new Date().toISOString(),
     })
-    .eq("id", id);
-  return !error;
+    .eq("id", id)
+    .select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 export async function deleteQna(id: string): Promise<boolean> {
   const supabase = createClient();
-  const { error } = await supabase.from("qna").delete().eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("qna").delete().eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }

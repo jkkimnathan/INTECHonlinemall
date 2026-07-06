@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { getSafeImageExtension } from "@/lib/security";
 
 export interface Notice {
   id: string;
@@ -38,7 +39,8 @@ export async function getNotices(): Promise<Notice[]> {
     .from("notices")
     .select("*")
     .order("is_pinned", { ascending: false })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(200);
 
   if (error || !data) return [];
   return data.map(toNotice);
@@ -92,20 +94,21 @@ export async function updateNotice(
   if (input.isPinned !== undefined) updates.is_pinned = input.isPinned;
   if (input.imageUrl !== undefined) updates.image_url = input.imageUrl;
 
-  const { error } = await supabase.from("notices").update(updates).eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("notices").update(updates).eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 export async function deleteNotice(id: string): Promise<boolean> {
   const supabase = createClient();
-  const { error } = await supabase.from("notices").delete().eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("notices").delete().eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 /** 공지 이미지 업로드 */
 export async function uploadNoticeImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
+  const ext = getSafeImageExtension(file.name);
+  if (!ext) return { url: null, error: "지원하지 않는 이미지 형식입니다." };
   const path = `notices/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error: uploadError } = await supabase.storage

@@ -19,7 +19,8 @@ const CATEGORIES: Product["category"][] = [
 const BRANDS = ["INTEL", "ASUS", "MANLI", "ASRock", "TOSHIBA", "Microsoft", "iPC"];
 
 function slugify(text: string) {
-  return text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").trim();
+  const slug = text.toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, "").replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").trim();
+  return slug || `product-${Date.now().toString(36)}`;
 }
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -27,6 +28,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -48,7 +50,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
   useEffect(() => {
     getProductById(id).then((p) => {
-      if (!p) { setLoading(false); return; }
+      if (!p) { setNotFound(true); setLoading(false); return; }
       setName(p.name);
       setOriginalSlug(p.slug);
       if (BRANDS.includes(p.brand)) { setBrand(p.brand); } else { setBrand("__custom__"); setCustomBrand(p.brand); }
@@ -91,7 +93,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     e.preventDefault();
     setError("");
     if (!name.trim()) return setError("상품명을 입력하세요.");
-    if (!price || isNaN(Number(price))) return setError("올바른 가격을 입력하세요.");
+    if (!price || isNaN(Number(price)) || Number(price) < 0) return setError("올바른 가격을 입력하세요.");
+    if (stock === "" || isNaN(Number(stock)) || !Number.isInteger(Number(stock)) || Number(stock) < 0)
+      return setError("재고는 0 이상의 정수로 입력하세요.");
+    if (salePrice !== "" && (isNaN(Number(salePrice)) || Number(salePrice) < 0))
+      return setError("올바른 할인가를 입력하세요.");
+    if (salePrice !== "" && Number(salePrice) > 0 && Number(salePrice) >= Number(price))
+      return setError("할인가는 정가보다 낮아야 합니다.");
 
     const allImages = thumbnail ? [thumbnail, ...additionalImages] : additionalImages;
     const hasSale = salePrice !== "" && Number(salePrice) > 0;
@@ -121,6 +129,17 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
   if (loading) {
     return <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-gray-400" /></div>;
+  }
+
+  if (notFound) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <p className="text-gray-500">상품을 찾을 수 없습니다.</p>
+        <Link href="/admin/products">
+          <Button variant="outline"><ArrowLeft className="h-4 w-4 mr-2" />상품 목록으로 돌아가기</Button>
+        </Link>
+      </div>
+    );
   }
 
   return (

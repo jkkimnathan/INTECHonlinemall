@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { validatePassword, validateEmail, validatePhone } from "@/lib/security";
 
 export default function SignupPage() {
   const router = useRouter();
-  const { signup, isLoggedIn } = useAuthStore();
+  const { signup, isLoggedIn, loading } = useAuthStore();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -27,9 +27,19 @@ export default function SignupPage() {
   const [submitting, setSubmitting] = useState(false);
   const [confirmSent, setConfirmSent] = useState(false);
 
-  if (isLoggedIn) {
-    router.push("/mypage");
-    return null;
+  // 이미 로그인한 경우 — auth 초기화 완료 후에만 이동 (렌더 중 push 금지)
+  useEffect(() => {
+    if (!loading && isLoggedIn && !confirmSent) {
+      router.replace("/mypage");
+    }
+  }, [loading, isLoggedIn, confirmSent, router]);
+
+  if (!confirmSent && (loading || isLoggedIn)) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center bg-[#fbfbfd]">
+        <p className="text-sm text-[#86868b]">불러오는 중...</p>
+      </div>
+    );
   }
 
   if (confirmSent) {

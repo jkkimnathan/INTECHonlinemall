@@ -11,7 +11,7 @@ export function toProduct(row: Record<string, unknown>): Product {
     condition: (row.condition as Product["condition"]) || "new",
     description: (row.description as string) || "",
     specs: (row.specs as Record<string, string>) || {},
-    price: row.price as number,
+    price: Number(row.price) || 0,
     salePrice: (row.sale_price as number) ?? null,
     images: (row.images as string[]) || [],
     detailImages: (row.detail_images as string[]) || [],

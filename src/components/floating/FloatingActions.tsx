@@ -17,7 +17,8 @@ export default function FloatingActions() {
   const items = useRecentlyViewedStore((s) => s.items);
 
   useEffect(() => {
-    setMounted(true);
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
   }, []);
 
   const handleScroll = useCallback(() => {
