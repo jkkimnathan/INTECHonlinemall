@@ -45,8 +45,14 @@ begin
     return new;
   end if;
 
-  -- 신뢰된 서버 함수(create_order 등)가 명시적으로 허용한 경우
-  if coalesce(current_setting('app.allow_points_write', true), '') = '1' then
+  -- 신뢰된 서버 함수(create_order)가 명시적으로 허용한 경우:
+  -- points 변경만 허용하고 나머지 민감 컬럼은 여전히 보호(우회 범위 최소화)
+  if coalesce(current_setting('app.allow_points_write', true), '') = '1'
+     and tg_op = 'UPDATE' then
+    new.grade := old.grade;
+    new.is_admin := old.is_admin;
+    new.email := old.email;
+    new.created_at := old.created_at;
     return new;
   end if;
 
@@ -75,6 +81,11 @@ create trigger trg_protect_profile_columns
 -- ============================================================
 -- A + B. 주문 생성 RPC — 서버가 금액/재고/적립금을 완전 검증
 -- ============================================================
+-- 직접 INSERT 정책 제거: 주문은 create_order RPC로만 생성 가능.
+-- (이 정책이 남아 있으면 클라이언트가 RPC를 우회해 0원 주문을
+--  직접 삽입할 수 있어 서버 검증 전체가 무력화된다.)
+drop policy if exists orders_insert_own on public.orders;
+
 create or replace function public.create_order(
   p_items jsonb,
   p_shipping jsonb,
@@ -239,9 +250,13 @@ begin
   end if;
 
   -- 구매 검증: 내 주문 항목 중 해당 상품이 있는가
+  -- (items 가 배열이 아닌 비정상/구버전 데이터가 있어도 오류 없이 건너뜀)
   select exists(
     select 1
-    from public.orders o, jsonb_array_elements(o.items) it
+    from public.orders o,
+         jsonb_array_elements(
+           case when jsonb_typeof(o.items) = 'array' then o.items else '[]'::jsonb end
+         ) it
     where o.user_id = v_uid
       and coalesce(it->'product'->>'id', it->>'productId', it->>'product_id') = p_product_id
   ) into v_purchased;
