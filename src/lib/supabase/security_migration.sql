@@ -84,13 +84,16 @@ create policy reviews_insert_own on public.reviews for insert
 create policy reviews_delete_own on public.reviews for delete
   using (user_id::text = auth.uid()::text or public.is_admin());
 
+-- 이미 존재하면 건너뜀 (재실행 안전).
+-- unique 제약은 내부적으로 인덱스를 만들어 42P07(duplicate_table)로 실패할 수 있고,
+-- check 제약은 42710(duplicate_object)로 실패하므로 두 경우 모두 무시한다.
 do $$ begin
   alter table public.reviews add constraint reviews_rating_range check (rating between 1 and 5);
-exception when duplicate_object then null; end $$;
+exception when duplicate_object or duplicate_table then null; end $$;
 
 do $$ begin
   alter table public.reviews add constraint reviews_one_per_product unique (user_id, product_id);
-exception when duplicate_object then null; end $$;
+exception when duplicate_object or duplicate_table then null; end $$;
 
 -- ── 6. qna: 비밀글 보호 (SEC-03) ──
 -- 행 정책: 비밀글이 아닌 글, 본인 글, 관리자만 직접 조회 가능
