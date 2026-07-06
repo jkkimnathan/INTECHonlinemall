@@ -86,6 +86,8 @@ create trigger trg_protect_profile_columns
 --  직접 삽입할 수 있어 서버 검증 전체가 무력화된다.)
 drop policy if exists orders_insert_own on public.orders;
 
+-- 이전 버전(반환 타입 다름)이 남아 있으면 replace 가 불가하므로 먼저 제거 (재실행 안전)
+drop function if exists public.create_order(jsonb, jsonb, text, integer);
 create or replace function public.create_order(
   p_items jsonb,
   p_shipping jsonb,
@@ -220,6 +222,7 @@ grant execute on function public.create_order(jsonb, jsonb, text, integer) to au
 -- 직접 INSERT 정책 제거: 리뷰는 RPC(review_create)로만 작성 가능
 drop policy if exists reviews_insert_own on public.reviews;
 
+drop function if exists public.review_create(text, integer, text);
 create or replace function public.review_create(
   p_product_id text,
   p_rating int,
@@ -292,6 +295,7 @@ grant execute on function public.review_create(text, int, text) to authenticated
 -- ============================================================
 -- E. 비회원 주문조회 RPC — 주문번호 + 전화번호 서버 검증
 -- ============================================================
+drop function if exists public.order_lookup(text, text);
 create or replace function public.order_lookup(p_id text, p_phone text)
 returns jsonb
 language plpgsql
