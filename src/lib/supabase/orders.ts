@@ -59,7 +59,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ order: Ord
   return { order: toOrder(data as Record<string, unknown>), error: null };
 }
 
-/** 주문 조회 (by ID) */
+/** 주문 조회 (by ID) — 본인 주문만 (RLS 강제) */
 export async function getOrderById(id: string): Promise<Order | null> {
   const supabase = createClient();
   const { data, error } = await supabase
@@ -70,6 +70,21 @@ export async function getOrderById(id: string): Promise<Order | null> {
 
   if (error || !data) return null;
   return toOrder(data);
+}
+
+/**
+ * 비회원 주문조회 — 서버 RPC(order_lookup)가 주문번호+전화번호를
+ * 서버에서 대조한 뒤에만 주문을 반환한다(IDOR 방지).
+ */
+export async function lookupOrder(id: string, phone: string): Promise<Order | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("order_lookup", {
+    p_id: id,
+    p_phone: phone,
+  });
+
+  if (error || !data) return null;
+  return toOrder(data as Record<string, unknown>);
 }
 
 /** 내 주문 목록 */

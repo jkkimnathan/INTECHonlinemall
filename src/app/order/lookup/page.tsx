@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { getOrderById } from "@/lib/supabase/orders";
+import { lookupOrder } from "@/lib/supabase/orders";
 import { Order } from "@/types/order";
 import { Search, Package, ArrowLeft, Loader2 } from "lucide-react";
 
@@ -42,10 +42,11 @@ export default function OrderLookupPage() {
     }
 
     setSearching(true);
-    const found = await getOrderById(orderNumber.trim());
+    // 서버가 주문번호+전화번호를 대조한 뒤에만 주문을 반환한다(IDOR 방지).
+    const found = await lookupOrder(orderNumber.trim(), contact.trim());
     setSearching(false);
 
-    if (found && (found.shipping.phone === contact.trim())) {
+    if (found) {
       setResult(found);
     } else {
       setError("주문을 찾을 수 없습니다. 주문번호와 연락처를 다시 확인해주세요.");

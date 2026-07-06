@@ -78,30 +78,28 @@ export async function hasReviewed(userId: string, productId: string): Promise<bo
   return data.length > 0;
 }
 
-/** 리뷰 작성 */
+/**
+ * 리뷰 작성 — 서버 RPC(review_create)가 구매 여부를 검증하고
+ * 작성자명을 프로필에서 서버가 지정한다. userId/userName 은
+ * 서버가 auth 세션 기준으로 채우므로 클라이언트 값은 무시된다.
+ */
 export async function createReview(input: {
   productId: string;
-  userId: string;
-  userName: string;
+  userId?: string;
+  userName?: string;
   rating: number;
   content: string;
 }): Promise<{ data: Review | null; error: string | null }> {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from("reviews")
-    .insert({
-      product_id: input.productId,
-      user_id: input.userId,
-      user_name: input.userName,
-      rating: input.rating,
-      content: input.content,
-    })
-    .select()
-    .single();
+  const { data, error } = await supabase.rpc("review_create", {
+    p_product_id: input.productId,
+    p_rating: input.rating,
+    p_content: input.content,
+  });
 
   if (error) return { data: null, error: error.message };
   if (!data) return { data: null, error: "리뷰 저장 실패" };
-  return { data: toReview(data), error: null };
+  return { data: toReview(data as ReviewRow), error: null };
 }
 
 /** 리뷰 삭제 (본인만) */

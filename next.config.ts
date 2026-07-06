@@ -38,11 +38,14 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              // Daum 우편번호(주소검색) 스크립트 허용
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://t1.daumcdn.net https://*.daumcdn.net",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://tamfbsqtrncnmjuzjbjf.supabase.co",
+              "img-src 'self' data: blob: https://tamfbsqtrncnmjuzjbjf.supabase.co https://*.daumcdn.net https://*.daum.net",
               "font-src 'self' data:",
-              "connect-src 'self' https://tamfbsqtrncnmjuzjbjf.supabase.co wss://tamfbsqtrncnmjuzjbjf.supabase.co",
+              "connect-src 'self' https://tamfbsqtrncnmjuzjbjf.supabase.co wss://tamfbsqtrncnmjuzjbjf.supabase.co https://*.daum.net https://*.daumcdn.net",
+              // Daum 우편번호 레이어(iframe) 허용
+              "frame-src https://postcode.map.daum.net",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",
