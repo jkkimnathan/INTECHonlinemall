@@ -15,6 +15,9 @@
 create extension if not exists pgcrypto with schema extensions;
 create extension if not exists pg_trgm with schema extensions;
 
+-- 트라이그램 opclass 등을 스키마 한정 없이 참조할 수 있도록
+set search_path = public, extensions;
+
 -- is_admin() 보장 (v1에서 생성했더라도 안전하게 재정의)
 create or replace function public.is_admin()
 returns boolean
@@ -164,7 +167,9 @@ begin
   v_discount := greatest(0, least(coalesce(p_use_points, 0)::numeric, coalesce(v_points_balance, 0), floor(v_subtotal)));
 
   v_total := v_subtotal + v_shipping_fee - v_discount;
-  v_id := 'ORD-' || (extract(epoch from clock_timestamp()) * 1000)::bigint::text;
+  -- 같은 밀리초 동시주문 시 PK 충돌을 피하기 위해 랜덤 접미사 부여
+  v_id := 'ORD-' || (extract(epoch from clock_timestamp()) * 1000)::bigint::text
+          || '-' || substr(md5(random()::text || v_uid::text), 1, 4);
 
   insert into public.orders
     (id, user_id, items, shipping, payment_method, subtotal, shipping_fee, discount, total, status)
@@ -327,9 +332,15 @@ create index if not exists idx_products_flags on public.products (is_featured, i
 create index if not exists idx_qna_created on public.qna (created_at desc);
 
 -- 검색(ILIKE '%...%') 가속용 트라이그램 인덱스
-create index if not exists idx_products_name_trgm on public.products using gin (name extensions.gin_trgm_ops);
-create index if not exists idx_products_brand_trgm on public.products using gin (brand extensions.gin_trgm_ops);
-create index if not exists idx_products_desc_trgm on public.products using gin (description extensions.gin_trgm_ops);
+-- pg_trgm 설치 스키마 차이로 실패해도 나머지가 중단되지 않도록 예외 처리
+do $$
+begin
+  create index if not exists idx_products_name_trgm on public.products using gin (name gin_trgm_ops);
+  create index if not exists idx_products_brand_trgm on public.products using gin (brand gin_trgm_ops);
+  create index if not exists idx_products_desc_trgm on public.products using gin (description gin_trgm_ops);
+exception when others then
+  raise notice '트라이그램 인덱스 생성 건너뜀 (pg_trgm opclass 미해결): %', sqlerrm;
+end $$;
 
 -- 통계 갱신
 analyze public.products;
