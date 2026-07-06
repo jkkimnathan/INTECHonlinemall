@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { Product } from "@/types/product";
+import { sanitizeSearchTerm } from "@/lib/security";
 import { toProduct } from "./product-utils";
 
 export { toProduct };
@@ -33,8 +34,11 @@ export async function getProducts(options?: {
     query = query.eq("is_featured", true);
   }
   if (options?.search) {
-    const q = `%${options.search}%`;
-    query = query.or(`name.ilike.${q},brand.ilike.${q},category.ilike.${q},description.ilike.${q}`);
+    const term = sanitizeSearchTerm(options.search);
+    if (term) {
+      const q = `%${term}%`;
+      query = query.or(`name.ilike.${q},brand.ilike.${q},category.ilike.${q},description.ilike.${q}`);
+    }
   }
 
   // 정렬

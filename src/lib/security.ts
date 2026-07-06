@@ -47,3 +47,15 @@ export function validatePrice(price: number): boolean {
 export function validateQuantity(qty: number): boolean {
   return Number.isInteger(qty) && qty >= 1 && qty <= 999;
 }
+
+/**
+ * 검색어 sanitize — PostgREST `.or()` 필터 인젝션 방지.
+ * 콤마/괄호/점/별표 등 PostgREST·LIKE 특수문자를 제거하고 길이를 제한한다.
+ */
+export function sanitizeSearchTerm(term: string): string {
+  return term
+    .replace(/[%_,()*:."'\\]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 100);
+}
