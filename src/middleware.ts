@@ -1,51 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
-// Rate limiting: IP별 시도 횟수 추적 (메모리 기반, 서버리스 환경에서는 요청 단위)
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_MAX = 10; // 최대 시도 횟수
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1분
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-
-  if (!entry || now > entry.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return false;
-  }
-
-  entry.count++;
-  if (entry.count > RATE_LIMIT_MAX) {
-    return true;
-  }
-  return false;
-}
-
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next({
     request: { headers: request.headers },
   });
 
   const pathname = request.nextUrl.pathname;
-
-  // Rate Limiting: 로그인/회원가입 페이지 POST 요청 제한
-  if (
-    (pathname === "/login" || pathname === "/signup") &&
-    request.method === "POST"
-  ) {
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
-
-    if (isRateLimited(ip)) {
-      return NextResponse.json(
-        { error: "너무 많은 요청입니다. 잠시 후 다시 시도해주세요." },
-        { status: 429 }
-      );
-    }
-  }
 
   try {
     const supabase = createServerClient(
@@ -113,8 +74,13 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
+// 인증 확인이 필요한 경로에서만 미들웨어 실행 (공개 페이지는 getUser() 호출 없이 통과)
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/admin/:path*",
+    "/mypage/:path*",
+    "/checkout/:path*",
+    "/login",
+    "/signup",
   ],
 };

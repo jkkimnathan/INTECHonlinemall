@@ -73,6 +73,14 @@ export default function BrandSubcategorySelect({ brand, value, onChange }: Props
   }
 
   const handleSelect = (depth: number, label: string) => {
+    // "선택하세요" 선택 시 해당 레벨 이하를 잘라내고 상위 경로로 동기화
+    if (!label) {
+      const truncated = selections.slice(0, depth);
+      setSelections(truncated);
+      onChange(truncated.length > 0 ? truncated.join(" > ") : null);
+      return;
+    }
+
     const newSelections = selections.slice(0, depth);
     newSelections[depth] = label;
     setSelections(newSelections);

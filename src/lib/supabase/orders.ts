@@ -40,6 +40,9 @@ export async function createOrder(input: CreateOrderInput): Promise<{ order: Ord
   if (!input.userId || !input.shipping?.name || !input.shipping?.phone || !input.shipping?.address) {
     return { order: null, error: "배송 정보가 누락되었습니다." };
   }
+  if (!input.items || input.items.length === 0) {
+    return { order: null, error: "주문할 상품이 없습니다." };
+  }
   for (const item of input.items) {
     if (!validateQuantity(item.quantity)) {
       return { order: null, error: `상품 수량이 유효하지 않습니다: ${item.product?.name}` };
@@ -91,7 +94,8 @@ export async function getAllOrders(): Promise<Order[]> {
   const { data, error } = await supabase
     .from("orders")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(1000);
 
   if (error || !data) return [];
   return data.map(toOrder);
@@ -100,11 +104,13 @@ export async function getAllOrders(): Promise<Order[]> {
 /** 주문 상태 변경 (어드민) */
 export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<{ error: string | null }> {
   const supabase = createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("orders")
     .update({ status })
-    .eq("id", orderId);
+    .eq("id", orderId)
+    .select("id");
 
   if (error) return { error: error.message };
+  if (!data || data.length === 0) return { error: "주문을 찾을 수 없습니다." };
   return { error: null };
 }

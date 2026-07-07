@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { getSafeImageExtension } from "@/lib/security";
 
 export interface PageBanner {
   id: string;
@@ -62,7 +63,7 @@ export async function upsertPageBanner(input: {
   imageUrl?: string | null;
 }): Promise<{ error: string | null }> {
   const supabase = createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("page_banners")
     .upsert(
       {
@@ -73,16 +74,19 @@ export async function upsertPageBanner(input: {
         updated_at: new Date().toISOString(),
       },
       { onConflict: "page_key" }
-    );
+    )
+    .select("id");
 
   if (error) return { error: error.message };
+  if (!data || data.length === 0) return { error: "배너 저장에 실패했습니다." };
   return { error: null };
 }
 
 /** 배너 이미지 업로드 */
 export async function uploadPageBannerImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
+  const ext = getSafeImageExtension(file.name);
+  if (!ext) return { url: null, error: "지원하지 않는 이미지 형식입니다." };
   const path = `page-banners/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error: uploadError } = await supabase.storage

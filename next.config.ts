@@ -38,11 +38,17 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://tamfbsqtrncnmjuzjbjf.supabase.co",
-              "font-src 'self' data:",
+              // unsafe-eval은 개발 모드(HMR/source map)에서만 허용
+              `script-src 'self' 'unsafe-inline'${
+                process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""
+              } https://t1.daumcdn.net https://postcode.map.daum.net`,
+              // 폰트 CSS: Pretendard(jsdelivr) + Manrope(Google Fonts) — layout.tsx에서 로드
+              "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
+              "img-src 'self' data: blob: https://tamfbsqtrncnmjuzjbjf.supabase.co https://t1.daumcdn.net",
+              "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com",
               "connect-src 'self' https://tamfbsqtrncnmjuzjbjf.supabase.co wss://tamfbsqtrncnmjuzjbjf.supabase.co",
+              // 다음 우편번호 서비스 팝업/iframe 허용
+              "frame-src https://postcode.map.daum.net",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

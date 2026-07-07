@@ -8,6 +8,28 @@ export function sanitize(input: string): string {
     .replace(/\//g, "&#x2F;");
 }
 
+/** like/ilike 패턴용 이스케이프 - %, _ 와일드카드를 리터럴로 처리 */
+export function escapeLikePattern(input: string): string {
+  return input
+    .replace(/\\/g, "\\\\")
+    .replace(/%/g, "\\%")
+    .replace(/_/g, "\\_");
+}
+
+/** 검색어 sanitize - PostgREST or() 필터 예약문자(,()) 제거 + like 와일드카드 이스케이프 */
+export function sanitizeSearchTerm(term: string): string {
+  return escapeLikePattern(term.replace(/[,()]/g, " ")).trim();
+}
+
+/** 업로드 허용 이미지 확장자 */
+const ALLOWED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "gif", "avif"];
+
+/** 이미지 파일 확장자 검증 - 허용 목록 외에는 null 반환 */
+export function getSafeImageExtension(fileName: string): string | null {
+  const ext = fileName.split(".").pop()?.toLowerCase() || "";
+  return ALLOWED_IMAGE_EXTENSIONS.includes(ext) ? ext : null;
+}
+
 /** 비밀번호 강도 검증 */
 export function validatePassword(password: string): {
   valid: boolean;

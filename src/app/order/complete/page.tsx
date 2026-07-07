@@ -16,18 +16,21 @@ function formatPrice(price: number) {
 function OrderCompleteContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
+  // undefined = 로딩 중, null = 없음
+  const [order, setOrder] = useState<Order | null | undefined>(
+    orderId ? undefined : null
+  );
+  const loading = order === undefined;
 
   useEffect(() => {
-    if (orderId) {
-      getOrderById(orderId).then((o) => {
-        setOrder(o);
-        setLoading(false);
-      });
-    } else {
-      setLoading(false);
-    }
+    if (!orderId) return;
+    let cancelled = false;
+    getOrderById(orderId).then((o) => {
+      if (!cancelled) setOrder(o);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [orderId]);
 
   if (loading) {

@@ -9,8 +9,7 @@ interface Props {
   banners?: Banner[];
 }
 
-export default function HeroBannerSlider({ banners: initialBanners = [] }: Props) {
-  const [banners] = useState<Banner[]>(initialBanners);
+export default function HeroBannerSlider({ banners = [] }: Props) {
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
@@ -80,6 +79,9 @@ export default function HeroBannerSlider({ banners: initialBanners = [] }: Props
 
   const isInternal = (url: string) => url.startsWith("/");
 
+  // 배너 배열이 줄어들어도 인덱스가 범위를 벗어나지 않도록 보정
+  const activeIndex = current % banners.length;
+
   return (
     <section
       className="relative overflow-hidden group"
@@ -92,7 +94,7 @@ export default function HeroBannerSlider({ banners: initialBanners = [] }: Props
       {/* 슬라이드 컨테이너 */}
       <div
         className="flex transition-transform duration-700 ease-in-out"
-        style={{ transform: `translateX(-${current * 100}%)` }}
+        style={{ transform: `translateX(-${activeIndex * 100}%)` }}
       >
         {banners.map((banner) => {
           const content = (
@@ -100,7 +102,6 @@ export default function HeroBannerSlider({ banners: initialBanners = [] }: Props
               {banner.mobileImageUrl && (
                 <source media="(max-width: 767px)" srcSet={banner.mobileImageUrl} />
               )}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={banner.imageUrl}
                 alt={banner.title}
@@ -164,7 +165,7 @@ export default function HeroBannerSlider({ banners: initialBanners = [] }: Props
               key={index}
               onClick={() => goToSlide(index)}
               className={`w-2.5 h-2.5 rounded-full transition-all ${
-                index === current
+                index === activeIndex
                   ? "bg-white w-6"
                   : "bg-white/40 hover:bg-white/60"
               }`}

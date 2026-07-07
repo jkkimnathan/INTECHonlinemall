@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { getSafeImageExtension } from "@/lib/security";
 
 export interface SiteEvent {
   id: string;
@@ -40,7 +41,8 @@ export async function getEvents(): Promise<SiteEvent[]> {
   const { data, error } = await supabase
     .from("events")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(200);
 
   if (error || !data) return [];
   return data.map(toSiteEvent);
@@ -104,20 +106,21 @@ export async function updateEvent(
   if (input.status !== undefined) updates.status = input.status;
   if (input.imageUrl !== undefined) updates.image_url = input.imageUrl;
 
-  const { error } = await supabase.from("events").update(updates).eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("events").update(updates).eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 export async function deleteEvent(id: string): Promise<boolean> {
   const supabase = createClient();
-  const { error } = await supabase.from("events").delete().eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("events").delete().eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 /** 이벤트 이미지 업로드 */
 export async function uploadEventImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
+  const ext = getSafeImageExtension(file.name);
+  if (!ext) return { url: null, error: "지원하지 않는 이미지 형식입니다." };
   const path = `events/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error: uploadError } = await supabase.storage

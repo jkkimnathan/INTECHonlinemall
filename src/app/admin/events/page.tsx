@@ -85,10 +85,15 @@ export default function AdminEventsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !description.trim() || !startDate || !endDate) return;
+    if (startDate > endDate) {
+      alert("시작일은 종료일보다 늦을 수 없습니다.");
+      return;
+    }
     setSubmitting(true);
 
+    let ok: boolean;
     if (editingId) {
-      await updateEvent(editingId, {
+      ok = await updateEvent(editingId, {
         title,
         description,
         startDate,
@@ -97,7 +102,7 @@ export default function AdminEventsPage() {
         imageUrl: imageUrl || null,
       });
     } else {
-      await createEvent({
+      const created = await createEvent({
         title,
         description,
         startDate,
@@ -105,16 +110,24 @@ export default function AdminEventsPage() {
         status,
         imageUrl: imageUrl || undefined,
       });
+      ok = created !== null;
+    }
+
+    setSubmitting(false);
+    if (!ok) {
+      alert("저장에 실패했습니다. 다시 시도해주세요.");
+      loadEvents();
+      return;
     }
 
     resetForm();
-    setSubmitting(false);
     loadEvents();
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("정말 삭제하시겠습니까?")) return;
-    await deleteEvent(id);
+    const ok = await deleteEvent(id);
+    if (!ok) alert("삭제에 실패했습니다. 다시 시도해주세요.");
     loadEvents();
   };
 

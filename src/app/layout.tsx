@@ -43,9 +43,7 @@ export const metadata: Metadata = {
     description: siteConfig.description,
   },
   // verification: { google: "인증코드", other: { "naver-site-verification": "인증코드" } },
-  alternates: {
-    canonical: siteConfig.url,
-  },
+  // canonical은 루트에 두면 모든 하위 페이지가 홈으로 정규화되어 색인이 누락됨 — 페이지별 정의
 };
 
 export default function RootLayout({

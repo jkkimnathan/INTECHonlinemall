@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import Link from "next/link";
@@ -78,7 +78,7 @@ const shippingMemos = [
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotalPrice, clearCart } = useCartStore();
-  const { user, isLoggedIn } = useAuthStore();
+  const { user, isLoggedIn, loading } = useAuthStore();
   const [submitting, setSubmitting] = useState(false);
 
   const [shipping, setShipping] = useState<ShippingInfo>({
@@ -89,6 +89,24 @@ export default function CheckoutPage() {
     addressDetail: "",
     memo: shippingMemos[0],
   });
+
+  // auth 초기화 완료 전에는 리다이렉트하지 않는다 (F5/직접 진입 시 튕김 방지)
+  useEffect(() => {
+    if (!loading && !isLoggedIn) {
+      router.push("/login?returnUrl=/checkout");
+    }
+  }, [loading, isLoggedIn, router]);
+
+  // 프로필이 늦게 로드되면 비어 있는 배송지 정보 프리필 (렌더 중 상태 조정 패턴)
+  const [prefilledUserId, setPrefilledUserId] = useState<string | null>(null);
+  if (user && prefilledUserId !== user.id) {
+    setPrefilledUserId(user.id);
+    setShipping((prev) => ({
+      ...prev,
+      name: prev.name || user.name || "",
+      phone: prev.phone || user.phone || "",
+    }));
+  }
   const [customMemo, setCustomMemo] = useState("");
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>("card");
   const [usePoints, setUsePoints] = useState(0);
@@ -108,10 +126,13 @@ export default function CheckoutPage() {
     }).open();
   };
 
-  // 로그인 체크
-  if (!isLoggedIn) {
-    router.push("/login");
-    return null;
+  // auth 초기화 중이거나 미로그인(리다이렉트 대기) 상태 — 로딩 표시
+  if (loading || !isLoggedIn) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#fbfbfd]">
+        <p className="text-sm text-[#86868b]">주문 정보를 불러오는 중...</p>
+      </div>
+    );
   }
 
   // 장바구니 비어있음

@@ -39,7 +39,8 @@ export async function getReviewsByProductId(productId: string): Promise<Review[]
     .from("reviews")
     .select("*")
     .eq("product_id", productId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(200);
 
   if (error || !data) return [];
   return data.map(toReview);

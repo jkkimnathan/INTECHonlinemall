@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { getAllOrders, updateOrderStatus } from "@/lib/supabase/orders";
 import { Order, OrderStatus } from "@/types/order";
 import { Eye, Package, Loader2 } from "lucide-react";
@@ -46,7 +45,8 @@ export default function AdminOrdersPage() {
   const handleStatusChange = async (orderId: string, status: OrderStatus) => {
     const { error } = await updateOrderStatus(orderId, status);
     if (error) {
-      showToast(`상태 변경 실패: ${error}`, "error");
+      showToast(`상태 변경에 실패했습니다. 다시 시도해주세요. (${error})`, "error");
+      getAllOrders().then(setOrders);
       return;
     }
     setOrders((prev) =>
