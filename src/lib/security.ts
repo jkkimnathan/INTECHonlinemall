@@ -8,6 +8,28 @@ export function sanitize(input: string): string {
     .replace(/\//g, "&#x2F;");
 }
 
+/** like/ilike 패턴용 이스케이프 - %, _ 와일드카드를 리터럴로 처리 */
+export function escapeLikePattern(input: string): string {
+  return input
+    .replace(/\\/g, "\\\\")
+    .replace(/%/g, "\\%")
+    .replace(/_/g, "\\_");
+}
+
+/** 검색어 sanitize - PostgREST or() 필터 예약문자(,()) 제거 + like 와일드카드 이스케이프 */
+export function sanitizeSearchTerm(term: string): string {
+  return escapeLikePattern(term.replace(/[,()]/g, " ")).trim();
+}
+
+/** 업로드 허용 이미지 확장자 */
+const ALLOWED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "gif", "avif"];
+
+/** 이미지 파일 확장자 검증 - 허용 목록 외에는 null 반환 */
+export function getSafeImageExtension(fileName: string): string | null {
+  const ext = fileName.split(".").pop()?.toLowerCase() || "";
+  return ALLOWED_IMAGE_EXTENSIONS.includes(ext) ? ext : null;
+}
+
 /** 비밀번호 강도 검증 */
 export function validatePassword(password: string): {
   valid: boolean;
@@ -46,20 +68,4 @@ export function validatePrice(price: number): boolean {
 /** 수량 검증 */
 export function validateQuantity(qty: number): boolean {
   return Number.isInteger(qty) && qty >= 1 && qty <= 999;
-}
-
-/**
- * 검색어 정규화 - PostgREST `.or()` 필터 문법과 ilike 와일드카드를 깨거나
- * 악용할 수 있는 문자를 제거한다.
- *  - `,` `(` `)` : .or() 조건 구분/그룹 문법을 깨뜨림
- *  - `%` `_`     : ilike 와일드카드 (의도치 않은 매칭)
- *  - `\`         : 이스케이프 문자
- * 길이도 100자로 제한한다. 반환값이 빈 문자열이면 검색을 건너뛴다.
- */
-export function sanitizeSearchTerm(input: string): string {
-  return input
-    .slice(0, 100)
-    .replace(/[%_,()\\]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
 }

@@ -26,8 +26,8 @@ interface Props {
 }
 
 export default function TimeDeal({ deals: initialDeals = [], products: initialProducts = [] }: Props) {
-  const [mounted, setMounted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  // 마운트 전에는 null → SSR과 첫 클라이언트 렌더가 일치 (하이드레이션 안전)
+  const [now, setNow] = useState<number | null>(null);
 
   const productMap = useMemo(() => {
     const map: Record<string, Product> = {};
@@ -35,42 +35,39 @@ export default function TimeDeal({ deals: initialDeals = [], products: initialPr
     return map;
   }, [initialProducts]);
 
-  const earliestEnd = useMemo(() => {
-    if (initialDeals.length === 0) return null;
-    return initialDeals.reduce((min, d) => {
-      const t = new Date(d.endTime);
-      return t < min ? t : min;
-    }, new Date(initialDeals[0].endTime));
-  }, [initialDeals]);
-
   useEffect(() => {
-    // 하이드레이션 가드: 카운트다운은 클라이언트에서만 렌더(서버/클라 시간 불일치 방지)
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
+    const raf = requestAnimationFrame(() => setNow(Date.now()));
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearInterval(timer);
+    };
   }, []);
 
-  useEffect(() => {
-    if (!earliestEnd) return;
-    const update = () => {
-      const now = new Date();
-      const diff = Math.max(0, earliestEnd.getTime() - now.getTime());
-      setTimeLeft({
-        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((diff / (1000 * 60)) % 60),
-        seconds: Math.floor((diff / 1000) % 60),
-      });
-    };
-    update();
-    const timer = setInterval(update, 1000);
-    return () => clearInterval(timer);
-  }, [earliestEnd]);
-
+  const mounted = now !== null;
   const pad = (n: number) => String(n).padStart(2, "0");
 
-  // 아이템이 있는 딜만 표시
-  const activeDeals = initialDeals.filter((d) => d.items.length > 0);
+  // 아이템이 있는 딜만 표시 + 시계가 흐르면 만료된 딜은 숨김
+  const activeDeals = initialDeals.filter(
+    (d) =>
+      d.items.length > 0 &&
+      (now === null || new Date(d.endTime).getTime() > now)
+  );
   const hasProducts = Object.keys(productMap).length > 0;
+
+  // 만료되지 않은 딜 중 가장 이른 종료 시각 기준 카운트다운
+  const earliestEnd = activeDeals.reduce<number | null>((min, d) => {
+    const t = new Date(d.endTime).getTime();
+    return min === null || t < min ? t : min;
+  }, null);
+
+  const diff = mounted && earliestEnd !== null ? Math.max(0, earliestEnd - now) : 0;
+  const timeLeft = {
+    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((diff / (1000 * 60)) % 60),
+    seconds: Math.floor((diff / 1000) % 60),
+  };
 
   if (activeDeals.length === 0 || !hasProducts) return null;
 
@@ -133,11 +130,12 @@ export default function TimeDeal({ deals: initialDeals = [], products: initialPr
                 const product = productMap[item.productId];
                 if (!product) return null;
 
-                const isSoldOut = item.soldCount >= item.dealQuantity;
-                const soldPercent = Math.min(
-                  100,
-                  Math.round((item.soldCount / item.dealQuantity) * 100)
-                );
+                const dealQuantity = item.dealQuantity || 0;
+                const isSoldOut = dealQuantity > 0 && item.soldCount >= dealQuantity;
+                const soldPercent =
+                  dealQuantity > 0
+                    ? Math.min(100, Math.round((item.soldCount / dealQuantity) * 100))
+                    : 0;
                 const basePrice = product.salePrice || product.price;
                 const discount = getDiscountRate(product.price, item.dealPrice);
 
@@ -218,7 +216,7 @@ export default function TimeDeal({ deals: initialDeals = [], products: initialPr
                           {isSoldOut ? "완판" : `${soldPercent}% 판매`}
                         </span>
                         <span className="text-gray-400">
-                          {item.dealQuantity}개 한정
+                          {dealQuantity}개 한정
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">

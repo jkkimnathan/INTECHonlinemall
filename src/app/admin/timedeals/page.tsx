@@ -56,14 +56,14 @@ export default function AdminTimeDealsPage() {
   // Expanded deals
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  const loadData = async () => {
-    const [dealData, productData] = await Promise.all([
-      getAllTimeDeals(),
-      getProducts(),
-    ]);
-    setDeals(dealData);
-    setProducts(productData);
-    setLoading(false);
+  const loadData = () => {
+    Promise.all([getAllTimeDeals(), getProducts()]).then(
+      ([dealData, productData]) => {
+        setDeals(dealData);
+        setProducts(productData);
+        setLoading(false);
+      }
+    );
   };
 
   useEffect(() => {
@@ -115,6 +115,10 @@ export default function AdminTimeDealsPage() {
     e.preventDefault();
     setError("");
     if (!dealTitle.trim() || !dealEndTime) return;
+    if (!editingDealId && new Date(dealEndTime).getTime() <= Date.now()) {
+      setError("종료 시간이 이미 지났습니다. 현재 이후의 시간을 선택해주세요.");
+      return;
+    }
     setSubmitting(true);
 
     const endTimeISO = new Date(dealEndTime).toISOString();
@@ -152,12 +156,14 @@ export default function AdminTimeDealsPage() {
 
   const handleDeleteDeal = async (id: string) => {
     if (!confirm("이 타임딜과 포함된 모든 상품이 삭제됩니다. 계속하시겠습니까?")) return;
-    await deleteTimeDeal(id);
+    const ok = await deleteTimeDeal(id);
+    if (!ok) alert("삭제에 실패했습니다. 다시 시도해주세요.");
     loadData();
   };
 
   const handleToggleDeal = async (deal: DealWithItems) => {
-    await updateTimeDeal(deal.id, { isActive: !deal.isActive });
+    const ok = await updateTimeDeal(deal.id, { isActive: !deal.isActive });
+    if (!ok) alert("저장에 실패했습니다. 다시 시도해주세요.");
     loadData();
   };
 
@@ -171,8 +177,25 @@ export default function AdminTimeDealsPage() {
     const product = products.find((p) => p.id === itemProductId);
     if (!product) return;
 
+    const deal = deals.find((d) => d.id === dealId);
+    if (deal?.items.some((i) => i.productId === itemProductId)) {
+      setError("이미 이 타임딜에 추가된 상품입니다.");
+      return;
+    }
+
+    if (!Number.isInteger(Number(itemDealQuantity)) || Number(itemDealQuantity) < 1) {
+      setError("타임딜 수량은 1개 이상의 정수로 입력해주세요.");
+      return;
+    }
+
     if (Number(itemDealQuantity) > product.stock) {
       setError(`타임딜 수량(${itemDealQuantity})이 재고(${product.stock})보다 많습니다.`);
+      return;
+    }
+
+    const basePrice = product.salePrice || product.price;
+    if (Number(itemDealPrice) >= basePrice) {
+      setError(`타임딜 가격은 현재 판매가(${basePrice.toLocaleString()}원)보다 낮아야 합니다.`);
       return;
     }
 

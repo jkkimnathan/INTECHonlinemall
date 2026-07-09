@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
-import { validateImageFile, safeImagePath } from "@/lib/upload";
-import { sanitizeSearchTerm } from "@/lib/security";
 import { Product } from "@/types/product";
 import { toProduct } from "./product-utils";
+import { sanitizeSearchTerm, escapeLikePattern, getSafeImageExtension } from "@/lib/security";
 
 export { toProduct };
 
@@ -60,7 +59,7 @@ export async function getProducts(options?: {
       query = query.order("created_at", { ascending: false });
   }
 
-  const { data, error } = await query;
+  const { data, error } = await query.limit(500);
 
   if (error) {
     console.error("getProducts error:", error);
@@ -101,7 +100,8 @@ export async function getCategories(): Promise<string[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("products")
-    .select("category");
+    .select("category")
+    .limit(1000);
 
   if (error || !data) return [];
 
@@ -114,7 +114,8 @@ export async function getBrands(): Promise<string[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("products")
-    .select("brand");
+    .select("brand")
+    .limit(1000);
 
   if (error || !data) return [];
 
@@ -159,7 +160,7 @@ async function resolveUniqueSlug(slug: string): Promise<string> {
   const { data } = await supabase
     .from("products")
     .select("slug")
-    .like("slug", `${slug}%`);
+    .like("slug", `${escapeLikePattern(slug)}%`);
 
   if (!data || data.length === 0) return slug;
 
@@ -213,9 +214,9 @@ export async function deleteProduct(id: string): Promise<{ error: string | null 
 /** 이미지 업로드 → public URL 반환 */
 export async function uploadProductImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const check = await validateImageFile(file);
-  if (!check.valid) return { url: null, error: check.error! };
-  const path = safeImagePath("products", check.ext!);
+  const ext = getSafeImageExtension(file.name);
+  if (!ext) return { url: null, error: "지원하지 않는 이미지 형식입니다." };
+  const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
     .from("product-images")

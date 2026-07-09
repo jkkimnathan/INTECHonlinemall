@@ -16,14 +16,12 @@ import {
   Heart,
   ShoppingCart,
   Coins,
-  Settings,
   LogOut,
   ChevronRight,
   Crown,
   Truck,
   CheckCircle,
   RotateCcw,
-  Loader2,
 } from "lucide-react";
 
 function formatPrice(price: number) {
@@ -48,7 +46,7 @@ const statusBadgeColors: Record<string, string> = {
 
 export default function MyPage() {
   const router = useRouter();
-  const { user, isLoggedIn, loading: authLoading, logout } = useAuthStore();
+  const { user, isLoggedIn, loading, logout } = useAuthStore();
   const cartItems = useCartStore((s) => s.items);
   const wishlistItems = useWishlistStore((s) => s.items);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -59,17 +57,17 @@ export default function MyPage() {
     }
   }, [user?.id]);
 
-  // 비로그인 리다이렉트는 렌더 중이 아니라 effect에서 (정적 생성 중 location 참조 오류 방지)
+  // auth 초기화 완료 전에는 리다이렉트하지 않는다 (F5/직접 진입 시 튕김 방지)
   useEffect(() => {
-    if (!authLoading && (!isLoggedIn || !user)) {
-      router.push("/login");
+    if (!loading && !isLoggedIn) {
+      router.push("/login?returnUrl=/mypage");
     }
-  }, [authLoading, isLoggedIn, user, router]);
+  }, [loading, isLoggedIn, router]);
 
-  if (authLoading || !isLoggedIn || !user) {
+  if (loading || !isLoggedIn || !user) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center bg-[#fbfbfd]">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <p className="text-sm text-[#86868b]">내 정보를 불러오는 중...</p>
       </div>
     );
   }
@@ -262,10 +260,6 @@ export default function MyPage() {
             <div className="bg-white rounded-xl border p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-[#1d1d1f]">회원 정보</h3>
-                <Button variant="outline" size="sm" className="text-xs">
-                  <Settings className="h-3 w-3 mr-1" />
-                  수정
-                </Button>
               </div>
               <div className="space-y-3 text-sm">
                 <div className="flex">
@@ -282,7 +276,9 @@ export default function MyPage() {
                 </div>
                 <div className="flex">
                   <span className="text-[#86868b] w-20">가입일</span>
-                  <span className="text-[#1d1d1f]">{user.createdAt}</span>
+                  <span className="text-[#1d1d1f]">
+                    {new Date(user.createdAt).toLocaleDateString("ko-KR")}
+                  </span>
                 </div>
               </div>
             </div>

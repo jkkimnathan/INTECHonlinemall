@@ -147,7 +147,8 @@ export default function AdminBannersPage() {
   };
 
   const toggleActive = async (banner: Banner) => {
-    await updateBanner(banner.id, { is_active: !banner.isActive });
+    const { error: toggleErr } = await updateBanner(banner.id, { is_active: !banner.isActive });
+    if (toggleErr) alert("저장에 실패했습니다. 다시 시도해주세요.");
     loadBanners();
   };
 

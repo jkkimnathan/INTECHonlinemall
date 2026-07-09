@@ -77,14 +77,19 @@ export default function ProductReviews({ productId }: { productId: string }) {
   };
 
   useEffect(() => {
+    let cancelled = false;
+
     const init = async () => {
       setLoading(true);
-      await loadReviews();
+      const data = await getReviewsByProductId(productId);
+      if (cancelled) return;
+      setReviews(data);
 
       const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
+      if (cancelled) return;
 
       if (user) {
         setUserId(user.id);
@@ -98,6 +103,7 @@ export default function ProductReviews({ productId }: { productId: string }) {
           hasPurchasedProduct(user.id, productId),
           hasReviewed(user.id, productId),
         ]);
+        if (cancelled) return;
         setCanReview(purchased && !reviewed);
         setAlreadyReviewed(reviewed);
       }
@@ -105,7 +111,10 @@ export default function ProductReviews({ productId }: { productId: string }) {
       setLoading(false);
     };
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    return () => {
+      cancelled = true;
+    };
   }, [productId]);
 
   const handleSubmit = async (e: React.FormEvent) => {

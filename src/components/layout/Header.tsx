@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   ShoppingCart,
@@ -132,8 +132,15 @@ export default function Header() {
   const [mobileSubBrand, setMobileSubBrand] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const cartItemCount = useCartStore((s) => s.getTotalItems());
   const { isLoggedIn, user, logout } = useAuthStore();
+
+  // persisted 스토어 하이드레이션 이후에만 배지 렌더링 (SSR 불일치 방지)
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -373,7 +380,7 @@ export default function Header() {
             <Link href="/cart" className="relative" aria-label="장바구니">
               <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9">
                 <ShoppingCart className="h-5 w-5" />
-                {cartItemCount > 0 && (
+                {mounted && cartItemCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-[#DC2626] text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center tabular-nums">
                     {cartItemCount > 99 ? "99+" : cartItemCount}
                   </span>

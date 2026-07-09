@@ -18,24 +18,35 @@ const categories: { label: string; value: ProductCategory | "전체" }[] = [
 
 export default function CategoryTabs() {
   const [active, setActive] = useState<ProductCategory | "전체">("전체");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loadedFor, setLoadedFor] = useState<string | null>(null);
-  // 로딩 여부는 "현재 선택된 카테고리의 데이터를 이미 불러왔는가"로 파생 (effect 내 동기 setState 제거)
-  const loading = loadedFor !== active;
+  const [result, setResult] = useState<{
+    category: ProductCategory | "전체";
+    products: Product[];
+  } | null>(null);
 
   useEffect(() => {
-    let alive = true;
+    let cancelled = false;
     const opts =
       active === "전체" ? {} : { category: active as ProductCategory };
-    getProducts(opts).then((data) => {
-      if (!alive) return;
-      setProducts(data.filter((p) => !isHiddenBrand(p.brand)).slice(0, 8));
-      setLoadedFor(active);
-    });
+    getProducts(opts)
+      .then((data) => {
+        if (cancelled) return;
+        setResult({
+          category: active,
+          products: data.filter((p) => !isHiddenBrand(p.brand)).slice(0, 8),
+        });
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setResult({ category: active, products: [] });
+      });
     return () => {
-      alive = false;
+      cancelled = true;
     };
   }, [active]);
+
+  // 현재 탭의 응답이 아직 도착하지 않았으면 로딩 상태
+  const loading = result?.category !== active;
+  const products = result?.products ?? [];
 
   return (
     <section className="py-12 bg-white">

@@ -57,7 +57,7 @@ export async function getProducts(options?: {
       query = query.order("created_at", { ascending: false });
   }
 
-  const { data, error } = await query;
+  const { data, error } = await query.limit(500);
   if (error) {
     console.error("getProducts error:", error);
     return [];
@@ -76,13 +76,16 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     .single();
 
   if (error || !data) return null;
-  return toProduct(data);
+  const product = toProduct(data);
+  // 숨김 브랜드 상품은 직접 slug 접근으로도 노출 금지
+  if (isHiddenBrand(product.brand)) return null;
+  return product;
 }
 
 /** 카테고리 목록 */
 export async function getCategories(): Promise<string[]> {
   const supabase = createPublicClient();
-  const { data, error } = await supabase.from("products").select("category");
+  const { data, error } = await supabase.from("products").select("category").limit(1000);
 
   if (error || !data) return [];
   const categories = [...new Set(data.map((r) => r.category as string))];

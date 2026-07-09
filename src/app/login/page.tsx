@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,21 +9,31 @@ import { useAuthStore } from "@/store/auth";
 import { siteConfig } from "@/config/site";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
-export default function LoginPage() {
+/** open-redirect 방지: 내부 경로만 허용 */
+function safeReturnUrl(raw: string | null): string {
+  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  return "/";
+}
+
+function LoginForm() {
   const router = useRouter();
-  const { login, isLoggedIn } = useAuthStore();
+  const searchParams = useSearchParams();
+  const returnUrl = safeReturnUrl(
+    searchParams.get("returnUrl") ?? searchParams.get("redirect")
+  );
+  const { login, isLoggedIn, loading } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // 이미 로그인한 경우: 렌더 중이 아니라 effect에서 리다이렉트
+  // 이미 로그인한 경우 — auth 초기화 완료 후에만 이동
   useEffect(() => {
-    if (isLoggedIn) {
-      router.push("/");
+    if (!loading && isLoggedIn) {
+      router.replace(returnUrl);
     }
-  }, [isLoggedIn, router]);
+  }, [loading, isLoggedIn, router, returnUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +53,7 @@ export default function LoginPage() {
     setSubmitting(false);
 
     if (result.success) {
-      router.push("/");
+      router.push(returnUrl);
     } else {
       setError(result.error || "로그인에 실패했습니다.");
     }
@@ -134,17 +144,34 @@ export default function LoginPage() {
           {/* 소셜 로그인은 추후 카카오/네이버 OAuth 키 발급 후 활성화 */}
 
           {/* 하단 링크 */}
-          <div className="mt-6 text-center text-sm text-[#86868b]">
-            아직 회원이 아니신가요?{" "}
+          <div className="mt-6 flex items-center justify-center gap-3 text-sm text-[#86868b]">
             <Link
-              href="/signup"
-              className="text-[#1A56DB] font-medium hover:underline"
+              href="/forgot-password"
+              className="hover:text-[#1A56DB] hover:underline"
             >
-              회원가입
+              비밀번호 찾기
             </Link>
+            <span className="text-[#e5e7eb]">|</span>
+            <span>
+              아직 회원이 아니신가요?{" "}
+              <Link
+                href="/signup"
+                className="text-[#1A56DB] font-medium hover:underline"
+              >
+                회원가입
+              </Link>
+            </span>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

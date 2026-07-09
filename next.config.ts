@@ -38,12 +38,14 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              // 토스페이먼츠 결제위젯 + 다음(카카오) 우편번호 검색 스크립트 허용
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.tosspayments.com https://t1.daumcdn.net https://ssl.daumcdn.net https://postcode.map.daum.net",
+              // 토스페이먼츠 결제위젯 + 다음(카카오) 우편번호 스크립트. unsafe-eval은 개발 모드에서만 허용
+              `script-src 'self' 'unsafe-inline'${
+                process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""
+              } https://js.tosspayments.com https://t1.daumcdn.net https://ssl.daumcdn.net https://postcode.map.daum.net`,
               // 웹폰트 CSS: Pretendard(jsdelivr) + Manrope(구글폰트)
               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
               "img-src 'self' data: blob: https://tamfbsqtrncnmjuzjbjf.supabase.co https://static.toss.im https://*.tosspayments.com https://t1.daumcdn.net",
-              // 폰트 파일: 구글폰트(gstatic) + jsdelivr
+              // 폰트 파일: 구글폰트(gstatic) + jsdelivr + 토스
               "font-src 'self' data: https://static.toss.im https://fonts.gstatic.com https://cdn.jsdelivr.net",
               "connect-src 'self' https://tamfbsqtrncnmjuzjbjf.supabase.co wss://tamfbsqtrncnmjuzjbjf.supabase.co https://api.tosspayments.com https://event.tosspayments.com https://*.tosspayments.com",
               // 결제위젯/우편번호 검색이 iframe으로 동작

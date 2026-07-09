@@ -19,13 +19,14 @@ const CATEGORIES: Product["category"][] = [
 const BRANDS = ["INTEL", "ASUS", "MANLI", "ASRock", "TOSHIBA", "Microsoft", "iPC"];
 
 function slugify(text: string) {
-  return text
+  const slug = text
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/[^\p{L}\p{N}\s-]/gu, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "")
     .trim();
+  return slug || `product-${Date.now().toString(36)}`;
 }
 
 export default function NewProductPage() {
@@ -103,8 +104,13 @@ export default function NewProductPage() {
 
     if (!name.trim()) return setError("상품명을 입력하세요.");
     if (!finalBrand.trim()) return setError("브랜드를 입력하세요.");
-    if (!price || isNaN(Number(price))) return setError("올바른 가격을 입력하세요.");
-    if (!stock || isNaN(Number(stock))) return setError("올바른 재고를 입력하세요.");
+    if (!price || isNaN(Number(price)) || Number(price) < 0) return setError("올바른 가격을 입력하세요.");
+    if (stock === "" || isNaN(Number(stock)) || !Number.isInteger(Number(stock)) || Number(stock) < 0)
+      return setError("재고는 0 이상의 정수로 입력하세요.");
+    if (salePrice !== "" && (isNaN(Number(salePrice)) || Number(salePrice) < 0))
+      return setError("올바른 할인가를 입력하세요.");
+    if (salePrice !== "" && Number(salePrice) > 0 && Number(salePrice) >= Number(price))
+      return setError("할인가는 정가보다 낮아야 합니다.");
 
     const allImages = thumbnail ? [thumbnail, ...additionalImages] : additionalImages;
     const hasSale = salePrice !== "" && Number(salePrice) > 0;

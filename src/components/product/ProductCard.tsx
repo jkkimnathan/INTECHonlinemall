@@ -13,6 +13,7 @@ function formatPrice(price: number) {
 }
 
 function getDiscountRate(price: number, salePrice: number) {
+  if (price <= 0) return 0;
   return Math.round(((price - salePrice) / price) * 100);
 }
 
@@ -21,6 +22,12 @@ export default function ProductCard({ product }: { product: Product }) {
   const finalPrice = product.salePrice ?? product.price;
   const points = Math.floor(finalPrice * 0.01);
   const isFreeShipping = finalPrice >= 50000;
+  // 배지와 가격 표시가 동일한 조건 사용 (0원/역할인 방지)
+  const hasDiscount =
+    !!product.isSale &&
+    product.salePrice != null &&
+    product.price > 0 &&
+    product.salePrice < product.price;
 
   return (
     <Link
@@ -79,7 +86,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </h3>
 
         {/* 배지 — 모델명 아래 (이미지를 가리지 않도록) */}
-        {(product.condition === "refurbished" || product.isNew || (product.isSale && product.salePrice) || isFreeShipping) && (
+        {(product.condition === "refurbished" || product.isNew || hasDiscount || isFreeShipping) && (
           <div className="flex flex-wrap gap-1 mt-2">
             {product.condition === "refurbished" && (
               <Badge className="rounded-full bg-[#fff7ed] text-[#c2410c] text-[11px] font-semibold border-transparent">리퍼</Badge>
@@ -87,7 +94,7 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.isNew && (
               <Badge className="rounded-full bg-[#eef4ff] text-[#1d4ed8] text-[11px] font-semibold border-transparent">NEW</Badge>
             )}
-            {product.isSale && product.salePrice && (
+            {hasDiscount && product.salePrice != null && (
               <Badge className="rounded-full bg-[#DC2626] text-white text-[11px] font-semibold border-transparent">
                 {getDiscountRate(product.price, product.salePrice)}%
               </Badge>
@@ -104,7 +111,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="text-[12px] text-[#86868b] mt-1.5">{product.category}</p>
 
         <div className="mt-3">
-          {product.salePrice ? (
+          {hasDiscount && product.salePrice != null ? (
             <div>
               <span className="text-[11px] text-[#a1a1aa] line-through tabular-nums">
                 {formatPrice(product.price)}

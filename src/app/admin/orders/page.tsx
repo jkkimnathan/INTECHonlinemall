@@ -46,7 +46,8 @@ export default function AdminOrdersPage() {
   const handleStatusChange = async (orderId: string, status: OrderStatus) => {
     const { error } = await updateOrderStatus(orderId, status);
     if (error) {
-      showToast(`상태 변경 실패: ${error}`, "error");
+      showToast(`상태 변경에 실패했습니다. 다시 시도해주세요. (${error})`, "error");
+      getAllOrders().then(setOrders);
       return;
     }
     setOrders((prev) =>

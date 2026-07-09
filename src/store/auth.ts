@@ -23,11 +23,14 @@ interface AuthStore {
     password: string;
     name: string;
     phone: string;
-  }) => Promise<{ success: boolean; error?: string }>;
+  }) => Promise<{ success: boolean; error?: string; needsConfirm?: boolean }>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
   initialize: () => Promise<void>;
 }
+
+// onAuthStateChange 리스너는 앱 수명 동안 1회만 등록 (StrictMode 이중 실행/재초기화 대비)
+let authListenerRegistered = false;
 
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   user: null,
@@ -36,6 +39,70 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
   initialize: async () => {
     const supabase = createClient();
+
+    // Auth 상태 변경 리스너 — 세션 유무와 무관하게 항상 등록
+    if (!authListenerRegistered) {
+      authListenerRegistered = true;
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_OUT") {
+          // 공용 PC에서 다음 사용자 계정으로 위시리스트가 넘어가지 않도록 정리
+          useWishlistStore.getState().clearWishlist();
+          set({ user: null, isLoggedIn: false, loading: false });
+          return;
+        }
+
+        if (session?.user && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")) {
+          const u = session.user;
+          const current = get().user;
+          // 세션 기반으로 즉시 로그인 반영 (동일 유저면 기존 프로필 유지)
+          if (!current || current.id !== u.id) {
+            set({
+              user: {
+                id: u.id,
+                email: u.email || "",
+                name: u.user_metadata?.name || "",
+                phone: u.user_metadata?.phone || "",
+                grade: "일반",
+                points: 0,
+                isAdmin: false,
+                createdAt: u.created_at || new Date().toISOString(),
+              },
+              isLoggedIn: true,
+              loading: false,
+            });
+          } else {
+            set({ isLoggedIn: true, loading: false });
+          }
+
+          // supabase-js 콜백 내부에서 쿼리를 await하면 토큰 갱신 락 데드락 위험 → 콜백 밖에서 로드
+          setTimeout(() => {
+            supabase
+              .from("profiles")
+              .select("*")
+              .eq("id", u.id)
+              .single()
+              .then(({ data: profile }) => {
+                if (profile && get().user?.id === profile.id) {
+                  set({
+                    user: {
+                      id: profile.id,
+                      email: profile.email,
+                      name: profile.name || "",
+                      phone: profile.phone || "",
+                      grade: profile.grade || "일반",
+                      points: profile.points || 0,
+                      isAdmin: profile.is_admin || false,
+                      createdAt: profile.created_at,
+                    },
+                    isLoggedIn: true,
+                  });
+                }
+              });
+          }, 0);
+        }
+      });
+    }
+
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -104,38 +171,6 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     }
 
     set({ user: null, isLoggedIn: false, loading: false });
-
-    // Auth 상태 변경 리스너
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_OUT") {
-        set({ user: null, isLoggedIn: false });
-        return;
-      }
-
-      if (session?.user && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-
-        if (profile) {
-          set({
-            user: {
-              id: profile.id,
-              email: profile.email,
-              name: profile.name || "",
-              phone: profile.phone || "",
-              grade: profile.grade || "일반",
-              points: profile.points || 0,
-              isAdmin: profile.is_admin || false,
-              createdAt: profile.created_at,
-            },
-            isLoggedIn: true,
-          });
-        }
-      }
-    });
   },
 
   login: async (email, password) => {
@@ -264,15 +299,20 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         },
         isLoggedIn: true,
       });
+      return { success: true };
     }
 
-    return { success: true };
+    // 세션이 없으면 = 이메일 확인이 필요한 설정(Confirm email ON).
+    // 확인 메일을 보냈으므로 자동 로그인하지 않고 안내가 필요함을 알린다.
+    return { success: true, needsConfirm: true };
   },
 
   logout: async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    set({ user: null, isLoggedIn: false });
+    // 다음 사용자 계정으로의 교차 오염 방지 — 위시리스트는 DB로 upsert되므로 반드시 정리
+    useWishlistStore.getState().clearWishlist();
+    set({ user: null, isLoggedIn: false, loading: false });
   },
 
   updateUser: (data) => {

@@ -24,7 +24,6 @@ const PAGE_KEYS = [
 ];
 
 export default function PageBannersAdmin() {
-  const [, setBanners] = useState<Record<string, PageBanner>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
@@ -38,7 +37,6 @@ export default function PageBannersAdmin() {
     getAllPageBanners().then((data) => {
       const map: Record<string, PageBanner> = {};
       data.forEach((b) => { map[b.pageKey] = b; });
-      setBanners(map);
 
       // 폼 초기화
       const formState: Record<string, { title: string; subtitle: string; imageUrl: string | null }> = {};

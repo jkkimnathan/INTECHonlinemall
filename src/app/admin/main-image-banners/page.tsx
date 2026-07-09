@@ -64,11 +64,11 @@ export default function AdminMainImageBannersPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  const loadBanners = async () => {
-    setLoading(true);
-    const data = await getAllMainImageBanners();
-    setBanners(data);
-    setLoading(false);
+  const loadBanners = () => {
+    getAllMainImageBanners().then((data) => {
+      setBanners(data);
+      setLoading(false);
+    });
   };
 
   useEffect(() => {
@@ -84,14 +84,20 @@ export default function AdminMainImageBannersPage() {
     };
   }, []);
 
+  const revokePreview = (preview: string) => {
+    if (preview.startsWith("blob:")) URL.revokeObjectURL(preview);
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = ""; // 같은 파일 재선택 가능하도록 초기화
     if (!file) return;
+    revokePreview(form.imagePreview);
+    const preview = URL.createObjectURL(file);
     setForm((prev) => ({
       ...prev,
       imageFile: file,
-      imagePreview: URL.createObjectURL(file),
+      imagePreview: preview,
     }));
   };
 
@@ -114,6 +120,7 @@ export default function AdminMainImageBannersPage() {
       imageUrl = uploadResult.url;
     }
 
+    let ok: boolean;
     if (editingId) {
       const updates: Parameters<typeof updateMainImageBanner>[1] = {
         position: form.position,
@@ -123,9 +130,9 @@ export default function AdminMainImageBannersPage() {
         isActive: form.isActive,
       };
       if (imageUrl) updates.imageUrl = imageUrl;
-      await updateMainImageBanner(editingId, updates);
+      ok = await updateMainImageBanner(editingId, updates);
     } else {
-      await createMainImageBanner({
+      const created = await createMainImageBanner({
         position: form.position,
         imageUrl,
         linkUrl: form.linkUrl || undefined,
@@ -133,9 +140,17 @@ export default function AdminMainImageBannersPage() {
         sortOrder: form.sortOrder,
         isActive: form.isActive,
       });
+      ok = created !== null;
     }
 
     setSaving(false);
+    if (!ok) {
+      setError("저장에 실패했습니다. 다시 시도해주세요.");
+      loadBanners();
+      return;
+    }
+
+    revokePreview(form.imagePreview);
     setShowForm(false);
     setEditingId(null);
     setForm({ ...emptyForm });
@@ -143,6 +158,7 @@ export default function AdminMainImageBannersPage() {
   };
 
   const handleEdit = (banner: MainImageBanner) => {
+    revokePreview(form.imagePreview);
     setEditingId(banner.id);
     setForm({
       position: banner.position,
@@ -159,11 +175,13 @@ export default function AdminMainImageBannersPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("정말 삭제하시겠습니까?")) return;
-    await deleteMainImageBanner(id);
+    const ok = await deleteMainImageBanner(id);
+    if (!ok) alert("삭제에 실패했습니다. 다시 시도해주세요.");
     loadBanners();
   };
 
   const handleCancel = () => {
+    revokePreview(form.imagePreview);
     setShowForm(false);
     setEditingId(null);
     setForm({ ...emptyForm });
@@ -191,6 +209,7 @@ export default function AdminMainImageBannersPage() {
         {!showForm && (
           <Button
             onClick={() => {
+              revokePreview(form.imagePreview);
               setShowForm(true);
               setEditingId(null);
               setForm({ ...emptyForm });

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import { validateImageFile, safeImagePath } from "@/lib/upload";
+import { getSafeImageExtension } from "@/lib/security";
 
 export interface Banner {
   id: string;
@@ -97,33 +97,37 @@ export async function updateBanner(
   }
 ): Promise<{ error: string | null }> {
   const supabase = createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("banners")
     .update(input)
-    .eq("id", id);
+    .eq("id", id)
+    .select("id");
 
   if (error) return { error: error.message };
+  if (!data || data.length === 0) return { error: "배너를 찾을 수 없습니다." };
   return { error: null };
 }
 
 /** 배너 삭제 */
 export async function deleteBanner(id: string): Promise<{ error: string | null }> {
   const supabase = createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("banners")
     .delete()
-    .eq("id", id);
+    .eq("id", id)
+    .select("id");
 
   if (error) return { error: error.message };
+  if (!data || data.length === 0) return { error: "배너를 찾을 수 없습니다." };
   return { error: null };
 }
 
 /** 배너 이미지 업로드 */
 export async function uploadBannerImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const check = await validateImageFile(file);
-  if (!check.valid) return { url: null, error: check.error! };
-  const path = safeImagePath("banners", check.ext!);
+  const ext = getSafeImageExtension(file.name);
+  if (!ext) return { url: null, error: "지원하지 않는 이미지 형식입니다." };
+  const path = `banners/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
     .from("banner-images")

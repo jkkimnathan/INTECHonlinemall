@@ -10,21 +10,26 @@ import { isHiddenBrand } from "@/config/site";
 function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loadedFor, setLoadedFor] = useState<string | null>(null);
-  // 로딩 여부는 "현재 검색어의 결과를 이미 불러왔는가"로 파생 (effect 내 동기 setState 제거)
-  const loading = loadedFor !== query;
+  const [result, setResult] = useState<{ query: string; products: Product[] } | null>(null);
+  // 현재 query에 대한 결과가 아직 없으면 로딩 중 (effect 내 동기 setState 없이 파생)
+  const loading = result === null || result.query !== query;
+  const products = !loading && result ? result.products : [];
 
   useEffect(() => {
-    let alive = true;
+    let cancelled = false;
     const opts = query ? { search: query } : {};
-    getProducts(opts).then((data) => {
-      if (!alive) return;
-      setProducts(data.filter((p) => !isHiddenBrand(p.brand)));
-      setLoadedFor(query);
-    });
+    getProducts(opts)
+      .then((data) => {
+        // query가 바뀐 뒤 도착한 이전 응답은 무시 (stale response 방지)
+        if (cancelled) return;
+        setResult({ query, products: data.filter((p) => !isHiddenBrand(p.brand)) });
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setResult({ query, products: [] });
+      });
     return () => {
-      alive = false;
+      cancelled = true;
     };
   }, [query]);
 

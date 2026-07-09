@@ -1,5 +1,5 @@
 import { createClient } from "./client";
-import { validateImageFile, safeImagePath } from "@/lib/upload";
+import { getSafeImageExtension } from "@/lib/security";
 
 /** 홈 섹션 콘텐츠(JSON) 조회 */
 export async function getHomeSection<T>(key: string): Promise<T | null> {
@@ -38,9 +38,9 @@ export async function uploadHomeSectionImage(
   file: File
 ): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const check = await validateImageFile(file);
-  if (!check.valid) return { url: null, error: check.error! };
-  const path = safeImagePath("home-sections", check.ext!);
+  const ext = getSafeImageExtension(file.name);
+  if (!ext) return { url: null, error: "지원하지 않는 이미지 형식입니다." };
+  const path = `home-sections/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
     .from("product-images")

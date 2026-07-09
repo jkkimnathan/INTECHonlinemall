@@ -84,8 +84,9 @@ export default function AdminNoticesPage() {
     if (!title.trim() || !content.trim()) return;
     setSubmitting(true);
 
+    let ok: boolean;
     if (editingId) {
-      await updateNotice(editingId, {
+      ok = await updateNotice(editingId, {
         title,
         content,
         category,
@@ -93,28 +94,37 @@ export default function AdminNoticesPage() {
         imageUrl: imageUrl || null,
       });
     } else {
-      await createNotice({
+      const created = await createNotice({
         title,
         content,
         category,
         isPinned,
         imageUrl: imageUrl || null,
       });
+      ok = created !== null;
+    }
+
+    setSubmitting(false);
+    if (!ok) {
+      alert("저장에 실패했습니다. 다시 시도해주세요.");
+      loadNotices();
+      return;
     }
 
     resetForm();
-    setSubmitting(false);
     loadNotices();
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("정말 삭제하시겠습니까?")) return;
-    await deleteNotice(id);
+    const ok = await deleteNotice(id);
+    if (!ok) alert("삭제에 실패했습니다. 다시 시도해주세요.");
     loadNotices();
   };
 
   const handleTogglePin = async (notice: Notice) => {
-    await updateNotice(notice.id, { isPinned: !notice.isPinned });
+    const ok = await updateNotice(notice.id, { isPinned: !notice.isPinned });
+    if (!ok) alert("저장에 실패했습니다. 다시 시도해주세요.");
     loadNotices();
   };
 

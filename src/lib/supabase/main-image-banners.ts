@@ -1,5 +1,5 @@
 import { createClient } from "./client";
-import { validateImageFile, safeImagePath } from "@/lib/upload";
+import { getSafeImageExtension } from "@/lib/security";
 
 export type BannerPosition = "left-1" | "left-2" | "left-3" | "center" | "right-1" | "right-2" | "right-3";
 
@@ -110,22 +110,22 @@ export async function updateMainImageBanner(
   if (input.sortOrder !== undefined) updates.sort_order = input.sortOrder;
   if (input.isActive !== undefined) updates.is_active = input.isActive;
 
-  const { error } = await supabase.from("main_image_banners").update(updates).eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("main_image_banners").update(updates).eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 export async function deleteMainImageBanner(id: string): Promise<boolean> {
   const supabase = createClient();
-  const { error } = await supabase.from("main_image_banners").delete().eq("id", id);
-  return !error;
+  const { data, error } = await supabase.from("main_image_banners").delete().eq("id", id).select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 /** 이미지 업로드 */
 export async function uploadMainImageBannerImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const check = await validateImageFile(file);
-  if (!check.valid) return { url: null, error: check.error! };
-  const path = safeImagePath("main-banners", check.ext!);
+  const ext = getSafeImageExtension(file.name);
+  if (!ext) return { url: null, error: "지원하지 않는 이미지 형식입니다." };
+  const path = `main-banners/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
     .from("product-images")
