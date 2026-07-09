@@ -1,13 +1,14 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getOrderById } from "@/lib/supabase/orders";
+import { useCartStore } from "@/store/cart";
 import { Order } from "@/types/order";
-import { CheckCircle, Package, ArrowRight, Loader2 } from "lucide-react";
+import { CheckCircle, XCircle, Package, ArrowRight, Loader2 } from "lucide-react";
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
@@ -16,24 +17,73 @@ function formatPrice(price: number) {
 function OrderCompleteContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
+  const paymentKey = searchParams.get("paymentKey");
+  const amount = searchParams.get("amount");
+
   const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!orderId);
+  const [confirmError, setConfirmError] = useState("");
+  const confirmStartedRef = useRef(false);
 
   useEffect(() => {
-    if (orderId) {
-      getOrderById(orderId).then((o) => {
-        setOrder(o);
-        setLoading(false);
-      });
-    } else {
+    if (!orderId) return;
+    if (confirmStartedRef.current) return;
+    confirmStartedRef.current = true;
+
+    (async () => {
+      // 토스 결제 성공 리다이렉트인 경우: 서버 승인부터 처리
+      if (paymentKey && amount) {
+        try {
+          const res = await fetch("/api/payments/confirm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paymentKey, orderId, amount: Number(amount) }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            setConfirmError(data.error || "결제 승인에 실패했습니다.");
+            setLoading(false);
+            return;
+          }
+          // 승인 성공 → 장바구니 비우기
+          useCartStore.getState().clearCart();
+        } catch {
+          setConfirmError("결제 승인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+          setLoading(false);
+          return;
+        }
+      }
+
+      const o = await getOrderById(orderId);
+      setOrder(o);
       setLoading(false);
-    }
-  }, [orderId]);
+    })();
+  }, [orderId, paymentKey, amount]);
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        {paymentKey && (
+          <p className="text-sm text-gray-500">결제를 확인하고 있습니다. 잠시만 기다려주세요...</p>
+        )}
+      </div>
+    );
+  }
+
+  // 결제 승인 실패
+  if (confirmError) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
+        <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-4">
+          <XCircle className="h-10 w-10 text-red-500" />
+        </div>
+        <h1 className="text-xl font-bold text-[#1d1d1f]">결제가 완료되지 않았습니다</h1>
+        <p className="text-sm text-[#86868b] mt-2 text-center">{confirmError}</p>
+        <p className="text-xs text-[#a1a1aa] mt-1">결제 금액은 청구되지 않았거나 자동 취소되었습니다.</p>
+        <Link href="/checkout" className="mt-6">
+          <Button className="rounded-full bg-[#1A56DB] hover:bg-[#1747b4]">다시 결제하기</Button>
+        </Link>
       </div>
     );
   }

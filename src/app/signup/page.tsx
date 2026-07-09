@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -26,10 +26,12 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  if (isLoggedIn) {
-    router.push("/mypage");
-    return null;
-  }
+  // 이미 로그인한 경우: 렌더 중이 아니라 effect에서 리다이렉트
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push("/mypage");
+    }
+  }, [isLoggedIn, router]);
 
   const updateField = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));

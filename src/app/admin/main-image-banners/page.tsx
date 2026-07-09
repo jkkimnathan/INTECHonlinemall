@@ -72,7 +72,16 @@ export default function AdminMainImageBannersPage() {
   };
 
   useEffect(() => {
-    loadBanners();
+    // 최초 로드: loadBanners()는 동기 setLoading(true)를 포함하므로 여기선 직접 조회
+    let alive = true;
+    getAllMainImageBanners().then((data) => {
+      if (!alive) return;
+      setBanners(data);
+      setLoading(false);
+    });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
+import { validateImageFile, safeImagePath } from "@/lib/upload";
+import { sanitizeSearchTerm } from "@/lib/security";
 import { Product } from "@/types/product";
 import { toProduct } from "./product-utils";
 
@@ -33,8 +35,11 @@ export async function getProducts(options?: {
     query = query.eq("is_featured", true);
   }
   if (options?.search) {
-    const q = `%${options.search}%`;
-    query = query.or(`name.ilike.${q},brand.ilike.${q},category.ilike.${q},description.ilike.${q}`);
+    const term = sanitizeSearchTerm(options.search);
+    if (term) {
+      const q = `%${term}%`;
+      query = query.or(`name.ilike.${q},brand.ilike.${q},category.ilike.${q},description.ilike.${q}`);
+    }
   }
 
   // 정렬
@@ -208,8 +213,9 @@ export async function deleteProduct(id: string): Promise<{ error: string | null 
 /** 이미지 업로드 → public URL 반환 */
 export async function uploadProductImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
-  const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const check = await validateImageFile(file);
+  if (!check.valid) return { url: null, error: check.error! };
+  const path = safeImagePath("products", check.ext!);
 
   const { error: uploadError } = await supabase.storage
     .from("product-images")

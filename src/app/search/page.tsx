@@ -11,15 +11,21 @@ function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadedFor, setLoadedFor] = useState<string | null>(null);
+  // 로딩 여부는 "현재 검색어의 결과를 이미 불러왔는가"로 파생 (effect 내 동기 setState 제거)
+  const loading = loadedFor !== query;
 
   useEffect(() => {
-    setLoading(true);
+    let alive = true;
     const opts = query ? { search: query } : {};
     getProducts(opts).then((data) => {
+      if (!alive) return;
       setProducts(data.filter((p) => !isHiddenBrand(p.brand)));
-      setLoading(false);
+      setLoadedFor(query);
     });
+    return () => {
+      alive = false;
+    };
   }, [query]);
 
   if (loading) {

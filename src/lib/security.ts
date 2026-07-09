@@ -47,3 +47,19 @@ export function validatePrice(price: number): boolean {
 export function validateQuantity(qty: number): boolean {
   return Number.isInteger(qty) && qty >= 1 && qty <= 999;
 }
+
+/**
+ * 검색어 정규화 - PostgREST `.or()` 필터 문법과 ilike 와일드카드를 깨거나
+ * 악용할 수 있는 문자를 제거한다.
+ *  - `,` `(` `)` : .or() 조건 구분/그룹 문법을 깨뜨림
+ *  - `%` `_`     : ilike 와일드카드 (의도치 않은 매칭)
+ *  - `\`         : 이스케이프 문자
+ * 길이도 100자로 제한한다. 반환값이 빈 문자열이면 검색을 건너뛴다.
+ */
+export function sanitizeSearchTerm(input: string): string {
+  return input
+    .slice(0, 100)
+    .replace(/[%_,()\\]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}

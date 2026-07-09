@@ -23,6 +23,7 @@ import {
   Truck,
   CheckCircle,
   RotateCcw,
+  Loader2,
 } from "lucide-react";
 
 function formatPrice(price: number) {
@@ -47,7 +48,7 @@ const statusBadgeColors: Record<string, string> = {
 
 export default function MyPage() {
   const router = useRouter();
-  const { user, isLoggedIn, logout } = useAuthStore();
+  const { user, isLoggedIn, loading: authLoading, logout } = useAuthStore();
   const cartItems = useCartStore((s) => s.items);
   const wishlistItems = useWishlistStore((s) => s.items);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -58,9 +59,19 @@ export default function MyPage() {
     }
   }, [user?.id]);
 
-  if (!isLoggedIn || !user) {
-    router.push("/login");
-    return null;
+  // 비로그인 리다이렉트는 렌더 중이 아니라 effect에서 (정적 생성 중 location 참조 오류 방지)
+  useEffect(() => {
+    if (!authLoading && (!isLoggedIn || !user)) {
+      router.push("/login");
+    }
+  }, [authLoading, isLoggedIn, user, router]);
+
+  if (authLoading || !isLoggedIn || !user) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#fbfbfd]">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      </div>
+    );
   }
 
   const handleLogout = () => {

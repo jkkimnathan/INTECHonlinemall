@@ -5,10 +5,9 @@ import { Phone, Mail, MapPin, Clock } from "lucide-react";
 const quickLinks = [
   { title: "공지사항", href: "/notice" },
   { title: "자주 묻는 질문", href: "/faq" },
-  { title: "1:1 문의", href: "/inquiry" },
+  { title: "1:1 문의", href: "/community" },
   { title: "배송안내", href: "/shipping" },
   { title: "교환/반품 안내", href: "/returns" },
-  { title: "비회원 주문조회", href: "/order/lookup" },
 ];
 
 export default function Footer() {
@@ -51,6 +50,10 @@ export default function Footer() {
               <p>
                 <span className="text-[#64748B]">사업자등록번호</span>{" "}
                 <span>{contact.businessNumber}</span>
+              </p>
+              <p>
+                <span className="text-[#64748B]">통신판매업신고번호</span>{" "}
+                <span>{contact.mailOrderNumber}</span>
               </p>
               <div className="flex items-start gap-1.5">
                 <MapPin className="h-4 w-4 text-[#64748B] mt-0.5 shrink-0" />
@@ -128,7 +131,7 @@ export default function Footer() {
             </div>
           </div>
           <p className="text-[10px] text-[#475569] text-center mt-3">
-            전자상거래 등에서의 소비자보호에 관한 법률에 의한 통신판매업
+            전자상거래 등에서의 소비자보호에 관한 법률에 따른 통신판매업 신고번호: {contact.mailOrderNumber}
           </p>
         </div>
       </div>

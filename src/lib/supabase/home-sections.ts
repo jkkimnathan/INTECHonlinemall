@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { validateImageFile, safeImagePath } from "@/lib/upload";
 
 /** 홈 섹션 콘텐츠(JSON) 조회 */
 export async function getHomeSection<T>(key: string): Promise<T | null> {
@@ -37,8 +38,9 @@ export async function uploadHomeSectionImage(
   file: File
 ): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
-  const path = `home-sections/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const check = await validateImageFile(file);
+  if (!check.valid) return { url: null, error: check.error! };
+  const path = safeImagePath("home-sections", check.ext!);
 
   const { error: uploadError } = await supabase.storage
     .from("product-images")

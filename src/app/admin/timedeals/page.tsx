@@ -10,7 +10,6 @@ import {
   updateTimeDeal,
   deleteTimeDeal,
   addTimeDealItem,
-  updateTimeDealItem,
   removeTimeDealItem,
   TimeDeal,
   TimeDealItem,
@@ -68,7 +67,16 @@ export default function AdminTimeDealsPage() {
   };
 
   useEffect(() => {
-    loadData();
+    let alive = true;
+    Promise.all([getAllTimeDeals(), getProducts()]).then(([dealData, productData]) => {
+      if (!alive) return;
+      setDeals(dealData);
+      setProducts(productData);
+      setLoading(false);
+    });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const resetDealForm = () => {

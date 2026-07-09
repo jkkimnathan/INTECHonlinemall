@@ -1,6 +1,7 @@
 import { CartItem } from "@/store/cart";
 
 export type OrderStatus =
+  | "결제대기"
   | "결제완료"
   | "배송준비"
   | "배송중"

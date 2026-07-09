@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { getAllOrders, updateOrderStatus } from "@/lib/supabase/orders";
 import { Order, OrderStatus } from "@/types/order";
 import { Eye, Package, Loader2 } from "lucide-react";
@@ -14,6 +13,7 @@ function formatPrice(price: number) {
 }
 
 const statusColors: Record<string, string> = {
+  결제대기: "bg-gray-100 text-[#86868b]",
   결제완료: "bg-blue-100 text-[#1A56DB]",
   배송준비: "bg-yellow-100 text-yellow-700",
   배송중: "bg-[#fff7ed] text-[#c2410c]",
@@ -54,9 +54,10 @@ export default function AdminOrdersPage() {
     );
   };
 
+  // "전체"에는 결제 전(결제대기) 주문을 숨긴다. 필요하면 "결제대기" 필터로 확인.
   const filtered =
     filter === "전체"
-      ? orders
+      ? orders.filter((o) => o.status !== "결제대기")
       : orders.filter((o) => o.status === filter);
 
   if (loading) {
@@ -79,9 +80,9 @@ export default function AdminOrdersPage() {
           className="text-xs"
           onClick={() => setFilter("전체")}
         >
-          전체 ({orders.length})
+          전체 ({orders.filter((o) => o.status !== "결제대기").length})
         </Button>
-        {statusOptions.map((status) => {
+        {(["결제대기", ...statusOptions] as OrderStatus[]).map((status) => {
           const count = orders.filter((o) => o.status === status).length;
           return (
             <Button

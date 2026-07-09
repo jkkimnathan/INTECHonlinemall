@@ -74,25 +74,33 @@ export default function ProductDetailPage({
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadedSlug, setLoadedSlug] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [mainImage, setMainImage] = useState(0);
   const addToCart = useCartStore((s) => s.addItem);
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
   const addToRecentlyViewed = useRecentlyViewedStore((s) => s.addItem);
 
+  // 로딩 여부는 "현재 slug의 상품을 이미 불러왔는가"로 파생 (effect 내 동기 setState 제거)
+  const loading = loadedSlug !== slug;
+
   useEffect(() => {
-    setLoading(true);
+    let alive = true;
     getProductBySlug(slug).then((p) => {
+      if (!alive) return;
       setProduct(p);
-      setLoading(false);
+      setLoadedSlug(slug);
       if (p) {
         addToRecentlyViewed(p);
         getProducts({ brand: p.brand }).then((related) => {
+          if (!alive) return;
           setRelatedProducts(related.filter((r) => r.id !== p.id).slice(0, 4));
         });
       }
     });
+    return () => {
+      alive = false;
+    };
   }, [slug, addToRecentlyViewed]);
 
   if (loading) {

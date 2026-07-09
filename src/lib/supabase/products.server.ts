@@ -2,6 +2,7 @@ import { createPublicClient } from "@/lib/supabase/server-public";
 import { Product } from "@/types/product";
 import { toProduct } from "./product-utils";
 import { isHiddenBrand } from "@/config/site";
+import { sanitizeSearchTerm } from "@/lib/security";
 
 /** 상품 목록 조회 (Server Component용) */
 export async function getProducts(options?: {
@@ -32,8 +33,11 @@ export async function getProducts(options?: {
     query = query.eq("is_featured", true);
   }
   if (options?.search) {
-    const q = `%${options.search}%`;
-    query = query.or(`name.ilike.${q},brand.ilike.${q},category.ilike.${q},description.ilike.${q}`);
+    const term = sanitizeSearchTerm(options.search);
+    if (term) {
+      const q = `%${term}%`;
+      query = query.or(`name.ilike.${q},brand.ilike.${q},category.ilike.${q},description.ilike.${q}`);
+    }
   }
 
   switch (options?.sortBy) {

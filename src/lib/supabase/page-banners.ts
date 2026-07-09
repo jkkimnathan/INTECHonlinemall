@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { validateImageFile, safeImagePath } from "@/lib/upload";
 
 export interface PageBanner {
   id: string;
@@ -82,8 +83,9 @@ export async function upsertPageBanner(input: {
 /** 배너 이미지 업로드 */
 export async function uploadPageBannerImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
-  const path = `page-banners/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const check = await validateImageFile(file);
+  if (!check.valid) return { url: null, error: check.error! };
+  const path = safeImagePath("page-banners", check.ext!);
 
   const { error: uploadError } = await supabase.storage
     .from("product-images")

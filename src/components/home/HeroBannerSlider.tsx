@@ -100,7 +100,6 @@ export default function HeroBannerSlider({ banners: initialBanners = [] }: Props
               {banner.mobileImageUrl && (
                 <source media="(max-width: 767px)" srcSet={banner.mobileImageUrl} />
               )}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={banner.imageUrl}
                 alt={banner.title}

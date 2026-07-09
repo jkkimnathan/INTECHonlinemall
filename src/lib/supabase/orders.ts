@@ -1,18 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { Order, OrderStatus } from "@/types/order";
 import { CartItem } from "@/store/cart";
-import { validatePrice, validateQuantity } from "@/lib/security";
-
-interface CreateOrderInput {
-  userId: string;
-  items: CartItem[];
-  shipping: Order["shipping"];
-  paymentMethod: Order["paymentMethod"];
-  subtotal: number;
-  shippingFee: number;
-  discount: number;
-  total: number;
-}
 
 function toOrder(row: Record<string, unknown>): Order {
   const items = row.items as CartItem[];
@@ -33,47 +21,8 @@ function toOrder(row: Record<string, unknown>): Order {
   };
 }
 
-/** 주문 생성 */
-export async function createOrder(input: CreateOrderInput): Promise<{ order: Order | null; error: string | null }> {
-  // 서버 검증: 금액 및 수량 유효성
-  if (!validatePrice(input.subtotal) || !validatePrice(input.total) || !validatePrice(input.shippingFee)) {
-    return { order: null, error: "주문 금액이 유효하지 않습니다." };
-  }
-  if (input.total < 0 || input.subtotal < 0) {
-    return { order: null, error: "주문 금액이 유효하지 않습니다." };
-  }
-  for (const item of input.items) {
-    if (!validateQuantity(item.quantity)) {
-      return { order: null, error: `상품 수량이 유효하지 않습니다: ${item.product?.name}` };
-    }
-  }
-  if (!input.userId || !input.shipping?.name || !input.shipping?.phone || !input.shipping?.address) {
-    return { order: null, error: "배송 정보가 누락되었습니다." };
-  }
-
-  const supabase = createClient();
-  const id = `ORD-${Date.now()}`;
-
-  const { data, error } = await supabase
-    .from("orders")
-    .insert([{
-      id,
-      user_id: input.userId,
-      items: input.items,
-      shipping: input.shipping,
-      payment_method: input.paymentMethod,
-      subtotal: input.subtotal,
-      shipping_fee: input.shippingFee,
-      discount: input.discount,
-      total: input.total,
-      status: "결제완료",
-    }])
-    .select("*")
-    .single();
-
-  if (error) return { order: null, error: error.message };
-  return { order: toOrder(data), error: null };
-}
+// 주문 생성은 서버 API(/api/orders/prepare + /api/payments/confirm)에서만 수행한다.
+// 브라우저에서의 직접 INSERT는 RLS로 차단되어 있다 (payment_migration.sql 참고).
 
 /** 주문 조회 (by ID) */
 export async function getOrderById(id: string): Promise<Order | null> {
@@ -88,13 +37,14 @@ export async function getOrderById(id: string): Promise<Order | null> {
   return toOrder(data);
 }
 
-/** 내 주문 목록 */
+/** 내 주문 목록 (결제 전 주문은 제외) */
 export async function getOrdersByUserId(userId: string): Promise<Order[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("orders")
     .select("*")
     .eq("user_id", userId)
+    .neq("status", "결제대기")
     .order("created_at", { ascending: false });
 
   if (error || !data) return [];

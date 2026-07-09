@@ -1,71 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import Link from "next/link";
+import { loadTossPayments, TossPaymentsWidgets } from "@tosspayments/tosspayments-sdk";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/store/cart";
 import { useAuthStore } from "@/store/auth";
-import { createOrder } from "@/lib/supabase/orders";
-import { PaymentMethod, ShippingInfo } from "@/types/order";
-import {
-  CreditCard,
-  Building2,
-  Wallet,
-  ArrowLeft,
-  ShoppingBag,
-} from "lucide-react";
+import { ShippingInfo } from "@/types/order";
+import { ArrowLeft, ShoppingBag, Loader2 } from "lucide-react";
 
 function formatPrice(price: number) {
   return price.toLocaleString("ko-KR") + "원";
 }
-
-const paymentMethods: {
-  id: PaymentMethod;
-  label: string;
-  icon: React.ReactNode;
-  description: string;
-}[] = [
-  {
-    id: "card",
-    label: "신용/체크카드",
-    icon: <CreditCard className="h-5 w-5" />,
-    description: "모든 카드 결제 가능",
-  },
-  {
-    id: "transfer",
-    label: "실시간 계좌이체",
-    icon: <Building2 className="h-5 w-5" />,
-    description: "은행 계좌에서 바로 결제",
-  },
-  {
-    id: "virtual",
-    label: "가상계좌",
-    icon: <Building2 className="h-5 w-5" />,
-    description: "발급된 계좌로 입금",
-  },
-  {
-    id: "kakaopay",
-    label: "카카오페이",
-    icon: <Wallet className="h-5 w-5" />,
-    description: "카카오페이 간편결제",
-  },
-  {
-    id: "naverpay",
-    label: "네이버페이",
-    icon: <Wallet className="h-5 w-5" />,
-    description: "네이버페이 간편결제",
-  },
-  {
-    id: "tosspay",
-    label: "토스페이",
-    icon: <Wallet className="h-5 w-5" />,
-    description: "토스페이 간편결제",
-  },
-];
 
 const shippingMemos = [
   "배송 전 연락 부탁드립니다",
@@ -75,10 +25,12 @@ const shippingMemos = [
   "직접 입력",
 ];
 
+const TOSS_CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!;
+
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, getTotalPrice, clearCart } = useCartStore();
-  const { user, isLoggedIn } = useAuthStore();
+  const { items, getTotalPrice } = useCartStore();
+  const { user, isLoggedIn, loading: authLoading } = useAuthStore();
   const [submitting, setSubmitting] = useState(false);
 
   const [shipping, setShipping] = useState<ShippingInfo>({
@@ -90,10 +42,69 @@ export default function CheckoutPage() {
     memo: shippingMemos[0],
   });
   const [customMemo, setCustomMemo] = useState("");
-  const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>("card");
   const [usePoints, setUsePoints] = useState(0);
   const [error, setError] = useState("");
   const [daumLoaded, setDaumLoaded] = useState(false);
+
+  // 토스 결제위젯 (결제수단 선택 UI가 위젯 안에 포함됨)
+  const [widgets, setWidgets] = useState<TossPaymentsWidgets | null>(null);
+  const [widgetReady, setWidgetReady] = useState(false);
+  const widgetInitRef = useRef(false);
+
+  const subtotal = getTotalPrice();
+  const shippingFee = subtotal >= 50000 ? 0 : 3000;
+  const discount = Math.min(usePoints, subtotal);
+  const total = subtotal + shippingFee - discount;
+
+  // 위젯 초기화 (1회). React Strict Mode의 effect 이중 실행에도 안전하도록
+  // ref 가드로 단 한 번만 렌더한다(위젯은 같은 selector에 두 번 렌더하면 오류).
+  useEffect(() => {
+    if (!user || items.length === 0 || widgetInitRef.current) return;
+    widgetInitRef.current = true;
+
+    (async () => {
+      try {
+        const toss = await loadTossPayments(TOSS_CLIENT_KEY);
+        const w = toss.widgets({ customerKey: user.id });
+        await w.setAmount({ currency: "KRW", value: total });
+        await Promise.all([
+          w.renderPaymentMethods({ selector: "#toss-payment-methods" }),
+          w.renderAgreement({ selector: "#toss-agreement" }),
+        ]);
+        setWidgets(w);
+        setWidgetReady(true);
+      } catch (e) {
+        console.error("toss widget init failed:", e);
+        widgetInitRef.current = false; // 실패 시 재시도 허용
+        setError("결제창을 불러오지 못했습니다. 새로고침 후 다시 시도해주세요.");
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, items.length]);
+
+  // 금액이 바뀌면 위젯에 반영 (포인트 사용 등)
+  useEffect(() => {
+    if (widgets && widgetReady) {
+      widgets.setAmount({ currency: "KRW", value: total }).catch(() => {});
+    }
+  }, [widgets, widgetReady, total]);
+
+  // 비로그인 리다이렉트 (렌더 중이 아니라 effect에서)
+  useEffect(() => {
+    if (!authLoading && !isLoggedIn) {
+      router.push("/login");
+    }
+  }, [authLoading, isLoggedIn, router]);
+
+  // 결제 실패로 돌아온 경우 안내 (failUrl 리다이렉트)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const failMessage = params.get("message");
+    if (params.get("code") || failMessage) {
+      setError(failMessage || "결제가 완료되지 않았습니다. 다시 시도해주세요.");
+      window.history.replaceState(null, "", "/checkout");
+    }
+  }, []);
 
   const openAddressSearch = () => {
     const daum = (window as unknown as Record<string, unknown>).daum as
@@ -108,10 +119,15 @@ export default function CheckoutPage() {
     }).open();
   };
 
-  // 로그인 체크
-  if (!isLoggedIn) {
-    router.push("/login");
-    return null;
+  // 인증 상태 확인 중이거나 비로그인일 때는 대기 화면.
+  // 리다이렉트는 렌더 중이 아니라 effect에서 처리(정적 생성 중 location 참조 오류 방지 +
+  // 새로고침·직접 진입 시 로그인 판정 전 튕김 방지).
+  if (authLoading || !isLoggedIn) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#fbfbfd]">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      </div>
+    );
   }
 
   // 장바구니 비어있음
@@ -127,11 +143,6 @@ export default function CheckoutPage() {
     );
   }
 
-  const subtotal = getTotalPrice();
-  const shippingFee = subtotal >= 50000 ? 0 : 3000;
-  const discount = Math.min(usePoints, subtotal);
-  const total = subtotal + shippingFee - discount;
-
   const updateShipping = (field: keyof ShippingInfo, value: string) => {
     setShipping((prev) => ({ ...prev, [field]: value }));
   };
@@ -141,36 +152,54 @@ export default function CheckoutPage() {
     if (!shipping.name) return setError("받는 분 이름을 입력해주세요.");
     if (!shipping.phone) return setError("연락처를 입력해주세요.");
     if (!shipping.address) return setError("주소를 입력해주세요.");
+    if (!widgets || !widgetReady) return setError("결제창이 아직 준비되지 않았습니다.");
 
-    const memo =
-      shipping.memo === "직접 입력" ? customMemo : shipping.memo;
+    const memo = shipping.memo === "직접 입력" ? customMemo : shipping.memo;
 
     setSubmitting(true);
-    const { order, error: orderErr } = await createOrder({
-      userId: user!.id,
-      items: [...items],
-      shipping: { ...shipping, memo },
-      paymentMethod: selectedPayment,
-      subtotal,
-      shippingFee,
-      discount,
-      total,
-    });
-    setSubmitting(false);
+    try {
+      // 1단계: 서버가 금액을 재계산하고 "결제대기" 주문을 만든다
+      const res = await fetch("/api/orders/prepare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
+          shipping: { ...shipping, memo },
+          usePoints: discount,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "주문 준비에 실패했습니다.");
+        return;
+      }
 
-    if (orderErr || !order) {
-      setError(`주문 실패: ${orderErr || "알 수 없는 오류"}`);
-      return;
+      // 2단계: 서버가 확정한 금액으로 토스 결제창 호출
+      await widgets.setAmount({ currency: "KRW", value: data.amount });
+      await widgets.requestPayment({
+        orderId: data.orderId,
+        orderName: data.orderName,
+        successUrl: `${window.location.origin}/order/complete`,
+        failUrl: `${window.location.origin}/checkout`,
+        customerEmail: user?.email,
+        customerName: user?.name || shipping.name,
+      });
+      // requestPayment는 성공 시 successUrl로 이동하므로 이후 코드는 실행되지 않음
+    } catch (e) {
+      // 사용자가 결제창을 닫은 경우 등
+      const message = e instanceof Error ? e.message : "";
+      if (!message.includes("취소")) {
+        setError(message || "결제를 시작하지 못했습니다.");
+      }
+    } finally {
+      setSubmitting(false);
     }
-
-    clearCart();
-    router.push(`/order/complete?orderId=${order.id}`);
   };
 
   return (
     <div className="bg-[#fbfbfd] min-h-screen">
       <Script
-        src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
+        src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
         strategy="lazyOnload"
         onLoad={() => setDaumLoaded(true)}
       />
@@ -312,43 +341,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* 결제 수단 */}
-            <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6">
-              <h2 className="font-bold text-[#1d1d1f] mb-4">결제 수단</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {paymentMethods.map((method) => (
-                  <button
-                    key={method.id}
-                    onClick={() => setSelectedPayment(method.id)}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
-                      selectedPayment === method.id
-                        ? "border-[#1A56DB] bg-[#EEF4FF]"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <div
-                      className={
-                        selectedPayment === method.id
-                          ? "text-[#1A56DB]"
-                          : "text-gray-400"
-                      }
-                    >
-                      {method.icon}
-                    </div>
-                    <span
-                      className={`text-sm font-medium ${
-                        selectedPayment === method.id
-                          ? "text-[#1A56DB]"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      {method.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* 적립금 사용 */}
             {user && user.points > 0 && (
               <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6">
@@ -383,6 +375,16 @@ export default function CheckoutPage() {
                 </div>
               </div>
             )}
+
+            {/* 결제 수단 (토스페이먼츠 위젯) */}
+            <div className="bg-white rounded-2xl border border-[#f1f1f3] p-6">
+              <h2 className="font-bold text-[#1d1d1f] mb-4">결제 수단</h2>
+              {!widgetReady && !error && (
+                <p className="text-sm text-gray-400 py-8 text-center">결제 수단을 불러오는 중...</p>
+              )}
+              <div id="toss-payment-methods" />
+              <div id="toss-agreement" />
+            </div>
           </div>
 
           {/* 오른쪽: 결제 요약 */}
@@ -429,7 +431,7 @@ export default function CheckoutPage() {
               <Button
                 className="w-full h-12 rounded-full bg-[#1A56DB] hover:bg-[#1747b4] text-white font-semibold text-base"
                 onClick={handleOrder}
-                disabled={submitting}
+                disabled={submitting || !widgetReady}
               >
                 {submitting ? "주문 처리 중..." : `${formatPrice(total)} 결제하기`}
               </Button>
@@ -437,7 +439,7 @@ export default function CheckoutPage() {
               <p className="text-xs text-gray-400 mt-3 text-center leading-relaxed">
                 주문 내용을 확인하였으며, 결제에 동의합니다.
                 <br />
-                (추후 토스페이먼츠 PG 연동 예정)
+                토스페이먼츠 안전결제
               </p>
             </div>
           </div>

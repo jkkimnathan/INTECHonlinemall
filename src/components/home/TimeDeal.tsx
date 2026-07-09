@@ -44,6 +44,8 @@ export default function TimeDeal({ deals: initialDeals = [], products: initialPr
   }, [initialDeals]);
 
   useEffect(() => {
+    // 하이드레이션 가드: 카운트다운은 클라이언트에서만 렌더(서버/클라 시간 불일치 방지)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

@@ -119,7 +119,7 @@ export default function CommunityClient({ banner }: { banner: BannerData | null 
       return;
     }
     const result = await unlockQna(item.id, passwordInput);
-    if (result) {
+    if (result.status === "ok") {
       setItems((prev) =>
         prev.map((q) =>
           q.id === item.id
@@ -130,6 +130,9 @@ export default function CommunityClient({ banner }: { banner: BannerData | null 
       setUnlockedIds((prev) => new Set(prev).add(item.id));
       setOpenId(item.id);
       setPasswordInput("");
+    } else if (result.status === "locked") {
+      const mins = Math.ceil(result.retryAfter / 60);
+      showToast(`비밀번호를 여러 번 틀렸습니다. ${mins}분 후 다시 시도해주세요.`, "error");
     } else {
       showToast("비밀번호가 일치하지 않습니다.", "error");
     }

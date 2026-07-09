@@ -24,7 +24,7 @@ const PAGE_KEYS = [
 ];
 
 export default function PageBannersAdmin() {
-  const [banners, setBanners] = useState<Record<string, PageBanner>>({});
+  const [, setBanners] = useState<Record<string, PageBanner>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);

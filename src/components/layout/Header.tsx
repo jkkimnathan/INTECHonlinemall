@@ -19,7 +19,6 @@ import { BRAND_SUBCATEGORIES, SubcategoryNode } from "@/config/brand-subcategori
 import { useCartStore } from "@/store/cart";
 import { useAuthStore } from "@/store/auth";
 import { Heart } from "lucide-react";
-import { useWishlistStore } from "@/store/wishlist";
 
 /** 캐스케이딩 서브카테고리 패널 - 호버하면 다음 레벨이 오른쪽에 나타남 */
 function SubcategoryPanel({

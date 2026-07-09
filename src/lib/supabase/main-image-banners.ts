@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { validateImageFile, safeImagePath } from "@/lib/upload";
 
 export type BannerPosition = "left-1" | "left-2" | "left-3" | "center" | "right-1" | "right-2" | "right-3";
 
@@ -122,8 +123,9 @@ export async function deleteMainImageBanner(id: string): Promise<boolean> {
 /** 이미지 업로드 */
 export async function uploadMainImageBannerImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
-  const path = `main-banners/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const check = await validateImageFile(file);
+  if (!check.valid) return { url: null, error: check.error! };
+  const path = safeImagePath("main-banners", check.ext!);
 
   const { error: uploadError } = await supabase.storage
     .from("product-images")

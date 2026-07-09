@@ -97,8 +97,7 @@ export default function ShippingPage() {
           </div>
           <ul className="space-y-2 text-sm text-[#3f3f46]">
             <li>- 출고 완료 시 등록된 연락처로 송장번호가 발송됩니다.</li>
-            <li>- <strong>마이페이지 &gt; 주문 내역</strong>에서 배송 상태를 확인할 수 있습니다.</li>
-            <li>- 비회원은 <strong>비회원 주문조회</strong>에서 주문번호와 연락처로 조회 가능합니다.</li>
+            <li>- 로그인 후 <strong>마이페이지 &gt; 주문 내역</strong>에서 주문·배송 상태를 확인할 수 있습니다.</li>
           </ul>
         </div>
 

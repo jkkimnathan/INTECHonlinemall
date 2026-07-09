@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { validateImageFile, safeImagePath } from "@/lib/upload";
 
 export interface SiteEvent {
   id: string;
@@ -117,8 +118,9 @@ export async function deleteEvent(id: string): Promise<boolean> {
 /** 이벤트 이미지 업로드 */
 export async function uploadEventImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
-  const path = `events/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const check = await validateImageFile(file);
+  if (!check.valid) return { url: null, error: check.error! };
+  const path = safeImagePath("events", check.ext!);
 
   const { error: uploadError } = await supabase.storage
     .from("product-images")

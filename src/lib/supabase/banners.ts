@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import { validateImageFile, safeImagePath } from "@/lib/upload";
 
 export interface Banner {
   id: string;
@@ -120,8 +121,9 @@ export async function deleteBanner(id: string): Promise<{ error: string | null }
 /** 배너 이미지 업로드 */
 export async function uploadBannerImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
-  const path = `banners/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const check = await validateImageFile(file);
+  if (!check.valid) return { url: null, error: check.error! };
+  const path = safeImagePath("banners", check.ext!);
 
   const { error: uploadError } = await supabase.storage
     .from("banner-images")

@@ -17,6 +17,8 @@ export default function FloatingActions() {
   const items = useRecentlyViewedStore((s) => s.items);
 
   useEffect(() => {
+    // 하이드레이션 가드: 최근 본 상품(localStorage 기반)은 클라이언트에서만 렌더
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

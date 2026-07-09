@@ -19,16 +19,22 @@ const categories: { label: string; value: ProductCategory | "전체" }[] = [
 export default function CategoryTabs() {
   const [active, setActive] = useState<ProductCategory | "전체">("전체");
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadedFor, setLoadedFor] = useState<string | null>(null);
+  // 로딩 여부는 "현재 선택된 카테고리의 데이터를 이미 불러왔는가"로 파생 (effect 내 동기 setState 제거)
+  const loading = loadedFor !== active;
 
   useEffect(() => {
-    setLoading(true);
+    let alive = true;
     const opts =
       active === "전체" ? {} : { category: active as ProductCategory };
     getProducts(opts).then((data) => {
+      if (!alive) return;
       setProducts(data.filter((p) => !isHiddenBrand(p.brand)).slice(0, 8));
-      setLoading(false);
+      setLoadedFor(active);
     });
+    return () => {
+      alive = false;
+    };
   }, [active]);
 
   return (

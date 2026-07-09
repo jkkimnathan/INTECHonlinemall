@@ -76,20 +76,35 @@ export async function createQna(input: {
   return !error;
 }
 
-/** 비밀글 열람 — 서버에서 비밀번호 검증 후에만 본문 반환 */
-export async function unlockQna(
-  id: string,
-  password: string
-): Promise<{ content: string; answerContent: string | null } | null> {
+export type UnlockResult =
+  | { status: "ok"; content: string; answerContent: string | null }
+  | { status: "wrong" }
+  | { status: "locked"; retryAfter: number };
+
+/** 비밀글 열람 — 서버에서 비밀번호 검증 + 시도 횟수 제한 후에만 본문 반환 */
+export async function unlockQna(id: string, password: string): Promise<UnlockResult> {
   const supabase = createClient();
   const { data, error } = await supabase.rpc("qna_unlock", {
     p_id: id,
     p_password: password,
   });
 
-  if (error || !data) return null;
-  const row = data as { content: string; answer_content: string | null };
-  return { content: row.content, answerContent: row.answer_content };
+  if (error || !data) return { status: "wrong" };
+  const row = data as {
+    ok: boolean;
+    code?: string;
+    retry_after?: number;
+    content?: string;
+    answer_content?: string | null;
+  };
+
+  if (row.ok) {
+    return { status: "ok", content: row.content ?? "", answerContent: row.answer_content ?? null };
+  }
+  if (row.code === "LOCKED") {
+    return { status: "locked", retryAfter: row.retry_after ?? 600 };
+  }
+  return { status: "wrong" };
 }
 
 export async function answerQna(

@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { validateImageFile, safeImagePath } from "@/lib/upload";
 
 export interface Notice {
   id: string;
@@ -105,8 +106,9 @@ export async function deleteNotice(id: string): Promise<boolean> {
 /** 공지 이미지 업로드 */
 export async function uploadNoticeImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
-  const ext = file.name.split(".").pop();
-  const path = `notices/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const check = await validateImageFile(file);
+  if (!check.valid) return { url: null, error: check.error! };
+  const path = safeImagePath("notices", check.ext!);
 
   const { error: uploadError } = await supabase.storage
     .from("product-images")
