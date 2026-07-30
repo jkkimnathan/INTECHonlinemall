@@ -119,6 +119,32 @@ export function tossGetPaymentByOrderId(orderId: string): Promise<TossResult> {
   });
 }
 
+/**
+ * 승인 실패 응답 중 "결과 불명확/처리 중" 계열 — claim과 멱등키를 유지하고
+ * 조회 API로 최종 상태를 확인해야 하는 코드들.
+ *
+ * - IDEMPOTENT_REQUEST_PROCESSING (409): 같은 멱등키 요청이 아직 처리 중.
+ *   확정 실패가 아니므로 절대 claim 해제/키 회전을 하면 안 된다 (중복 과금 위험).
+ * - ALREADY_PROCESSED_PAYMENT: 이미 처리된 결제 — 승인됐을 수 있으므로 조회로 확인.
+ * - PROVIDER_ERROR / FAILED_INTERNAL_SYSTEM_PROCESSING: 토스/기관 내부 오류 — 결과 불명.
+ */
+const UNSETTLED_CONFIRM_CODES = [
+  "IDEMPOTENT_REQUEST_PROCESSING",
+  "ALREADY_PROCESSED_PAYMENT",
+  "PROVIDER_ERROR",
+  "FAILED_INTERNAL_SYSTEM_PROCESSING",
+];
+
+/**
+ * 승인 실패가 "확정 실패(과금 없음)"인지 "불명확(조회 필요)"인지 분류한다.
+ * true = 불명확/처리 중 → claim·멱등키 유지 + 조회 복구.
+ * false = 확정 실패(카드 거절 등) → claim 해제 + 멱등키 회전 후 재시도 허용.
+ */
+export function isUnsettledConfirmError(httpStatus: number, code?: string): boolean {
+  if (httpStatus >= 500) return true;
+  return !!code && UNSETTLED_CONFIRM_CODES.includes(code);
+}
+
 /** 허용 결제수단 (가상계좌는 선택 A에 따라 미지원) */
 const ALLOWED_METHODS = ["카드", "계좌이체", "간편결제", "휴대폰"];
 

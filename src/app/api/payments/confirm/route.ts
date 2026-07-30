@@ -9,10 +9,11 @@ import {
   mapTossMethod,
   isValidPaymentKey,
   isValidOrderId,
+  isUnsettledConfirmError,
   TossTimeoutError,
   TossPayment,
 } from "@/lib/toss";
-import { hitRateLimit, clientIp, bodyTooLarge } from "@/lib/rate-limit";
+import { hitRateLimit, clientIp, readJsonLimited } from "@/lib/rate-limit";
 import { logPaymentEvent } from "@/lib/payment-events";
 import { SupabaseClient } from "@supabase/supabase-js";
 
@@ -31,14 +32,8 @@ import { SupabaseClient } from "@supabase/supabase-js";
  *    확인 불가면 환불확인필요(RECONCILIATION_REQUIRED)로 보존
  */
 export async function POST(req: NextRequest) {
-  if (bodyTooLarge(req, 4 * 1024)) {
-    return NextResponse.json({ error: "요청이 너무 큽니다." }, { status: 413 });
-  }
-
-  let body: { paymentKey?: unknown; orderId?: unknown; amount?: unknown };
-  try {
-    body = await req.json();
-  } catch {
+  const body = await readJsonLimited<{ paymentKey?: unknown; orderId?: unknown; amount?: unknown }>(req, 4 * 1024);
+  if (!body) {
     return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 400 });
   }
 
@@ -118,7 +113,7 @@ export async function POST(req: NextRequest) {
       idempotencyKey: confirmKey,
     });
 
-    if (!res.ok && res.status < 500) {
+    if (!res.ok && !isUnsettledConfirmError(res.status, res.data.code)) {
       // 토스가 명시적으로 거절 (카드 한도 등) — 과금되지 않은 확정 실패.
       // claim을 해제하고 멱등키를 회전해 사용자가 새 결제로 재시도할 수 있게 한다.
       await logPaymentEvent(admin, {
@@ -133,11 +128,14 @@ export async function POST(req: NextRequest) {
     }
 
     if (!res.ok) {
-      // 토스 5xx — 승인 여부 불명확. 조회로 실제 상태를 확인한다.
+      // 토스 5xx 또는 "처리 중/이미 처리됨" 계열 (IDEMPOTENT_REQUEST_PROCESSING 등)
+      // — 승인 여부 불명확. 확정 실패로 오판하면 지연된 첫 승인과 새 결제가 겹쳐
+      // 중복 과금될 수 있으므로, claim과 멱등키를 유지한 채 조회로 확인한다.
       const recovered = await recoverPaymentState(orderId);
       if (!recovered) {
         // 불명확 상태 유지: claim(IN_PROGRESS)을 풀지 않는다.
         // 만료 배치가 건드리지 못하게 하고, 대사 크론이 토스 조회로 판정한다.
+        // 사용자 재시도(90초 후 claim 승계)는 같은 멱등키로 이어받는다.
         await logPaymentEvent(admin, {
           orderId, eventType: "confirm_unclear", httpStatus: res.status,
           detail: { code: res.data.code },
@@ -317,6 +315,7 @@ async function markReconciliationRequired(
     .in("status", ["결제대기", "환불확인필요"]);
   await logPaymentEvent(admin, {
     orderId, eventType: "reconciliation_required",
-    detail: { reason, paymentKey: paymentKey || null },
+    // paymentKey는 취소/조회에 쓰이는 운영 식별자 — 로그에는 끝 6자리만 남긴다
+    detail: { reason, paymentKeyTail: paymentKey ? paymentKey.slice(-6) : null },
   });
 }

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/server-admin";
 import { toProduct } from "@/lib/supabase/product-utils";
 import { validateQuantity } from "@/lib/security";
-import { hitRateLimit, clientIp, bodyTooLarge } from "@/lib/rate-limit";
+import { hitRateLimit, clientIp, readJsonLimited } from "@/lib/rate-limit";
 import { logPaymentEvent } from "@/lib/payment-events";
 import {
   MIN_PAYMENT_AMOUNT,
@@ -31,10 +31,6 @@ interface PrepareBody {
  * 0원 주문(전액 포인트)은 토스 결제창 없이 이 API에서 곧바로 확정한다.
  */
 export async function POST(req: NextRequest) {
-  if (bodyTooLarge(req, 32 * 1024)) {
-    return NextResponse.json({ error: "요청이 너무 큽니다." }, { status: 413 });
-  }
-
   // 1. 로그인 확인 (쿠키 세션)
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -42,11 +38,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
   }
 
-  // 2. 입력 검증
-  let body: PrepareBody;
-  try {
-    body = await req.json();
-  } catch {
+  // 2. 입력 검증 (크기 제한 포함)
+  const body = await readJsonLimited<PrepareBody>(req, 32 * 1024);
+  if (!body) {
     return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 400 });
   }
 

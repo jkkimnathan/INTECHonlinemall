@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { tossCancel, tossGetPayment, tossGetPaymentByOrderId, TossTimeoutError, isValidOrderId } from "@/lib/toss";
 import { isCancelable } from "@/lib/order-status";
 import { logPaymentEvent } from "@/lib/payment-events";
-import { bodyTooLarge } from "@/lib/rate-limit";
+import { readJsonLimited } from "@/lib/rate-limit";
 
 /**
  * 관리자 주문 취소 API.
@@ -19,19 +19,13 @@ import { bodyTooLarge } from "@/lib/rate-limit";
  *  6) 실패/불명확 시 '환불확인필요'로 보존 (임의로 취소 표시하지 않음)
  */
 export async function POST(req: NextRequest) {
-  if (bodyTooLarge(req, 4 * 1024)) {
-    return NextResponse.json({ error: "요청이 너무 큽니다." }, { status: 413 });
-  }
-
   const adminUser = await requireAdmin();
   if (!adminUser) {
     return NextResponse.json({ error: "관리자 권한이 필요합니다." }, { status: 403 });
   }
 
-  let body: { orderId?: unknown; reason?: unknown };
-  try {
-    body = await req.json();
-  } catch {
+  const body = await readJsonLimited<{ orderId?: unknown; reason?: unknown }>(req, 4 * 1024);
+  if (!body) {
     return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 400 });
   }
   const orderId = body.orderId;
@@ -123,12 +117,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, orderId, status: "취소" });
   }
 
-  // ── 결제된 주문: 취소처리중 표시 → 토스 취소 → 확인 후 확정 ──
-  await admin
+  // ── 결제된 주문: 취소처리중 claim → 토스 취소 → 확인 후 확정 ──
+  // 조건부 UPDATE의 결과를 반드시 확인한다: 정확히 이 요청이 전환에 성공했을 때만
+  // 토스 취소를 호출한다. (동시에 배송중으로 바뀐 주문을 외부에서만 환불하는 사고 방지)
+  // 결제대기는 결제키가 복구된 경우(토스 승인됨 + 내부 미확정)에 한해 취소를 허용하되,
+  // 진행 중인 confirm(90초 내 claim)이 있으면 건드리지 않는다.
+  const claimGuard = new Date(Date.now() - 90 * 1000).toISOString();
+  const { data: claimedRows } = await admin
     .from("orders")
     .update({ status: "취소처리중", cancel_reason: reason })
     .eq("id", orderId)
-    .in("status", ["결제완료", "배송준비", "환불확인필요"]);
+    .in("status", ["결제완료", "배송준비", "환불확인필요", "결제대기"])
+    .or(`confirm_claimed_at.is.null,confirm_claimed_at.lt.${claimGuard}`)
+    .select("id");
+
+  if (!claimedRows || claimedRows.length === 0) {
+    // claim 실패: 그 사이 상태가 바뀌었거나, 다른 관리자가 이미 취소를 진행 중.
+    const { data: current } = await admin
+      .from("orders")
+      .select("status, confirm_claimed_at")
+      .eq("id", orderId)
+      .single();
+    if (current?.status !== "취소처리중") {
+      // 배송중 전환/결제 진행 중 등 → 토스 취소를 호출하지 않고 중단
+      return NextResponse.json(
+        { error: `주문 상태가 변경되어 취소할 수 없습니다. (현재: ${current?.status ?? "확인 불가"}) 새로고침 후 다시 확인해주세요.` },
+        { status: 409 }
+      );
+    }
+    // 이미 취소처리중 → 같은 cancel_key로 이어받는 재시도이므로 계속 진행 (멱등)
+  }
 
   const { data: cancelKey } = await admin.rpc("ensure_cancel_key", { p_order_id: orderId });
 

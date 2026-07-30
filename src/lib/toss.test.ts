@@ -4,6 +4,7 @@ import {
   mapTossMethod,
   isValidPaymentKey,
   isValidOrderId,
+  isUnsettledConfirmError,
   TossPayment,
 } from "./toss";
 
@@ -76,6 +77,33 @@ describe("입력 형식 검증", () => {
     expect(isValidOrderId("ORD-" + "a".repeat(100))).toBe(false);
     expect(isValidOrderId("ORD-abc; drop table")).toBe(false);
     expect(isValidOrderId(undefined)).toBe(false);
+  });
+});
+
+describe("승인 오류 분류 (확정 실패 vs 불명확)", () => {
+  it("멱등 요청 처리 중(409)은 확정 실패가 아니다 — claim/멱등키 유지 필요", () => {
+    expect(isUnsettledConfirmError(409, "IDEMPOTENT_REQUEST_PROCESSING")).toBe(true);
+  });
+
+  it("이미 처리된 결제는 조회로 확인해야 한다", () => {
+    expect(isUnsettledConfirmError(400, "ALREADY_PROCESSED_PAYMENT")).toBe(true);
+  });
+
+  it("토스/기관 내부 오류는 결과 불명", () => {
+    expect(isUnsettledConfirmError(400, "PROVIDER_ERROR")).toBe(true);
+    expect(isUnsettledConfirmError(500, "FAILED_INTERNAL_SYSTEM_PROCESSING")).toBe(true);
+  });
+
+  it("모든 5xx는 불명확", () => {
+    expect(isUnsettledConfirmError(500, undefined)).toBe(true);
+    expect(isUnsettledConfirmError(502, "ANYTHING")).toBe(true);
+  });
+
+  it("카드 거절 등 일반 4xx는 확정 실패 — 재시도 허용", () => {
+    expect(isUnsettledConfirmError(400, "REJECT_CARD_PAYMENT")).toBe(false);
+    expect(isUnsettledConfirmError(400, "INVALID_CARD_EXPIRATION")).toBe(false);
+    expect(isUnsettledConfirmError(403, "EXCEED_MAX_AMOUNT")).toBe(false);
+    expect(isUnsettledConfirmError(400, undefined)).toBe(false);
   });
 });
 

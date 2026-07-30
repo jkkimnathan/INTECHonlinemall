@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { isValidOrderId } from "@/lib/toss";
 import { ADMIN_SIMPLE_STATUSES, isAdminSimpleTransition } from "@/lib/order-status";
 import { logPaymentEvent } from "@/lib/payment-events";
-import { bodyTooLarge } from "@/lib/rate-limit";
+import { readJsonLimited } from "@/lib/rate-limit";
 import { OrderStatus } from "@/types/order";
 
 /**
@@ -16,19 +16,13 @@ import { OrderStatus } from "@/types/order";
  * 전용 API(결제 승인/취소/대사)만 만들 수 있다.
  */
 export async function POST(req: NextRequest) {
-  if (bodyTooLarge(req, 4 * 1024)) {
-    return NextResponse.json({ error: "요청이 너무 큽니다." }, { status: 413 });
-  }
-
   const adminUser = await requireAdmin();
   if (!adminUser) {
     return NextResponse.json({ error: "관리자 권한이 필요합니다." }, { status: 403 });
   }
 
-  let body: { orderId?: unknown; status?: unknown };
-  try {
-    body = await req.json();
-  } catch {
+  const body = await readJsonLimited<{ orderId?: unknown; status?: unknown }>(req, 4 * 1024);
+  if (!body) {
     return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 400 });
   }
 
