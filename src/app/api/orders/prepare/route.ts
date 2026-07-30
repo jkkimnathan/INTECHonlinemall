@@ -4,6 +4,14 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/server-admin";
 import { toProduct } from "@/lib/supabase/product-utils";
 import { validateQuantity } from "@/lib/security";
+import { hitRateLimit, clientIp, bodyTooLarge } from "@/lib/rate-limit";
+import { logPaymentEvent } from "@/lib/payment-events";
+import {
+  MIN_PAYMENT_AMOUNT,
+  aggregateQuantities,
+  evaluatePayableAmount,
+  calcShippingFee,
+} from "@/lib/order-utils";
 import { ShippingInfo } from "@/types/order";
 
 interface PrepareItem {
@@ -17,14 +25,16 @@ interface PrepareBody {
   usePoints: number;
 }
 
-const FREE_SHIPPING_THRESHOLD = 50000;
-const SHIPPING_FEE = 3000;
-
 /**
  * 주문 준비: 서버가 DB 가격으로 금액을 재계산하고 "결제대기" 주문을 만든다.
  * 브라우저가 보낸 금액은 일절 신뢰하지 않는다.
+ * 0원 주문(전액 포인트)은 토스 결제창 없이 이 API에서 곧바로 확정한다.
  */
 export async function POST(req: NextRequest) {
+  if (bodyTooLarge(req, 32 * 1024)) {
+    return NextResponse.json({ error: "요청이 너무 큽니다." }, { status: 413 });
+  }
+
   // 1. 로그인 확인 (쿠키 세션)
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -47,7 +57,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "주문 상품이 없습니다." }, { status: 400 });
   }
   for (const item of items) {
-    if (typeof item.productId !== "string" || !validateQuantity(item.quantity)) {
+    if (
+      typeof item.productId !== "string" ||
+      item.productId.length === 0 ||
+      item.productId.length > 64 ||
+      !validateQuantity(item.quantity)
+    ) {
       return NextResponse.json({ error: "상품 수량이 유효하지 않습니다." }, { status: 400 });
     }
   }
@@ -66,8 +81,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "서버 설정 오류입니다. 관리자에게 문의해주세요." }, { status: 500 });
   }
 
-  // 3. DB에서 실제 상품 정보 조회 (가격·재고는 여기 값만 사용)
-  const productIds = items.map((i) => i.productId);
+  // 3. rate limit (사용자 + IP, 공유 저장소 기반)
+  const ip = clientIp(req);
+  const [byUser, byIp] = await Promise.all([
+    hitRateLimit(admin, `prepare:u:${user.id}`, 10, 60),
+    hitRateLimit(admin, `prepare:ip:${ip}`, 30, 60),
+  ]);
+  if (!byUser || !byIp) {
+    return NextResponse.json({ error: "요청이 너무 잦습니다. 잠시 후 다시 시도해주세요." }, { status: 429 });
+  }
+
+  // 4. 같은 상품이 여러 줄로 들어오면 수량을 먼저 합산한다
+  const qtyByProduct = aggregateQuantities(items);
+  for (const [, qty] of qtyByProduct) {
+    if (!validateQuantity(qty)) {
+      return NextResponse.json({ error: "상품 수량이 유효하지 않습니다." }, { status: 400 });
+    }
+  }
+
+  // 5. DB에서 실제 상품 정보 조회 (가격·재고는 여기 값만 사용)
+  const productIds = [...qtyByProduct.keys()];
   const { data: rows, error: productError } = await admin
     .from("products")
     .select("*")
@@ -81,13 +114,13 @@ export async function POST(req: NextRequest) {
   let subtotal = 0;
   const orderItems = [];
 
-  for (const item of items) {
-    const row = productMap.get(item.productId);
+  for (const [productId, quantity] of qtyByProduct) {
+    const row = productMap.get(productId);
     if (!row) {
       return NextResponse.json({ error: "판매 중이 아닌 상품이 포함되어 있습니다." }, { status: 400 });
     }
     const stock = (row.stock as number) ?? 0;
-    if (stock < item.quantity) {
+    if (stock < quantity) {
       return NextResponse.json(
         { error: `재고가 부족합니다: ${row.name} (남은 수량 ${stock}개)` },
         { status: 409 }
@@ -95,11 +128,11 @@ export async function POST(req: NextRequest) {
     }
     const product = toProduct(row);
     const unitPrice = product.salePrice ?? product.price;
-    subtotal += unitPrice * item.quantity;
-    orderItems.push({ product, quantity: item.quantity });
+    subtotal += unitPrice * quantity;
+    orderItems.push({ product, quantity });
   }
 
-  // 4. 포인트 잔액 검증 (보유량 초과 사용 거부)
+  // 6. 포인트 잔액 검증 (보유량 초과 사용 거부)
   if (usePoints > 0) {
     const { data: profile } = await admin
       .from("profiles")
@@ -115,11 +148,19 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 5. 서버 기준 금액 확정
-  const shippingFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  // 7. 서버 기준 금액 확정
+  const shippingFee = calcShippingFee(subtotal);
   const total = subtotal + shippingFee - usePoints;
 
-  // 6. "결제대기" 주문 생성 (주문번호는 예측 불가능한 랜덤 값)
+  // 결제수단 최소 금액 미만(0원 초과 ~ 100원 미만)은 포인트 조정 안내
+  if (evaluatePayableAmount(total) === "BELOW_MIN") {
+    return NextResponse.json(
+      { error: `결제 금액은 최소 ${MIN_PAYMENT_AMOUNT}원 이상이어야 합니다. 포인트 사용량을 조정해주세요.` },
+      { status: 400 }
+    );
+  }
+
+  // 8. "결제대기" 주문 생성 (주문번호는 예측 불가능한 랜덤 값)
   const orderId = `ORD-${randomUUID()}`;
   const { error: insertError } = await admin.from("orders").insert([{
     id: orderId,
@@ -133,7 +174,7 @@ export async function POST(req: NextRequest) {
       addressDetail: String(shipping.addressDetail || "").slice(0, 200),
       memo: String(shipping.memo || "").slice(0, 200),
     },
-    payment_method: "card",
+    payment_method: total === 0 ? "points" : "card",
     subtotal,
     shipping_fee: shippingFee,
     discount: usePoints,
@@ -145,6 +186,31 @@ export async function POST(req: NextRequest) {
   if (insertError) {
     console.error("prepare order insert error:", insertError);
     return NextResponse.json({ error: "주문 생성에 실패했습니다." }, { status: 500 });
+  }
+
+  // 9. 0원 주문: 토스 결제창을 거치지 않고 서버에서 곧바로 확정
+  //    (포인트·재고 차감은 finalize RPC의 단일 트랜잭션으로 처리,
+  //     payment_status = 'ZERO_AMOUNT'로 토스 미경유 주문임을 기록)
+  if (total === 0) {
+    const { data: result, error: rpcError } = await admin.rpc("finalize_order_payment_v2", {
+      p_order_id: orderId,
+      p_payment_key: null,
+      p_payment_method: "points",
+      p_toss_status: null,
+    });
+    if (rpcError || !result?.ok) {
+      const code = result?.code || rpcError?.message || "UNKNOWN";
+      console.error("zero-amount finalize failed:", code);
+      const message =
+        code === "NOT_ENOUGH_STOCK"
+          ? "재고가 부족합니다."
+          : code === "NOT_ENOUGH_POINTS"
+          ? "포인트 잔액이 부족합니다."
+          : "주문 확정에 실패했습니다.";
+      return NextResponse.json({ error: message }, { status: 409 });
+    }
+    await logPaymentEvent(admin, { orderId, eventType: "zero_amount_ok" });
+    return NextResponse.json({ orderId, amount: 0, orderName: "", zeroAmount: true });
   }
 
   const firstName = orderItems[0].product.name;

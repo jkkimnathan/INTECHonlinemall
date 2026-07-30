@@ -44,7 +44,7 @@ export async function getOrdersByUserId(userId: string): Promise<Order[]> {
     .from("orders")
     .select("*")
     .eq("user_id", userId)
-    .neq("status", "결제대기")
+    .not("status", "in", '("결제대기","만료")')
     .order("created_at", { ascending: false });
 
   if (error || !data) return [];
@@ -63,14 +63,7 @@ export async function getAllOrders(): Promise<Order[]> {
   return data.map(toOrder);
 }
 
-/** 주문 상태 변경 (어드민) */
-export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<{ error: string | null }> {
-  const supabase = createClient();
-  const { error } = await supabase
-    .from("orders")
-    .update({ status })
-    .eq("id", orderId);
-
-  if (error) return { error: error.message };
-  return { error: null };
-}
+// 주문 상태 변경은 서버 API로만 수행한다:
+//  - 배송 상태: POST /api/admin/orders/status (상태 머신 검증)
+//  - 취소/환불: POST /api/admin/orders/cancel (토스 결제 취소 연동)
+// 브라우저의 직접 UPDATE는 RLS에서 차단된다 (payment_hardening_migration.sql).

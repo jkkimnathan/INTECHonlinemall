@@ -68,7 +68,14 @@ export default function PrivacyPage() {
           <h2>5. 개인정보처리의 위탁</h2>
           <p>회사는 원활한 개인정보 업무처리를 위하여 다음과 같이 개인정보 처리업무를 위탁하고 있습니다.</p>
           <ul>
-            <li>결제 처리: PG사(추후 연동 시 명시)</li>
+            <li>
+              <strong>결제 처리: 토스페이먼츠 주식회사</strong>
+              <ul>
+                <li>위탁 업무: 전자결제(신용카드, 계좌이체, 간편결제) 승인·취소 처리 및 결제 도용 방지</li>
+                <li>처리 항목: 결제 승인에 필요한 주문번호, 결제금액, 구매자 이름·이메일</li>
+                <li>보유·이용 기간: 전자상거래 등에서의 소비자보호에 관한 법률에 따른 기간(대금결제 및 재화 공급 기록 5년)</li>
+              </ul>
+            </li>
             <li>배송 업무: 택배사</li>
           </ul>
 
@@ -109,7 +116,8 @@ export default function PrivacyPage() {
           </p>
 
           <div className="mt-8 pt-6 border-t text-sm text-[#86868b]">
-            <p>시행일: 2025년 3월 1일</p>
+            <p>시행일: 2026년 8월 1일</p>
+            <p className="mt-1">개정 이력: 2026년 8월 1일 개정(결제 처리 위탁사 토스페이먼츠 명시) · 2025년 3월 1일 제정</p>
             <p className="mt-1">{contact.companyName} | 대표: {contact.ceo}</p>
             <p>{contact.address}</p>
             <p>고객센터: {contact.phone} | 이메일: {contact.email}</p>

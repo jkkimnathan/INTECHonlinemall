@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/store/cart";
 import { useAuthStore } from "@/store/auth";
+import { MIN_PAYMENT_AMOUNT } from "@/lib/order-utils";
 import { ShippingInfo } from "@/types/order";
 import { ArrowLeft, ShoppingBag, Loader2 } from "lucide-react";
 
@@ -152,7 +153,10 @@ export default function CheckoutPage() {
     if (!shipping.name) return setError("받는 분 이름을 입력해주세요.");
     if (!shipping.phone) return setError("연락처를 입력해주세요.");
     if (!shipping.address) return setError("주소를 입력해주세요.");
-    if (!widgets || !widgetReady) return setError("결제창이 아직 준비되지 않았습니다.");
+    if (total > 0 && total < MIN_PAYMENT_AMOUNT) {
+      return setError(`결제 금액은 최소 ${MIN_PAYMENT_AMOUNT}원 이상이어야 합니다. 포인트 사용량을 조정해주세요.`);
+    }
+    if (total > 0 && (!widgets || !widgetReady)) return setError("결제창이 아직 준비되지 않았습니다.");
 
     const memo = shipping.memo === "직접 입력" ? customMemo : shipping.memo;
 
@@ -174,7 +178,18 @@ export default function CheckoutPage() {
         return;
       }
 
+      // 0원 주문(전액 포인트): 서버가 이미 확정했으므로 토스 없이 완료 페이지로 이동
+      if (data.zeroAmount) {
+        useCartStore.getState().clearCart();
+        router.push(`/order/complete?orderId=${encodeURIComponent(data.orderId)}`);
+        return;
+      }
+
       // 2단계: 서버가 확정한 금액으로 토스 결제창 호출
+      if (!widgets) {
+        setError("결제창이 아직 준비되지 않았습니다.");
+        return;
+      }
       await widgets.setAmount({ currency: "KRW", value: data.amount });
       await widgets.requestPayment({
         orderId: data.orderId,
@@ -431,7 +446,7 @@ export default function CheckoutPage() {
               <Button
                 className="w-full h-12 rounded-full bg-[#1A56DB] hover:bg-[#1747b4] text-white font-semibold text-base"
                 onClick={handleOrder}
-                disabled={submitting || !widgetReady}
+                disabled={submitting || (total > 0 && !widgetReady)}
               >
                 {submitting ? "주문 처리 중..." : `${formatPrice(total)} 결제하기`}
               </Button>

@@ -23,6 +23,8 @@ function OrderCompleteContent() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(!!orderId);
   const [confirmError, setConfirmError] = useState("");
+  // true면 결제 취소/미청구가 "확인되지 않은" 상태 → 임의로 자동취소 안내를 하지 않는다
+  const [pendingReview, setPendingReview] = useState(false);
   const confirmStartedRef = useRef(false);
 
   useEffect(() => {
@@ -42,6 +44,7 @@ function OrderCompleteContent() {
           const data = await res.json();
           if (!res.ok) {
             setConfirmError(data.error || "결제 승인에 실패했습니다.");
+            setPendingReview(data.pending === true);
             setLoading(false);
             return;
           }
@@ -49,6 +52,7 @@ function OrderCompleteContent() {
           useCartStore.getState().clearCart();
         } catch {
           setConfirmError("결제 승인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+          setPendingReview(true); // 네트워크 오류 → 취소 여부를 단정할 수 없음
           setLoading(false);
           return;
         }
@@ -80,10 +84,20 @@ function OrderCompleteContent() {
         </div>
         <h1 className="text-xl font-bold text-[#1d1d1f]">결제가 완료되지 않았습니다</h1>
         <p className="text-sm text-[#86868b] mt-2 text-center">{confirmError}</p>
-        <p className="text-xs text-[#a1a1aa] mt-1">결제 금액은 청구되지 않았거나 자동 취소되었습니다.</p>
-        <Link href="/checkout" className="mt-6">
-          <Button className="rounded-full bg-[#1A56DB] hover:bg-[#1747b4]">다시 결제하기</Button>
-        </Link>
+        <p className="text-xs text-[#a1a1aa] mt-1">
+          {pendingReview
+            ? "결제 상태를 확인하고 있습니다. 청구 여부는 주문 내역 또는 고객센터에서 확인해주세요."
+            : "결제 금액은 청구되지 않았거나 자동 취소되었습니다."}
+        </p>
+        {pendingReview ? (
+          <Link href="/mypage" className="mt-6">
+            <Button className="rounded-full bg-[#1A56DB] hover:bg-[#1747b4]">주문 내역 확인</Button>
+          </Link>
+        ) : (
+          <Link href="/checkout" className="mt-6">
+            <Button className="rounded-full bg-[#1A56DB] hover:bg-[#1747b4]">다시 결제하기</Button>
+          </Link>
+        )}
       </div>
     );
   }

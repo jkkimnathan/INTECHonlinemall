@@ -40,7 +40,9 @@ const statusBadgeColors: Record<string, string> = {
   배송준비: "bg-yellow-100 text-yellow-700",
   배송중: "bg-[#fff7ed] text-[#c2410c]",
   배송완료: "bg-[#ecfdf5] text-[#047857]",
+  취소처리중: "bg-orange-100 text-orange-700",
   취소: "bg-red-100 text-red-700",
+  환불확인필요: "bg-red-100 text-red-700",
   "교환/반품": "bg-gray-100 text-[#3f3f46]",
 };
 
