@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import ProductGrid from "@/components/product/ProductGrid";
 import { getProducts } from "@/lib/supabase/products.server";
 import { getPageBannerServer } from "@/lib/supabase/page-banners.server";
@@ -103,12 +104,29 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
         </div>
       )}
 
-      <ProductGrid
-        products={products}
-        title={`${brandName}${titleSuffix}`}
-        description={`${products.length}개의 제품`}
-        showFilters={true}
-      />
+      {allProducts.length === 0 ? (
+        <div className="container mx-auto px-4 py-20 text-center">
+          <p className="text-lg font-semibold text-[#1d1d1f]">
+            {brandName} 제품을 준비 중입니다
+          </p>
+          <p className="text-sm text-[#86868b] mt-2">
+            곧 정식 취급 제품을 만나보실 수 있습니다.
+          </p>
+          <Link
+            href="/products"
+            className="inline-block mt-6 text-sm text-[#1A56DB] hover:underline"
+          >
+            전체 상품 보러가기
+          </Link>
+        </div>
+      ) : (
+        <ProductGrid
+          products={products}
+          title={`${brandName}${titleSuffix}`}
+          description={`${products.length}개의 제품`}
+          showFilters={true}
+        />
+      )}
     </div>
   );
 }

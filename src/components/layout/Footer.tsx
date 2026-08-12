@@ -55,6 +55,16 @@ export default function Footer() {
                 <span className="text-[#64748B]">통신판매업신고번호</span>{" "}
                 <span>{contact.mailOrderNumber}</span>
               </p>
+              <p>
+                <a
+                  href={`https://www.ftc.go.kr/bizCommPop.do?wrkr_no=${contact.businessNumber.replace(/-/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 rounded border border-[#334155] px-2 py-1 text-[11px] text-[#94A3B8] hover:text-white hover:border-[#475569] transition-colors"
+                >
+                  사업자정보확인
+                </a>
+              </p>
               <div className="flex items-start gap-1.5">
                 <MapPin className="h-4 w-4 text-[#64748B] mt-0.5 shrink-0" />
                 <span>{contact.address}</span>

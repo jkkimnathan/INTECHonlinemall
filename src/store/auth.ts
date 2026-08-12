@@ -23,6 +23,7 @@ interface AuthStore {
     password: string;
     name: string;
     phone: string;
+    marketingConsent?: boolean;
   }) => Promise<{ success: boolean; error?: string; needsConfirm?: boolean }>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
@@ -263,6 +264,11 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         data: {
           name: data.name,
           phone: data.phone,
+          // 마케팅 수신 동의 (선택) — 동의 시각과 함께 기록
+          marketing_consent: data.marketingConsent === true,
+          marketing_consent_at: data.marketingConsent === true
+            ? new Date().toISOString()
+            : null,
         },
       },
     });

@@ -16,7 +16,17 @@ const categories: { label: string; value: ProductCategory | "전체" }[] = [
   { label: "기타", value: "기타" },
 ];
 
-export default function CategoryTabs() {
+export default function CategoryTabs({
+  activeCategories,
+}: {
+  activeCategories?: string[] | null;
+}) {
+  // 상품이 있는 카테고리 탭만 노출 ("전체"는 항상 유지, 활성 목록 모르면 전부 노출)
+  const activeSet = activeCategories ? new Set(activeCategories) : null;
+  const visibleTabs = activeSet
+    ? categories.filter((c) => c.value === "전체" || activeSet.has(c.value))
+    : categories;
+
   const [active, setActive] = useState<ProductCategory | "전체">("전체");
   const [result, setResult] = useState<{
     category: ProductCategory | "전체";
@@ -65,7 +75,7 @@ export default function CategoryTabs() {
 
         {/* 탭 버튼 */}
         <div className="flex items-center justify-center gap-2 mb-8 flex-wrap">
-          {categories.map((cat) => (
+          {visibleTabs.map((cat) => (
             <button
               key={cat.value}
               onClick={() => setActive(cat.value)}

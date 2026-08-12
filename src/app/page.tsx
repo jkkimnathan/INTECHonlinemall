@@ -5,6 +5,7 @@ import Features from "@/components/home/Features";
 import IpcShowcase from "@/components/home/IpcShowcase";
 import MainImageBannerSection from "@/components/home/MainImageBannerSection";
 import { getHomePageData } from "@/lib/supabase/home-data.server";
+import { getActiveCatalog } from "@/lib/supabase/active-catalog.server";
 import { getHomeSectionServer } from "@/lib/supabase/home-sections.server";
 import { IpcContent, RefurbContent } from "@/lib/home-sections-defaults";
 import { getWebSiteJsonLd, jsonLdString } from "@/lib/jsonld";
@@ -36,11 +37,15 @@ const FeaturedProducts = dynamic(
 
 export default async function Home() {
   // 서버에서 모든 홈 데이터를 병렬 프리페칭
-  const [data, ipcContent, refurbContent] = await Promise.all([
+  const [data, ipcContent, refurbContent, catalog] = await Promise.all([
     getHomePageData(),
     getHomeSectionServer<IpcContent>("ipc"),
     getHomeSectionServer<RefurbContent>("refurb"),
+    getActiveCatalog(),
   ]);
+  // 상품 0개인 브랜드/카테고리는 홈에서도 자동 숨김 (모르면 전부 노출)
+  const activeBrandSlugs = catalog ? Array.from(catalog.brandSlugs) : null;
+  const activeCategories = catalog ? Array.from(catalog.categories) : null;
 
   return (
     <>
@@ -63,11 +68,11 @@ export default async function Home() {
       {/* 5. 추천 상품 */}
       <FeaturedProducts />
       {/* 6. 카테고리별 인기 상품 */}
-      <CategoryTabs />
+      <CategoryTabs activeCategories={activeCategories} />
       {/* 7. 리퍼몰 */}
       <RefurbShowcase content={refurbContent} />
       {/* 8. 공식 취급 브랜드 */}
-      <BrandShowcase />
+      <BrandShowcase activeBrandSlugs={activeBrandSlugs} />
     </>
   );
 }
