@@ -30,31 +30,49 @@ import { useRecentlyViewedStore } from "@/store/recentlyViewed";
 function DetailImageSection({ images, productName }: { images: string[]; productName: string }) {
   const [expanded, setExpanded] = useState(false);
 
+  // 접힘 상태에서는 앞 3장만 렌더 → 초기 로딩 이미지 수 대폭 감소
+  // (상세 이미지가 20장 넘는 상품이 많아, 펼치기 전까지 나머지는 아예 요청하지 않음)
+  const PREVIEW_COUNT = 3;
+  const shownImages = expanded ? images : images.slice(0, PREVIEW_COUNT);
+  const hasMore = images.length > PREVIEW_COUNT;
+
   return (
     <div className="bg-white rounded-lg border mt-6 overflow-hidden">
       <div className="p-6 pb-0">
         <h2 className="text-lg font-bold text-[#1d1d1f]">상세 정보</h2>
       </div>
-      <div className={`mt-4 relative ${!expanded ? "max-h-[600px] overflow-hidden" : ""}`}>
-        {images.map((img, i) => (
-          <Image key={i} src={img} alt={`${productName} 상세 ${i + 1}`} width={0} height={0} sizes="100vw" className="w-full h-auto" />
+      {/* 상세 이미지는 가운데 정렬 + 최대 860px 폭으로 제한 (데스크탑에서 과대 표시 방지) */}
+      <div className={`mt-4 relative mx-auto w-full max-w-[860px] ${!expanded ? "max-h-[600px] overflow-hidden" : ""}`}>
+        {shownImages.map((img, i) => (
+          <Image
+            key={i}
+            src={img}
+            alt={`${productName} 상세 ${i + 1}`}
+            width={0}
+            height={0}
+            sizes="(max-width: 860px) 100vw, 860px"
+            className="w-full h-auto"
+            loading={i === 0 ? undefined : "lazy"}
+          />
         ))}
-        {!expanded && (
+        {!expanded && hasMore && (
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
         )}
       </div>
-      <div className="p-4 text-center border-t">
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="inline-flex items-center gap-1 px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-        >
-          {expanded ? (
-            <>상세정보 접기 <ChevronUp className="h-4 w-4" /></>
-          ) : (
-            <>상세정보 더보기 <ChevronDown className="h-4 w-4" /></>
-          )}
-        </button>
-      </div>
+      {hasMore && (
+        <div className="p-4 text-center border-t">
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="inline-flex items-center gap-1 px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            {expanded ? (
+              <>상세정보 접기 <ChevronUp className="h-4 w-4" /></>
+            ) : (
+              <>상세정보 더보기 ({images.length}장) <ChevronDown className="h-4 w-4" /></>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -125,9 +143,9 @@ export default function ProductDetailClient({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             {/* 이미지 영역 */}
             <div>
-              <div className="relative aspect-square bg-[#f5f5f7] rounded-xl overflow-hidden">
+              <div className="relative aspect-square bg-white rounded-xl overflow-hidden border border-[#f1f1f3]">
                 {product.images.length > 0 ? (
-                  <Image src={product.images[mainImage] || product.images[0]} alt={product.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" priority />
+                  <Image src={product.images[mainImage] || product.images[0]} alt={product.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-contain p-4" priority />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-center p-8">
                     <div>
