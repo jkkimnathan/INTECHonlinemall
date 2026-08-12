@@ -7,6 +7,7 @@ import { getOrganizationJsonLd, jsonLdString } from "@/lib/jsonld";
 import FloatingActions from "@/components/floating/FloatingActions";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { ToastProvider } from "@/components/ui/toast";
+import { getActiveBrandSlugs } from "@/lib/supabase/active-catalog.server";
 
 // Fonts (design system): 한글 본문 Pretendard + 영문 액센트 Manrope.
 // Self-hosted CDN으로 로드 — next/font/google 빌드타임 페치 의존성 회피.
@@ -46,11 +47,13 @@ export const metadata: Metadata = {
   // canonical은 루트에 두면 모든 하위 페이지가 홈으로 정규화되어 색인이 누락됨 — 페이지별 정의
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 상품이 등록된 브랜드만 네비게이션에 노출 (빈 브랜드 자동 숨김, 데이터 들어오면 자동 노출)
+  const activeBrandSlugs = await getActiveBrandSlugs();
   return (
     <html lang="ko">
       <head>
@@ -73,7 +76,7 @@ export default function RootLayout({
         />
         <AuthProvider>
           <ToastProvider>
-            <Header />
+            <Header activeBrandSlugs={activeBrandSlugs} />
             <main className="min-h-screen">{children}</main>
             <Footer />
             <FloatingActions />

@@ -123,7 +123,12 @@ function MobileSubcategoryList({
   );
 }
 
-export default function Header() {
+export default function Header({
+  activeBrandSlugs,
+}: {
+  // 상품이 등록된 브랜드 slug 목록. null/undefined면 "알 수 없음"으로 보고 전부 노출한다.
+  activeBrandSlugs?: string[] | null;
+}) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [brandMenuOpen, setBrandMenuOpen] = useState(false);
@@ -151,12 +156,15 @@ export default function Header() {
     }
   };
 
-  // 브랜드 메뉴와 일반 메뉴 분리
-  const brandNavItems = siteConfig.mainNav.filter(
-    (item) =>
-      item.href.startsWith("/brand/") &&
-      !isHiddenBrand(item.href.replace("/brand/", ""))
-  );
+  // 브랜드 메뉴와 일반 메뉴 분리 (상품 0개 브랜드는 자동 숨김)
+  const activeSet = activeBrandSlugs ? new Set(activeBrandSlugs) : null;
+  const brandNavItems = siteConfig.mainNav.filter((item) => {
+    if (!item.href.startsWith("/brand/")) return false;
+    const slug = item.href.replace("/brand/", "");
+    if (isHiddenBrand(slug)) return false;
+    // 활성 목록을 아는 경우에만 빈 브랜드를 숨김 (모르면 전부 노출)
+    return activeSet ? activeSet.has(slug) : true;
+  });
   const otherNavItems = siteConfig.mainNav.filter(
     (item) => !item.href.startsWith("/brand/")
   );

@@ -4,8 +4,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { visibleBrands } from "@/config/site";
 
-export default function BrandShowcase() {
-  const brands = visibleBrands;
+export default function BrandShowcase({
+  activeBrandSlugs,
+}: {
+  activeBrandSlugs?: string[] | null;
+}) {
+  // 상품이 등록된 브랜드만 노출 (활성 목록을 모르면 전부 노출)
+  const activeSet = activeBrandSlugs ? new Set(activeBrandSlugs) : null;
+  const brands = activeSet
+    ? visibleBrands.filter((b) => activeSet.has(b.slug))
+    : visibleBrands;
+
+  if (brands.length === 0) return null;
 
   // 브랜드 개수에 맞춰 데스크탑 칸 수를 맞춤 (도시바 숨김 등으로 개수가 바뀌어도 빈칸 없이 균형)
   const lgColsClass =

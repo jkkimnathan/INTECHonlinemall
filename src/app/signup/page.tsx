@@ -23,6 +23,8 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
+  // 마케팅 수신은 선택 동의 (전자적 광고 전송은 사전 동의 필요 — 필수 항목과 분리)
+  const [agreeMarketing, setAgreeMarketing] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [confirmSent, setConfirmSent] = useState(false);
@@ -98,6 +100,7 @@ export default function SignupPage() {
       password: form.password,
       name: form.name,
       phone: form.phone,
+      marketingConsent: agreeMarketing,
     });
     setSubmitting(false);
 
@@ -250,6 +253,22 @@ export default function SignupPage() {
                     개인정보처리방침
                   </Link>
                   에 동의합니다 (필수)
+                </span>
+              </label>
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreeMarketing}
+                  onChange={(e) => setAgreeMarketing(e.target.checked)}
+                  className="mt-0.5"
+                  disabled={submitting}
+                />
+                <span className="text-sm text-[#3f3f46]">
+                  마케팅 정보 수신에 동의합니다{" "}
+                  <span className="text-[#86868b]">(선택 · 이메일/SMS)</span>
+                  <span className="block text-xs text-[#a1a1aa] mt-0.5">
+                    할인·이벤트·신제품 소식을 보내드립니다. 동의하지 않아도 가입할 수 있으며, 수신 후 언제든 해지할 수 있습니다.
+                  </span>
                 </span>
               </label>
             </div>
