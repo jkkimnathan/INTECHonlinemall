@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { compressImage } from "@/lib/image-compress";
 import { getSafeImageExtension } from "@/lib/security";
 
 export type BannerPosition = "left-1" | "left-2" | "left-3" | "center" | "right-1" | "right-2" | "right-3";
@@ -123,6 +124,8 @@ export async function deleteMainImageBanner(id: string): Promise<boolean> {
 /** 이미지 업로드 */
 export async function uploadMainImageBannerImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
+  // 원본이 크면 업로드 전 자동 리사이즈·압축 (로딩 속도 개선)
+  file = await compressImage(file);
   const ext = getSafeImageExtension(file.name);
   if (!ext) return { url: null, error: "지원하지 않는 이미지 형식입니다." };
   const path = `main-banners/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;

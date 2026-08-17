@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { compressImage } from "@/lib/image-compress";
 import { getSafeImageExtension } from "@/lib/security";
 
 export interface SiteEvent {
@@ -119,6 +120,8 @@ export async function deleteEvent(id: string): Promise<boolean> {
 /** 이벤트 이미지 업로드 */
 export async function uploadEventImage(file: File): Promise<{ url: string | null; error: string | null }> {
   const supabase = createClient();
+  // 원본이 크면 업로드 전 자동 리사이즈·압축 (로딩 속도 개선)
+  file = await compressImage(file);
   const ext = getSafeImageExtension(file.name);
   if (!ext) return { url: null, error: "지원하지 않는 이미지 형식입니다." };
   const path = `events/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
