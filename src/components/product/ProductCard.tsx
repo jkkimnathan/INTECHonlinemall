@@ -22,6 +22,13 @@ export default function ProductCard({ product }: { product: Product }) {
   const finalPrice = product.salePrice ?? product.price;
   const points = Math.floor(finalPrice * 0.01);
   const isFreeShipping = finalPrice >= 50000;
+  // NEW 배지 자동 만료: 등록 60일 경과 시 수동 플래그가 켜져 있어도 표시하지 않음
+  const NEW_BADGE_DAYS = 60;
+  const showNewBadge =
+    product.isNew &&
+    (!product.createdAt ||
+      Date.now() - new Date(product.createdAt).getTime() <
+        NEW_BADGE_DAYS * 24 * 60 * 60 * 1000);
   // 배지와 가격 표시가 동일한 조건 사용 (0원/역할인 방지)
   const hasDiscount =
     !!product.isSale &&
@@ -86,12 +93,12 @@ export default function ProductCard({ product }: { product: Product }) {
         </h3>
 
         {/* 배지 — 모델명 아래 (이미지를 가리지 않도록) */}
-        {(product.condition === "refurbished" || product.isNew || hasDiscount || isFreeShipping) && (
+        {(product.condition === "refurbished" || showNewBadge || hasDiscount || isFreeShipping) && (
           <div className="flex flex-wrap gap-1 mt-2">
             {product.condition === "refurbished" && (
               <Badge className="rounded-full bg-[#fff7ed] text-[#c2410c] text-[11px] font-semibold border-transparent">리퍼</Badge>
             )}
-            {product.isNew && (
+            {showNewBadge && (
               <Badge className="rounded-full bg-[#eef4ff] text-[#1d4ed8] text-[11px] font-semibold border-transparent">NEW</Badge>
             )}
             {hasDiscount && product.salePrice != null && (

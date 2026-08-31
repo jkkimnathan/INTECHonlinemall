@@ -135,6 +135,9 @@ export default function SignupPage() {
               </label>
               <Input
                 type="text"
+                name="name"
+                autoComplete="name"
+                required
                 placeholder="홍길동"
                 value={form.name}
                 onChange={(e) => updateField("name", e.target.value)}
@@ -149,6 +152,9 @@ export default function SignupPage() {
               </label>
               <Input
                 type="email"
+                name="email"
+                autoComplete="email"
+                required
                 placeholder="example@email.com"
                 value={form.email}
                 onChange={(e) => updateField("email", e.target.value)}
@@ -163,6 +169,9 @@ export default function SignupPage() {
               </label>
               <Input
                 type="tel"
+                name="phone"
+                autoComplete="tel"
+                required
                 placeholder="010-0000-0000"
                 value={form.phone}
                 onChange={(e) => updateField("phone", e.target.value)}
@@ -178,6 +187,9 @@ export default function SignupPage() {
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
+                  name="password"
+                  autoComplete="new-password"
+                  required
                   placeholder="영문+숫자+특수문자 8자 이상"
                   value={form.password}
                   onChange={(e) => updateField("password", e.target.value)}
@@ -187,7 +199,8 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a1a1aa] hover:text-[#3f3f46]"
+                  aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 표시"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-11 min-h-11 flex items-center justify-center text-[#a1a1aa] hover:text-[#3f3f46]"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -204,6 +217,9 @@ export default function SignupPage() {
               </label>
               <Input
                 type="password"
+                name="passwordConfirm"
+                autoComplete="new-password"
+                required
                 placeholder="비밀번호 재입력"
                 value={form.passwordConfirm}
                 onChange={(e) => updateField("passwordConfirm", e.target.value)}
