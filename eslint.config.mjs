@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // b2b/ 는 별도 앱 (자체 eslint 설정 사용)
+    "b2b/**",
   ]),
 ]);
 
