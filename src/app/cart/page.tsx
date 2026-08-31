@@ -156,9 +156,10 @@ export default function CartPage() {
                           onClick={() =>
                             updateQuantity(product.id, quantity - 1)
                           }
-                          className="p-1.5 pl-2.5 text-[#3f3f46] hover:text-[#1A56DB]"
+                          aria-label="수량 줄이기"
+                          className="min-w-10 min-h-10 flex items-center justify-center text-[#3f3f46] hover:text-[#1A56DB]"
                         >
-                          <Minus className="h-3 w-3" />
+                          <Minus className="h-3.5 w-3.5" />
                         </button>
                         <span className="px-3 text-sm font-semibold tabular-nums">
                           {quantity}
@@ -170,9 +171,10 @@ export default function CartPage() {
                               Math.min(product.stock, quantity + 1)
                             )
                           }
-                          className="p-1.5 pr-2.5 text-[#3f3f46] hover:text-[#1A56DB]"
+                          aria-label="수량 늘리기"
+                          className="min-w-10 min-h-10 flex items-center justify-center text-[#3f3f46] hover:text-[#1A56DB]"
                         >
-                          <Plus className="h-3 w-3" />
+                          <Plus className="h-3.5 w-3.5" />
                         </button>
                       </div>
 

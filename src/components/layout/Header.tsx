@@ -219,7 +219,7 @@ export default function Header({
 
       {/* 메인 헤더 - 로고, 검색, 장바구니 */}
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           {/* 모바일 메뉴 버튼 */}
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger
@@ -326,12 +326,19 @@ export default function Header({
                 >
                   마이페이지
                 </Link>
+                <Link
+                  href="/wishlist"
+                  onClick={closeMenu}
+                  className="px-3 py-3 text-base font-medium rounded-lg hover:bg-[#f5f5f7]"
+                >
+                  위시리스트
+                </Link>
               </nav>
             </SheetContent>
           </Sheet>
 
           {/* 로고 */}
-          <Link href="/" className="flex-shrink-0">
+          <Link href="/" className="flex-shrink-0 inline-flex items-center min-h-11">
             <span className="text-xl font-bold text-[#1d1d1f] tracking-[-0.02em]">
               {siteConfig.name}
             </span>
@@ -375,12 +382,12 @@ export default function Header({
             >
               <Search className="h-5 w-5" />
             </Button>
-            <Link href="/mypage" aria-label="마이페이지">
+            <Link href="/mypage" aria-label="마이페이지" className="hidden sm:block">
               <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9">
                 <User className="h-5 w-5" />
               </Button>
             </Link>
-            <Link href="/wishlist" aria-label="위시리스트">
+            <Link href="/wishlist" aria-label="위시리스트" className="hidden sm:block">
               <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9">
                 <Heart className="h-5 w-5" />
               </Button>

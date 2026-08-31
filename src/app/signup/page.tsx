@@ -235,48 +235,48 @@ export default function SignupPage() {
 
             {/* 약관 동의 */}
             <div className="space-y-2 pt-2">
-              <label className="flex items-start gap-2 cursor-pointer">
+              <label className="flex items-start gap-2.5 cursor-pointer py-1.5">
                 <input
                   type="checkbox"
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="mt-0.5"
+                  className="mt-0.5 h-[18px] w-[18px] accent-[#1A56DB]"
                   disabled={submitting}
                 />
                 <span className="text-sm text-[#3f3f46]">
                   <Link
                     href="/terms"
-                    className="text-[#1A56DB] hover:underline"
+                    className="text-[#1A56DB] hover:underline inline-block py-1"
                   >
                     이용약관
                   </Link>
                   에 동의합니다 (필수)
                 </span>
               </label>
-              <label className="flex items-start gap-2 cursor-pointer">
+              <label className="flex items-start gap-2.5 cursor-pointer py-1.5">
                 <input
                   type="checkbox"
                   checked={agreePrivacy}
                   onChange={(e) => setAgreePrivacy(e.target.checked)}
-                  className="mt-0.5"
+                  className="mt-0.5 h-[18px] w-[18px] accent-[#1A56DB]"
                   disabled={submitting}
                 />
                 <span className="text-sm text-[#3f3f46]">
                   <Link
                     href="/privacy"
-                    className="text-[#1A56DB] hover:underline"
+                    className="text-[#1A56DB] hover:underline inline-block py-1"
                   >
                     개인정보처리방침
                   </Link>
                   에 동의합니다 (필수)
                 </span>
               </label>
-              <label className="flex items-start gap-2 cursor-pointer">
+              <label className="flex items-start gap-2.5 cursor-pointer py-1.5">
                 <input
                   type="checkbox"
                   checked={agreeMarketing}
                   onChange={(e) => setAgreeMarketing(e.target.checked)}
-                  className="mt-0.5"
+                  className="mt-0.5 h-[18px] w-[18px] accent-[#1A56DB]"
                   disabled={submitting}
                 />
                 <span className="text-sm text-[#3f3f46]">
@@ -311,7 +311,7 @@ export default function SignupPage() {
             이미 회원이신가요?{" "}
             <Link
               href="/login"
-              className="text-[#1A56DB] font-medium hover:underline"
+              className="text-[#1A56DB] font-medium hover:underline inline-block py-1"
             >
               로그인
             </Link>
