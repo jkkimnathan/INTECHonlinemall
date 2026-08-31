@@ -20,7 +20,7 @@ export default function SignupCompletePage() {
 
         <div className="rounded-lg border bg-white p-6 text-sm text-zinc-600 space-y-2 text-left">
           <p>- 영업담당 검토 후 1~2영업일 내 결과를 이메일로 안내드립니다.</p>
-          <p>- 승인 시 등록하신 이메일로 임시 비밀번호가 발송됩니다.</p>
+          <p>- 승인 시 등록하신 이메일로 비밀번호 설정 링크가 발송됩니다.</p>
           <p>- 추가 문의: <a href="mailto:nathan@intechn.com" className="text-blue-600 hover:underline">nathan@intechn.com</a></p>
           <p>- 전화: 02-2129-7935</p>
         </div>

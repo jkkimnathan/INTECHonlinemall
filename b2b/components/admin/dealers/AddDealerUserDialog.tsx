@@ -18,7 +18,7 @@ interface Props {
   open: boolean
   dealerId: string
   onClose: () => void
-  onSuccess: (loginId: string, tempPassword: string) => void
+  onSuccess: (loginId: string, activationLink: string | null) => void
 }
 
 export default function AddDealerUserDialog({ open, dealerId, onClose, onSuccess }: Props) {
@@ -42,7 +42,7 @@ export default function AddDealerUserDialog({ open, dealerId, onClose, onSuccess
 
       const result = await addDealerUser(dealerId, formData)
       setName(''); setEmail(''); setPhone(''); setRole('')
-      onSuccess(result.loginId, result.tempPassword)
+      onSuccess(result.loginId, result.activationLink)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : '추가 실패')
     } finally {

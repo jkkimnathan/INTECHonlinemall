@@ -53,8 +53,8 @@ export default function DealerForm({ mode, initialData }: DealerFormProps) {
 
   // 임시 비번 다이얼로그
   const [credDialog, setCredDialog] = useState<{
-    open: boolean; loginId: string; tempPassword: string; dealerId: string
-  }>({ open: false, loginId: '', tempPassword: '', dealerId: '' })
+    open: boolean; loginId: string; activationLink: string | null; dealerId: string
+  }>({ open: false, loginId: '', activationLink: null, dealerId: '' })
 
   // 사업자번호 자동 포맷
   const handleBusinessNoChange = (val: string) => {
@@ -127,7 +127,7 @@ export default function DealerForm({ mode, initialData }: DealerFormProps) {
         setCredDialog({
           open: true,
           loginId: result.loginId,
-          tempPassword: result.tempPassword,
+          activationLink: result.activationLink,
           dealerId: result.dealerId,
         })
       } else {
@@ -260,7 +260,7 @@ export default function DealerForm({ mode, initialData }: DealerFormProps) {
       <CredentialDialog
         open={credDialog.open}
         loginId={credDialog.loginId}
-        tempPassword={credDialog.tempPassword}
+        activationLink={credDialog.activationLink}
         onClose={() => {
           setCredDialog((prev) => ({ ...prev, open: false }))
           router.push(`/admin/dealers/${credDialog.dealerId}`)

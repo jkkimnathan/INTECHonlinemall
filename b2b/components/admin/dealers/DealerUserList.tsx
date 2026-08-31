@@ -31,13 +31,13 @@ interface Props {
 
 export default function DealerUserList({ dealerId, users }: Props) {
   const [showAdd, setShowAdd] = useState(false)
-  const [cred, setCred] = useState({ open: false, loginId: '', tempPassword: '' })
+  const [cred, setCred] = useState<{ open: boolean; loginId: string; activationLink: string | null }>({ open: false, loginId: '', activationLink: null })
 
   const handleResetPassword = async (userId: string) => {
     try {
       const result = await resetDealerUserPassword(userId)
       const user = users.find((u) => u.id === userId)
-      setCred({ open: true, loginId: user?.login_id ?? '', tempPassword: result.tempPassword })
+      setCred({ open: true, loginId: user?.login_id ?? '', activationLink: result.activationLink })
     } catch (err) {
       toast.error(err instanceof Error ? err.message : '비밀번호 재설정 실패')
     }
@@ -150,9 +150,9 @@ export default function DealerUserList({ dealerId, users }: Props) {
         open={showAdd}
         dealerId={dealerId}
         onClose={() => setShowAdd(false)}
-        onSuccess={(loginId, tempPassword) => {
+        onSuccess={(loginId, activationLink) => {
           setShowAdd(false)
-          setCred({ open: true, loginId, tempPassword })
+          setCred({ open: true, loginId, activationLink })
         }}
       />
 
@@ -160,8 +160,8 @@ export default function DealerUserList({ dealerId, users }: Props) {
       <CredentialDialog
         open={cred.open}
         loginId={cred.loginId}
-        tempPassword={cred.tempPassword}
-        onClose={() => setCred({ open: false, loginId: '', tempPassword: '' })}
+        activationLink={cred.activationLink}
+        onClose={() => setCred({ open: false, loginId: '', activationLink: null })}
       />
     </>
   )

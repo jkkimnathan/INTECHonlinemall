@@ -18,7 +18,7 @@ export default function DealerSignupPage() {
         {/* 안내 */}
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 mb-6 space-y-1">
           <p>- 가입신청 후 영업담당 검토를 거쳐 1~2영업일 내 승인됩니다.</p>
-          <p>- 승인 시 입력하신 이메일로 임시 비밀번호가 전달됩니다.</p>
+          <p>- 승인 시 입력하신 이메일로 비밀번호 설정 링크가 전달됩니다.</p>
           <p>- 정확한 사업자 정보를 입력해주세요.</p>
         </div>
 

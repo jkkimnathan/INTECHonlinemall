@@ -50,7 +50,7 @@ export default function DealerDetailClient({ dealer, users, orderCount, rfqCount
   const [showReject, setShowReject] = useState(false)
   const [rejectReason, setRejectReason] = useState('')
   const [showDelete, setShowDelete] = useState(false)
-  const [cred, setCred] = useState({ open: false, loginId: '', tempPassword: '' })
+  const [cred, setCred] = useState<{ open: boolean; loginId: string; activationLink: string | null }>({ open: false, loginId: '', activationLink: null })
   const [processing, setProcessing] = useState(false)
 
   const st = dealerStatusLabel(dealer.status)
@@ -62,7 +62,7 @@ export default function DealerDetailClient({ dealer, users, orderCount, rfqCount
     try {
       const result = await approveDealer(dealer.id)
       setShowApprove(false)
-      setCred({ open: true, loginId: result.loginId, tempPassword: result.tempPassword })
+      setCred({ open: true, loginId: result.loginId, activationLink: result.activationLink })
     } catch (err) {
       toast.error(err instanceof Error ? err.message : '승인 실패')
     } finally {
@@ -340,8 +340,8 @@ export default function DealerDetailClient({ dealer, users, orderCount, rfqCount
       <CredentialDialog
         open={cred.open}
         loginId={cred.loginId}
-        tempPassword={cred.tempPassword}
-        onClose={() => { setCred({ open: false, loginId: '', tempPassword: '' }); router.refresh() }}
+        activationLink={cred.activationLink}
+        onClose={() => { setCred({ open: false, loginId: '', activationLink: null }); router.refresh() }}
       />
     </>
   )

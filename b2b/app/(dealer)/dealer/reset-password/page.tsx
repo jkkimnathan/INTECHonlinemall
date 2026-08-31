@@ -119,6 +119,7 @@ export default function ResetPasswordPage() {
               <Input
                 id="password"
                 type="password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="8자 이상"
@@ -131,6 +132,7 @@ export default function ResetPasswordPage() {
               <Input
                 id="confirm"
                 type="password"
+                autoComplete="new-password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="비밀번호 다시 입력"

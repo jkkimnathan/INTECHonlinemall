@@ -42,7 +42,7 @@ export default function LandingPage() {
       {/* NAV */}
       <nav className="nav-blur fixed top-0 left-0 right-0 z-40 border-b border-black/5">
         <div className="max-w-6xl mx-auto px-6 h-12 flex items-center justify-between">
-          <a href="#">
+          <a href="/" aria-label="iPC B2B Mall 홈으로">
             <Image src="/landing/ipc-logo.png" alt="iPC" width={80} height={20} className="h-5 w-auto" />
           </a>
           <div className="hidden md:flex items-center gap-8 text-[13px] text-[#86868b] font-medium">
@@ -182,7 +182,7 @@ export default function LandingPage() {
                     NPU를 탑재한 차세대 AI PC. 클라우드 없이 기기 안에서 생성형 AI와 실시간 추론을 처리해, 보안과 속도를 동시에 잡았습니다.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {['NPU 탑재 (40+ TOPS)', 'Copilot+ PC 지원', '온디바이스 LLM 추론', '데이터 유출 없는 로컬 AI'].map((t) => (
+                    {['NPU 탑재 (40+ TOPS)', 'Copilot+ PC 지원', '온디바이스 LLM 추론', '외부 전송을 최소화한 로컬 AI'].map((t) => (
                       <span key={t} className="bg-white/10 border border-white/10 rounded-full px-4 py-1.5 text-xs text-white font-medium">{t}</span>
                     ))}
                   </div>
@@ -226,7 +226,7 @@ export default function LandingPage() {
                 {[
                   { icon: BadgeCheck, t: 'S/A/B 등급제 — 상태를 투명하게 표기' },
                   { icon: ShieldCheck, t: '전 부품 자체 보증 제공' },
-                  { icon: Wallet, t: '신품 대비 최대 60% 절감' },
+                  { icon: Wallet, t: '신품 대비 최대 60% 절감*' },
                 ].map(({ icon: Icon, t }) => (
                   <div key={t} className="flex items-start gap-4">
                     <Icon className="size-5 text-emerald-500 mt-0.5 shrink-0" />
@@ -298,7 +298,7 @@ export default function LandingPage() {
                 정품으로 구성 된 PC와 Software를 솔루션으로 구성하시고, 총소유비용을 낮추세요.
               </p>
               <div className="space-y-4">
-                {['공식 수입 정품 부품 사용', '규정에 따른 공식 A/S 지원', '최대 45% 비용 절감'].map((t) => (
+                {['공식 수입 정품 부품 사용', '규정에 따른 공식 A/S 지원', '최대 45% 비용 절감*'].map((t) => (
                   <div key={t} className="flex items-start gap-4">
                     <CheckCircle className="size-5 text-[#0071e3] mt-0.5 shrink-0" />
                     <span className="text-[15px]">{t}</span>
@@ -318,7 +318,7 @@ export default function LandingPage() {
                 라이선스 자산 관리 및 보안
               </h3>
               <p className="text-lg text-[#1d1d1f] font-medium mb-4">
-                기업용 정품 소프트웨어 통합 관리로 컴플라이언스 리스크 제로
+                기업용 정품 소프트웨어 통합 관리로 라이선스 컴플라이언스 리스크 최소화
               </p>
               <p className="text-[#86868b] text-[17px] leading-relaxed">
                 AhnLab, Microsoft의 기업용 보안 프로세스를 구축하세요.
@@ -450,6 +450,10 @@ export default function LandingPage() {
       {/* FOOTER */}
       <footer className="py-16 border-t border-black/5">
         <div className="max-w-6xl mx-auto px-6">
+          <p className="text-[11px] text-[#a1a1aa] mb-10">
+            * 표기된 절감률·성능 수치는 자체 고객 사례 기준이며, 구성·수량·계약 조건·비교
+            대상에 따라 달라질 수 있습니다.
+          </p>
           <div className="grid md:grid-cols-4 gap-12 mb-14">
             <div className="md:col-span-2">
               <Image src="/landing/ipc-logo.png" alt="iPC" width={80} height={24} className="h-6 w-auto mb-4" />
@@ -466,15 +470,20 @@ export default function LandingPage() {
                 <li><a href="#lineup" className="hover:text-[#1d1d1f] transition-colors duration-300">iPC Master</a></li>
                 <li><a href="#lineup" className="hover:text-[#1d1d1f] transition-colors duration-300">iPC AI</a></li>
                 <li><a href="#refurb" className="hover:text-[#1d1d1f] transition-colors duration-300">리퍼 부품</a></li>
+                <li className="pt-2 border-t border-black/5">
+                  <a href="https://intechonline.kr" className="hover:text-[#1d1d1f] transition-colors duration-300">
+                    개인 구매는 인텍앤컴퍼니몰 →
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-semibold mb-4">고객 지원</h4>
               <ul className="space-y-2.5 text-sm text-[#86868b]">
                 <li className="flex items-center gap-2"><Phone className="size-[15px]" />1800-7631</li>
-                <li className="flex items-center gap-2"><Wrench className="size-[15px]" />A/S : 1544-6549</li>
-                <li className="flex items-center gap-2"><Monitor className="size-[15px]" />iPC : 02-2129-7935</li>
-                <li className="flex items-center gap-2"><Code className="size-[15px]" />Software : 02-2129-7931</li>
+                <li className="flex items-center gap-2"><Wrench className="size-[15px]" />A/S : <a href="tel:1544-6549" className="hover:underline">1544-6549</a></li>
+                <li className="flex items-center gap-2"><Monitor className="size-[15px]" />iPC : <a href="tel:02-2129-7935" className="hover:underline">02-2129-7935</a></li>
+                <li className="flex items-center gap-2"><Code className="size-[15px]" />Software : <a href="tel:02-2129-7931" className="hover:underline">02-2129-7931</a></li>
               </ul>
             </div>
           </div>

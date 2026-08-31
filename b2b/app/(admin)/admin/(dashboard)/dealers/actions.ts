@@ -16,6 +16,25 @@ import DealerApprovedEmail from '@/components/emails/DealerApprovedEmail'
 
 const REVALIDATE_PATH = '/admin/dealers'
 
+/**
+ * 1회성 비밀번호 설정(활성화) 링크 생성.
+ * 비밀번호 원문을 이메일/화면으로 전달하지 않기 위한 보안 조치(감사 P0):
+ * 링크는 만료·1회성이며, 사용자가 접속해 직접 새 비밀번호를 설정한다.
+ * 실패 시 null 을 반환하고 호출부는 재발급 안내로 폴백한다.
+ */
+async function generateActivationLink(
+  adminSupabase: ReturnType<typeof createAdminClient>,
+  email: string
+): Promise<string | null> {
+  const { data, error } = await adminSupabase.auth.admin.generateLink({
+    type: 'recovery',
+    email,
+    options: { redirectTo: `${getSiteUrl()}/dealer/reset-password` },
+  })
+  if (error || !data?.properties?.action_link) return null
+  return data.properties.action_link
+}
+
 // ============================================================
 // 거래처 CRUD
 // ============================================================
@@ -24,7 +43,7 @@ const REVALIDATE_PATH = '/admin/dealers'
 export async function createDealerWithUser(formData: FormData): Promise<{
   dealerId: string
   loginId: string
-  tempPassword: string
+  activationLink: string | null
 }> {
   await requireAdmin()
   const supabase = await createClient()
@@ -101,17 +120,20 @@ export async function createDealerWithUser(formData: FormData): Promise<{
 
   revalidatePath(REVALIDATE_PATH)
 
+  // 비밀번호 원문 대신 1회성 활성화 링크 발급
+  const activationLink = await generateActivationLink(adminSupabase, contactEmail)
+
   return {
     dealerId: dealer.id,
     loginId: contactEmail,
-    tempPassword,
+    activationLink,
   }
 }
 
 /** 가입신청 승인 (pending → active + 첫 담당자 계정 발급) */
 export async function approveDealer(dealerId: string): Promise<{
   loginId: string
-  tempPassword: string
+  activationLink: string | null
 }> {
   await requireAdmin()
   const supabase = await createClient()
@@ -174,26 +196,30 @@ export async function approveDealer(dealerId: string): Promise<{
 
   revalidatePath(REVALIDATE_PATH)
 
-  // 승인 이메일 발송
-  try {
-    await sendEmail({
-      templateKey: 'dealer_dealer_approved',
-      to: loginEmail,
-      recipientType: 'dealer',
-      recipientName: primaryUser.email ?? '',
-      subject: 'iPC Mall 가입이 승인되었습니다',
-      react: DealerApprovedEmail({
-        dealerName: dealer.company_name,
-        contactName: dealer.contact_name ?? '',
-        loginId: loginEmail,
-        tempPassword,
-        loginUrl: `${getSiteUrl()}/dealer/login`,
-      }),
-      relatedDealerId: dealerId,
-    })
-  } catch { /* 이메일 실패가 비즈니스 로직 차단 안 함 */ }
+  // 비밀번호 원문 대신 1회성 활성화 링크를 발급해 이메일로 안내
+  const activationLink = await generateActivationLink(adminSupabase, loginEmail)
 
-  return { loginId: loginEmail, tempPassword }
+  if (activationLink) {
+    try {
+      await sendEmail({
+        templateKey: 'dealer_dealer_approved',
+        to: loginEmail,
+        recipientType: 'dealer',
+        recipientName: primaryUser.email ?? '',
+        subject: 'iPC Mall 가입이 승인되었습니다',
+        react: DealerApprovedEmail({
+          dealerName: dealer.company_name,
+          contactName: dealer.contact_name ?? '',
+          loginId: loginEmail,
+          activationLink,
+          loginUrl: `${getSiteUrl()}/dealer/login`,
+        }),
+        relatedDealerId: dealerId,
+      })
+    } catch { /* 이메일 실패가 비즈니스 로직 차단 안 함 */ }
+  }
+
+  return { loginId: loginEmail, activationLink }
 }
 
 /** 가입신청 반려 (suspended + 사유 저장) */
@@ -297,7 +323,7 @@ export async function updateDealerMemo(dealerId: string, memo: string) {
 /** 담당자 추가 (Auth 계정 + dealer_users) */
 export async function addDealerUser(dealerId: string, formData: FormData): Promise<{
   loginId: string
-  tempPassword: string
+  activationLink: string | null
 }> {
   await requireAdmin()
   const supabase = await createClient()
@@ -332,35 +358,30 @@ export async function addDealerUser(dealerId: string, formData: FormData): Promi
 
   revalidatePath(`/admin/dealers/${dealerId}`)
 
-  return { loginId: email, tempPassword }
+  const activationLink = await generateActivationLink(adminSupabase, email)
+  return { loginId: email, activationLink }
 }
 
-/** 담당자 비밀번호 재설정 */
+/** 담당자 비밀번호 재설정 — 1회성 재설정 링크 발급 (비밀번호 원문 미전달) */
 export async function resetDealerUserPassword(userId: string): Promise<{
-  tempPassword: string
+  activationLink: string | null
 }> {
   await requireAdmin()
   const supabase = await createClient()
   const adminSupabase = createAdminClient()
 
-  // dealer_users에서 auth_user_id 조회
   const { data: user, error: fetchError } = await supabase
     .from('dealer_users')
-    .select('auth_user_id')
+    .select('auth_user_id, email')
     .eq('id', userId)
     .single()
 
-  if (fetchError || !user?.auth_user_id) throw new Error('사용자를 찾을 수 없습니다.')
+  if (fetchError || !user?.auth_user_id || !user.email) throw new Error('사용자를 찾을 수 없습니다.')
 
-  const tempPassword = generateTempPassword()
+  const activationLink = await generateActivationLink(adminSupabase, user.email)
+  if (!activationLink) throw new Error('재설정 링크 생성에 실패했습니다. 잠시 후 다시 시도해주세요.')
 
-  const { error } = await adminSupabase.auth.admin.updateUserById(user.auth_user_id, {
-    password: tempPassword,
-  })
-
-  if (error) throw new Error('비밀번호 재설정 실패: ' + error.message)
-
-  return { tempPassword }
+  return { activationLink }
 }
 
 /** 담당자 활성/비활성 */

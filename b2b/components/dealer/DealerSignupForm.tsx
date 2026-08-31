@@ -67,7 +67,8 @@ export default function DealerSignupForm() {
     setCertFile(file)
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault()
     // 클라이언트 검증
     if (!companyName.trim()) { toast.error('상호명을 입력해주세요.'); return }
     const rawNo = businessNo.replace(/\D/g, '')
@@ -114,50 +115,50 @@ export default function DealerSignupForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6">
       {/* 섹션 1: 사업자 정보 */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">사업자 정보</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label>상호 *</Label>
-              <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="(주)OO유통" />
+              <Label htmlFor="signup-company">상호 *</Label>
+              <Input id="signup-company" name="organization" autoComplete="organization" required value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="(주)OO유통" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label>사업자등록번호 *</Label>
-              <Input value={businessNo} onChange={(e) => handleBusinessNoChange(e.target.value)} placeholder="123-45-67890" />
+              <Label htmlFor="signup-bizno">사업자등록번호 *</Label>
+              <Input id="signup-bizno" name="business_no" inputMode="numeric" required value={businessNo} onChange={(e) => handleBusinessNoChange(e.target.value)} placeholder="123-45-67890" />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex flex-col gap-2">
-              <Label>대표자명 *</Label>
-              <Input value={ceoName} onChange={(e) => setCeoName(e.target.value)} placeholder="홍길동" />
+              <Label htmlFor="signup-ceo">대표자명 *</Label>
+              <Input id="signup-ceo" name="ceo_name" required value={ceoName} onChange={(e) => setCeoName(e.target.value)} placeholder="홍길동" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label>업태</Label>
-              <Input value={businessType} onChange={(e) => setBusinessType(e.target.value)} placeholder="도소매" />
+              <Label htmlFor="signup-biztype">업태</Label>
+              <Input id="signup-biztype" name="business_type" value={businessType} onChange={(e) => setBusinessType(e.target.value)} placeholder="도소매" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label>종목</Label>
-              <Input value={businessItem} onChange={(e) => setBusinessItem(e.target.value)} placeholder="컴퓨터 및 주변기기" />
+              <Label htmlFor="signup-bizitem">종목</Label>
+              <Input id="signup-bizitem" name="business_item" value={businessItem} onChange={(e) => setBusinessItem(e.target.value)} placeholder="컴퓨터 및 주변기기" />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label>대표 전화</Label>
-              <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="02-1234-5678" />
+              <Label htmlFor="signup-phone">대표 전화</Label>
+              <Input id="signup-phone" name="phone" type="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="02-1234-5678" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label>우편번호</Label>
-              <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} placeholder="06234" />
+              <Label htmlFor="signup-postal">우편번호</Label>
+              <Input id="signup-postal" name="postal_code" inputMode="numeric" autoComplete="postal-code" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} placeholder="06234" />
             </div>
-            <div className="col-span-1 flex flex-col gap-2">
-              <Label>주소</Label>
-              <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="서울시 강남구..." />
-            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="signup-address">주소</Label>
+            <Input id="signup-address" name="address" autoComplete="street-address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="서울시 강남구..." />
           </div>
         </CardContent>
       </Card>
@@ -169,24 +170,24 @@ export default function DealerSignupForm() {
           <p className="text-xs text-zinc-400">승인 시 이 담당자에게 로그인 계정이 발급됩니다.</p>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label>담당자명 *</Label>
-              <Input value={userName} onChange={(e) => setUserName(e.target.value)} placeholder="김철수" />
+              <Label htmlFor="signup-username">담당자명 *</Label>
+              <Input id="signup-username" name="name" autoComplete="name" required value={userName} onChange={(e) => setUserName(e.target.value)} placeholder="김철수" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label>이메일 (로그인 ID) *</Label>
-              <Input type="email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} placeholder="kim@company.com" />
+              <Label htmlFor="signup-email">이메일 (로그인 ID) *</Label>
+              <Input id="signup-email" name="email" type="email" autoComplete="email" required value={userEmail} onChange={(e) => setUserEmail(e.target.value)} placeholder="kim@company.com" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label>휴대폰 *</Label>
-              <Input value={userPhone} onChange={(e) => setUserPhone(e.target.value)} placeholder="010-1234-5678" />
+              <Label htmlFor="signup-userphone">휴대폰 *</Label>
+              <Input id="signup-userphone" name="mobile" type="tel" autoComplete="tel" required value={userPhone} onChange={(e) => setUserPhone(e.target.value)} placeholder="010-1234-5678" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label>직책</Label>
-              <Input value={userRole} onChange={(e) => setUserRole(e.target.value)} placeholder="구매담당" />
+              <Label htmlFor="signup-role">직책</Label>
+              <Input id="signup-role" name="role" autoComplete="organization-title" value={userRole} onChange={(e) => setUserRole(e.target.value)} placeholder="구매담당" />
             </div>
           </div>
         </CardContent>
@@ -228,25 +229,29 @@ export default function DealerSignupForm() {
           <CardTitle className="text-base">약관 동의</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <label className="flex items-center gap-3 cursor-pointer">
-            <Checkbox checked={agreePrivacy} onCheckedChange={(v) => setAgreePrivacy(v === true)} />
-            <span className="text-sm">개인정보 수집 및 이용에 동의합니다 (필수)</span>
-            <a href="#" className="text-xs text-blue-600 hover:underline ml-auto">전문보기</a>
-          </label>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <Checkbox checked={agreeTerms} onCheckedChange={(v) => setAgreeTerms(v === true)} />
-            <span className="text-sm">B2B 거래 약관에 동의합니다 (필수)</span>
-            <a href="#" className="text-xs text-blue-600 hover:underline ml-auto">전문보기</a>
-          </label>
+          <div className="flex items-center gap-3">
+            <label className="flex flex-1 items-center gap-3 cursor-pointer py-1.5">
+              <Checkbox checked={agreePrivacy} onCheckedChange={(v) => setAgreePrivacy(v === true)} />
+              <span className="text-sm">개인정보 수집 및 이용에 동의합니다 (필수)</span>
+            </label>
+            <a href="/dealer/privacy" target="_blank" rel="noopener" className="text-xs text-blue-600 hover:underline inline-flex items-center py-2 px-1 flex-shrink-0">전문보기</a>
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="flex flex-1 items-center gap-3 cursor-pointer py-1.5">
+              <Checkbox checked={agreeTerms} onCheckedChange={(v) => setAgreeTerms(v === true)} />
+              <span className="text-sm">B2B 거래 약관에 동의합니다 (필수)</span>
+            </label>
+            <a href="/dealer/terms" target="_blank" rel="noopener" className="text-xs text-blue-600 hover:underline inline-flex items-center py-2 px-1 flex-shrink-0">전문보기</a>
+          </div>
         </CardContent>
       </Card>
 
       {/* 제출 버튼 */}
       <div className="flex justify-center">
-        <Button size="lg" onClick={handleSubmit} disabled={submitting} className="w-64">
+        <Button type="submit" size="lg" disabled={submitting} className="w-64">
           {submitting ? '신청 중...' : '가입신청'}
         </Button>
       </div>
-    </div>
+    </form>
   )
 }

@@ -99,7 +99,9 @@ export default function DealerLoginPage() {
               <Label htmlFor="email">이메일</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
+                autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="partner@company.com"
@@ -110,7 +112,9 @@ export default function DealerLoginPage() {
               <Label htmlFor="password">비밀번호</Label>
               <Input
                 id="password"
+                name="password"
                 type="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호 입력"

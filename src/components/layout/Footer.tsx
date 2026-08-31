@@ -8,6 +8,7 @@ const quickLinks = [
   { title: "1:1 문의", href: "/community" },
   { title: "배송안내", href: "/shipping" },
   { title: "교환/반품 안내", href: "/returns" },
+  { title: "기업·대량구매 (B2B)", href: "https://ipcb2bmall.com" },
 ];
 
 export default function Footer() {

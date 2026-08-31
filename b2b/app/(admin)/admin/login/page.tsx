@@ -74,7 +74,9 @@ export default function AdminLoginPage() {
               <Label htmlFor="email">이메일</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
+                autoComplete="username"
                 placeholder="admin@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -87,7 +89,9 @@ export default function AdminLoginPage() {
               <Label htmlFor="password">비밀번호</Label>
               <Input
                 id="password"
+                name="password"
                 type="password"
+                autoComplete="current-password"
                 placeholder="비밀번호 입력"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
