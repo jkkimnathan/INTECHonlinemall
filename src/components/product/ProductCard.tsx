@@ -4,8 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/types/product";
-import { ShoppingCart, Truck } from "lucide-react";
+import { ShoppingCart, Truck, GitCompareArrows } from "lucide-react";
 import { useCartStore } from "@/store/cart";
+import { useCompareStore } from "@/store/compare";
 import { showToast } from "@/components/ui/toast";
 
 function formatPrice(price: number) {
@@ -19,6 +20,8 @@ function getDiscountRate(price: number, salePrice: number) {
 
 export default function ProductCard({ product }: { product: Product }) {
   const addToCart = useCartStore((s) => s.addItem);
+  const compareToggle = useCompareStore((s) => s.toggle);
+  const inCompare = useCompareStore((s) => s.items.some((p) => p.id === product.id));
   const finalPrice = product.salePrice ?? product.price;
   const points = Math.floor(finalPrice * 0.01);
   const isFreeShipping = finalPrice >= 50000;
@@ -51,6 +54,25 @@ export default function ProductCard({ product }: { product: Product }) {
             <p className="text-[#3f3f46] text-sm mt-1 line-clamp-2">{product.name}</p>
           </div>
         )}
+
+        {/* 비교 담기 토글 */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const r = compareToggle(product);
+            showToast(r.message);
+          }}
+          aria-label={inCompare ? "비교에서 제거" : "비교에 담기"}
+          title="상품 비교"
+          className={`absolute top-2 right-2 z-10 rounded-full min-w-9 min-h-9 flex items-center justify-center border transition-colors ${
+            inCompare
+              ? "bg-[#1A56DB] text-white border-transparent"
+              : "bg-white/90 text-[#a1a1aa] border-[#e5e7eb] hover:text-[#1A56DB] hover:border-[#1A56DB]"
+          }`}
+        >
+          <GitCompareArrows className="h-4 w-4" />
+        </button>
 
         {product.stock <= 3 && product.stock > 0 && (
           <div className="absolute bottom-3 right-3">
