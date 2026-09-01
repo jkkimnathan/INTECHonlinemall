@@ -144,12 +144,14 @@ export default function HeroBannerSlider({ banners = [] }: Props) {
         <>
           <button
             onClick={prevSlide}
+            aria-label="이전 배너"
             className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/50"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={nextSlide}
+            aria-label="다음 배너"
             className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/50"
           >
             <ChevronRight className="h-5 w-5" />
@@ -164,7 +166,9 @@ export default function HeroBannerSlider({ banners = [] }: Props) {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-2.5 h-2.5 rounded-full transition-all ${
+              aria-label={`${index + 1}번 배너로 이동`}
+              aria-current={index === activeIndex}
+              className={`before:absolute before:-inset-3 relative w-2.5 h-2.5 rounded-full transition-all ${
                 index === activeIndex
                   ? "bg-white w-6"
                   : "bg-white/40 hover:bg-white/60"

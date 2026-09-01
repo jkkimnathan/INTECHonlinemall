@@ -39,7 +39,7 @@ export default function CompareBar() {
               <button
                 onClick={() => remove(p.id)}
                 aria-label={`${p.name} 비교에서 제거`}
-                className="absolute top-0 right-0 bg-black/60 text-white rounded-bl-md p-0.5"
+                className="absolute -top-1 -right-1 bg-black/60 text-white rounded-full p-1.5 min-w-6 min-h-6 flex items-center justify-center"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -52,7 +52,7 @@ export default function CompareBar() {
 
         <button
           onClick={clear}
-          className="text-xs text-[#86868b] hover:text-[#1d1d1f] underline underline-offset-2 flex-shrink-0 py-2"
+          className="text-xs text-[#86868b] hover:text-[#1d1d1f] underline underline-offset-2 flex-shrink-0 py-3 px-2 min-h-11 inline-flex items-center"
         >
           비우기
         </button>

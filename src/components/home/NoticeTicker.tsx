@@ -67,7 +67,7 @@ export default function NoticeTicker({ notices = [], events = [] }: Props) {
                   <span key={`${loop}-${i}`}>
                     <Link
                       href={item.href}
-                      className="text-xs hover:text-yellow-400 transition-colors"
+                      className="text-xs hover:text-yellow-400 transition-colors inline-flex items-center py-3 -my-3"
                     >
                       {item.text}
                     </Link>

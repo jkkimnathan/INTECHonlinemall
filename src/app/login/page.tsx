@@ -79,7 +79,7 @@ function LoginForm() {
           </div>
 
           {/* 로그인 폼 */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form method="post" onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 이메일

@@ -98,7 +98,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 addToCart(product, 1);
                 showToast("상품이 장바구니에 담겼습니다.");
               }}
-              className="bg-white text-[#1d1d1f] px-4 py-2 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-[#1A56DB] hover:text-white transition-colors shadow-lg"
+              className="bg-white text-[#1d1d1f] px-4 py-2 pointer-coarse:min-h-11 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-[#1A56DB] hover:text-white transition-colors shadow-lg"
             >
               <ShoppingCart className="h-4 w-4" />
               장바구니 담기
@@ -118,7 +118,9 @@ export default function ProductCard({ product }: { product: Product }) {
         {(product.condition === "refurbished" || showNewBadge || hasDiscount || isFreeShipping) && (
           <div className="flex flex-wrap gap-1 mt-2">
             {product.condition === "refurbished" && (
-              <Badge className="rounded-full bg-[#fff7ed] text-[#c2410c] text-[11px] font-semibold border-transparent">리퍼</Badge>
+              <Badge className="rounded-full bg-[#fff7ed] text-[#c2410c] text-[11px] font-semibold border-transparent">
+                리퍼{product.specs?.["등급"] ? ` ${product.specs["등급"]}급`.replace("급급", "급") : ""}
+              </Badge>
             )}
             {showNewBadge && (
               <Badge className="rounded-full bg-[#eef4ff] text-[#1d4ed8] text-[11px] font-semibold border-transparent">NEW</Badge>

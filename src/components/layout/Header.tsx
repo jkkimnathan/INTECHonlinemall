@@ -272,7 +272,7 @@ export default function Header({
         <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           {/* 모바일 메뉴 버튼 */}
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <SheetTrigger
+            <SheetTrigger aria-label="메뉴 열기"
               render={<Button variant="ghost" size="icon" className="lg:hidden h-11 w-11" />}
             >
               <Menu className="h-5 w-5" />

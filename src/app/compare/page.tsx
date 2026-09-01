@@ -70,9 +70,10 @@ export default function ComparePage() {
         {/* 비교 표 — 표 영역만 가로 스크롤 */}
         <div className="bg-white rounded-2xl border border-[#f1f1f3] overflow-x-auto">
           <table className="w-full text-sm min-w-[640px]">
+            <caption className="sr-only">선택한 상품들의 가격·상태·재고·사양 비교표. 첫 열은 항목 이름입니다.</caption>
             <thead>
               <tr className="border-b border-[#f1f1f3]">
-                <th className="w-28 md:w-36 p-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#86868b] align-bottom">
+                <th scope="col" className="sticky left-0 bg-white z-10 w-28 md:w-36 p-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#86868b] align-bottom">
                   상품
                 </th>
                 {items.map((p) => (
@@ -81,7 +82,7 @@ export default function ComparePage() {
                       <button
                         onClick={() => remove(p.id)}
                         aria-label={`${p.name} 비교에서 제거`}
-                        className="absolute -top-1 -right-1 text-[#a1a1aa] hover:text-[#1d1d1f] p-1.5"
+                        className="absolute -top-2 -right-2 text-[#a1a1aa] hover:text-[#1d1d1f] min-w-9 min-h-9 flex items-center justify-center"
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -107,7 +108,7 @@ export default function ComparePage() {
             </thead>
             <tbody className="divide-y divide-[#f7f7f8]">
               <tr>
-                <td className="p-4 text-[#86868b] font-medium">가격</td>
+                <th scope="row" className="sticky left-0 bg-white z-10 p-4 text-left text-[#86868b] font-medium">가격</th>
                 {items.map((p) => (
                   <td key={p.id} className="p-4 text-center">
                     {p.salePrice != null && p.salePrice < p.price ? (
@@ -122,7 +123,7 @@ export default function ComparePage() {
                 ))}
               </tr>
               <tr>
-                <td className="p-4 text-[#86868b] font-medium">상태</td>
+                <th scope="row" className="sticky left-0 bg-white z-10 p-4 text-left text-[#86868b] font-medium">상태</th>
                 {items.map((p) => (
                   <td key={p.id} className="p-4 text-center">
                     {p.condition === "refurbished" ? (
@@ -134,13 +135,13 @@ export default function ComparePage() {
                 ))}
               </tr>
               <tr>
-                <td className="p-4 text-[#86868b] font-medium">카테고리</td>
+                <th scope="row" className="sticky left-0 bg-white z-10 p-4 text-left text-[#86868b] font-medium">카테고리</th>
                 {items.map((p) => (
                   <td key={p.id} className="p-4 text-center text-[#3f3f46]">{p.category}</td>
                 ))}
               </tr>
               <tr>
-                <td className="p-4 text-[#86868b] font-medium">재고</td>
+                <th scope="row" className="sticky left-0 bg-white z-10 p-4 text-left text-[#86868b] font-medium">재고</th>
                 {items.map((p) => (
                   <td key={p.id} className="p-4 text-center">
                     {p.stock > 0 ? (
@@ -151,9 +152,17 @@ export default function ComparePage() {
                   </td>
                 ))}
               </tr>
+              {specKeys.length === 0 && (
+                <tr>
+                  <th scope="row" className="sticky left-0 bg-white z-10 p-4 text-left text-[#86868b] font-medium">사양</th>
+                  <td className="p-4 text-center text-[13px] text-[#a1a1aa]" colSpan={items.length}>
+                    선택한 상품에 등록된 상세 사양 정보가 없습니다. 상세 페이지의 이미지를 참고해주세요.
+                  </td>
+                </tr>
+              )}
               {specKeys.map((key) => (
                 <tr key={key}>
-                  <td className="p-4 text-[#86868b] font-medium">{key}</td>
+                  <th scope="row" className="sticky left-0 bg-white z-10 p-4 text-left text-[#86868b] font-medium">{key}</th>
                   {items.map((p) => (
                     <td key={p.id} className="p-4 text-center text-[#3f3f46]">
                       {p.specs?.[key] || <span className="text-[#d4d4d8]">-</span>}
@@ -162,7 +171,7 @@ export default function ComparePage() {
                 </tr>
               ))}
               <tr>
-                <td className="p-4" />
+                <th scope="row" className="sticky left-0 bg-white z-10 p-4" />
                 {items.map((p) => (
                   <td key={p.id} className="p-4 text-center">
                     <Link href={`/products/${p.slug}`}>

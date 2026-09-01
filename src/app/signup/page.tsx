@@ -128,7 +128,7 @@ export default function SignupPage() {
             <p className="text-[#86868b] text-sm mt-2">회원가입</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form method="post" onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 이름 <span className="text-red-500">*</span>
