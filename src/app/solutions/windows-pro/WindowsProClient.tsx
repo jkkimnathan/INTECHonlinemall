@@ -211,6 +211,7 @@ export default function WindowsProClient({ fontClassName = "" }: Props) {
   const stageBgRef = useRef<HTMLDivElement>(null);
   const stageImgRef = useRef<HTMLDivElement>(null);
   const stageImg2Ref = useRef<HTMLDivElement>(null);
+  const stageBaseRef = useRef<HTMLDivElement>(null);
   const stageText1Ref = useRef<HTMLParagraphElement>(null);
   const stageText2Ref = useRef<HTMLParagraphElement>(null);
   const stageCapRef = useRef<HTMLParagraphElement>(null);
@@ -284,30 +285,39 @@ export default function WindowsProClient({ fontClassName = "" }: Props) {
       const c = seg(p, 0.4, 0.75);
       if (bg)
         bg.style.backgroundColor = `rgb(${Math.round(lerp(245, 29, c))},${Math.round(lerp(245, 29, c))},${Math.round(lerp(247, 31, c))})`;
+      // 텍스트 가시도 먼저 계산 (이미지 디밍/하강에 사용)
+      const t1In = seg(p, 0.05, 0.2);
+      const t1Out = seg(p, 0.3, 0.45);
+      const t1Op = t1In * (1 - t1Out);
+      const t2In = seg(p, 0.6, 0.78);
+      const t2Op = t2In;
+      const textOp = Math.max(t1Op, t2Op);
       if (img) {
         const grow = seg(p, 0, 0.3);
         const shrink = seg(p, 0.35, 0.8);
-        img.style.opacity = String(Math.min(1, grow * 1.6));
-        img.style.transform = `scale(${lerp(lerp(0.7, 1.05, grow), 0.62, shrink)}) translateY(${lerp(lerp(80, 0, grow), -20, shrink)}px)`;
+        // 텍스트가 떠 있는 동안 이미지를 흐리게(최대 70%) + 아래로 밀어(최대 70px) 겹침 방지
+        img.style.opacity = String(Math.min(1, grow * 1.6) * (1 - 0.75 * textOp));
+        img.style.transform = `scale(${lerp(lerp(0.7, 1.05, grow), 0.62, shrink)}) translateY(${lerp(lerp(80, 0, grow), -20, shrink) + 110 * textOp}px)`;
       }
-      // 레이어: 태블릿(base) → Surface 2-in-1 in(.5→.66)
+      // 레이어: 태블릿(base) → Surface 2-in-1 크로스페이드 (.5→.66). 두 장이 동시에 보이지 않게 베이스는 사라짐
+      const x = seg(p, 0.5, 0.66);
       const i2 = stageImg2Ref.current;
-      if (i2) i2.style.opacity = String(seg(p, 0.5, 0.66));
+      if (i2) i2.style.opacity = String(x);
+      const base = stageBaseRef.current;
+      if (base) base.style.opacity = String(1 - x);
       const cap = stageCapRef.current;
       if (cap) cap.style.opacity = String(seg(p, 0.55, 0.7) * (1 - seg(p, 0.9, 0.98)));
-      const off = Math.min(200, vh * 0.3);
+      // 텍스트는 이미지 중심보다 충분히 위에 (겹침 방지)
+      const off = Math.min(200, vh * 0.27);
       const t1 = stageText1Ref.current;
       const t2 = stageText2Ref.current;
       if (t1) {
-        const i = seg(p, 0.05, 0.2);
-        const o = seg(p, 0.3, 0.45);
-        t1.style.opacity = String(i * (1 - o));
-        t1.style.transform = `translateY(${lerp(30, 0, i) - o * 30 - off}px)`;
+        t1.style.opacity = String(t1Op);
+        t1.style.transform = `translateY(${lerp(30, 0, t1In) - t1Out * 30 - off}px)`;
       }
       if (t2) {
-        const i = seg(p, 0.6, 0.78);
-        t2.style.opacity = String(i);
-        t2.style.transform = `translateY(${lerp(30, 0, i) - off}px)`;
+        t2.style.opacity = String(t2Op);
+        t2.style.transform = `translateY(${lerp(30, 0, t2In) - off}px)`;
       }
     };
 
@@ -459,7 +469,7 @@ export default function WindowsProClient({ fontClassName = "" }: Props) {
           <p ref={stageText1Ref} className={`${s.stageText} ${s.stageText1}`} style={{ opacity: 0 }}>
             Home 에디션으로는 안 되는 것들이
             <br />
-            <span className={s.gradLight}>기업에는 필수</span>입니다.
+            <span className={s.gradOnLight}>기업에는 필수</span>입니다.
           </p>
           <p ref={stageText2Ref} className={`${s.stageText} ${s.stageText2}`} style={{ opacity: 0 }}>
             데스크톱도, 노트북도.
@@ -467,14 +477,16 @@ export default function WindowsProClient({ fontClassName = "" }: Props) {
             Pro로 통일하세요.
           </p>
           <div ref={stageImgRef} className={s.stageImg} style={{ opacity: 0 }}>
-            <Image
-              src={`${ASSET}/tablet-cut.png`}
-              alt="Windows 11 Pro 태블릿"
-              width={1600}
-              height={918}
-              sizes="(max-width: 900px) 84vw, 820px"
-              className={`${s.stageBase} block h-auto w-full`}
-            />
+            <div ref={stageBaseRef} className={s.stageBaseWrap}>
+              <Image
+                src={`${ASSET}/tablet-cut.png`}
+                alt="Windows 11 Pro 태블릿"
+                width={1600}
+                height={918}
+                sizes="(max-width: 900px) 84vw, 820px"
+                className={`${s.stageBase} block h-auto w-full`}
+              />
+            </div>
             <div ref={stageImg2Ref} className={s.stageLayer}>
               <Image
                 src={`${ASSET}/surface-cut.png`}
