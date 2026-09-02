@@ -66,10 +66,10 @@ const VRAM_BARS = [
 ] as const;
 
 const PERF_STATS = [
-  { num: "4.75×", title: "첫 토큰 응답 속도 (TTFT)", src: "AMD R9700 대비 · Puget Systems" },
+  { num: "4.75×", title: "첫 토큰 응답 속도 (TTFT)", src: "A사 워크스테이션 GPU 대비 · Puget Systems" },
   { num: "93K", title: "컨텍스트 윈도우", src: "32GB VRAM 기준 · Intel 공식" },
   { num: "369", title: "tokens/s · 50 동시 요청", src: "vLLM · Level1Techs" },
-  { num: "4.1×", title: "달러당 최대 모델 파라미터", src: "RTX 5090 대비 · Newegg 2026/06" },
+  { num: "4.1×", title: "달러당 최대 모델 파라미터", src: "B사 플래그십 GPU 대비 · Newegg 2026/06" },
 ] as const;
 
 const CMP_A = "rgba(124,128,136,0.5)";
@@ -77,14 +77,14 @@ const CMP_B = "rgba(124,128,136,0.35)";
 
 const TTFT_BARS = [
   { name: "Intel Arc Pro B70", val: "0.08s", w: "21%", main: true, fill: undefined },
-  { name: "RTX Pro 4000", val: "0.17s", w: "45%", main: false, fill: CMP_A },
-  { name: "AMD R9700", val: "0.38s", w: "100%", main: false, fill: CMP_B },
+  { name: "B사 워크스테이션 GPU", val: "0.17s", w: "45%", main: false, fill: CMP_A },
+  { name: "A사 워크스테이션 GPU", val: "0.38s", w: "100%", main: false, fill: CMP_B },
 ] as const;
 
 const TPS_BARS = [
   { name: "Intel Arc Pro B70", val: "123", w: "100%", main: true, fill: undefined },
-  { name: "AMD R9700", val: "115", w: "93.5%", main: false, fill: CMP_A },
-  { name: "RTX Pro 4000", val: "115", w: "93.5%", main: false, fill: CMP_B },
+  { name: "A사 워크스테이션 GPU", val: "115", w: "93.5%", main: false, fill: CMP_A },
+  { name: "B사 워크스테이션 GPU", val: "115", w: "93.5%", main: false, fill: CMP_B },
 ] as const;
 
 const ROI_BARS = [
