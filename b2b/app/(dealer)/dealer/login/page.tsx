@@ -3,18 +3,37 @@
 /**
  * 거래처 로그인 페이지
  * 이메일+비밀번호 로그인 → dealer_users 권한 확인 → /dealer 대시보드 이동
+ * ?next=/dealer/... 가 있으면(보호 페이지에서 리다이렉트된 경우) 로그인 후 그 경로로 복귀
  */
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
+/** open-redirect 방지: /dealer 하위의 내부 경로만 허용 */
+function safeNext(raw: string | null): string {
+  if (raw && raw.startsWith('/dealer') && !raw.startsWith('//') && !raw.includes('://')) {
+    return raw
+  }
+  return '/dealer'
+}
+
 export default function DealerLoginPage() {
+  return (
+    <Suspense>
+      <DealerLoginForm />
+    </Suspense>
+  )
+}
+
+function DealerLoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const nextPath = safeNext(searchParams.get('next'))
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -76,8 +95,8 @@ export default function DealerLoginPage() {
       // 5. last_login_at 업데이트 (본인 행만 갱신하는 정의자 권한 RPC)
       await supabase.rpc('touch_last_login')
 
-      // 6. 대시보드로 이동
-      router.push('/dealer')
+      // 6. 원래 가려던 페이지(없으면 대시보드)로 이동
+      router.push(nextPath)
       router.refresh()
     } catch {
       setError('로그인 처리 중 오류가 발생했습니다.')

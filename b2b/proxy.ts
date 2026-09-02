@@ -82,11 +82,17 @@ export async function proxy(request: NextRequest) {
     return supabaseResponse
   }
 
-  // 보호된 /dealer/* 페이지: 세션 없으면 로그인으로
+  // 보호된 /dealer/* 페이지: 세션 없으면 로그인으로 (원래 가려던 경로는 ?next= 로 보존)
   if (pathname.startsWith('/dealer')) {
     if (!user) {
+      const returnTo = pathname + request.nextUrl.search
       const url = request.nextUrl.clone()
       url.pathname = '/dealer/login'
+      url.search = ''
+      // 대시보드 루트로 가는 경우는 기본 동작과 같으므로 파라미터 생략
+      if (returnTo !== '/dealer' && returnTo !== '/dealer/') {
+        url.searchParams.set('next', returnTo)
+      }
       return NextResponse.redirect(url)
     }
     return supabaseResponse

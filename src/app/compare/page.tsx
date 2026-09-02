@@ -15,7 +15,11 @@ function formatPrice(price: number) {
 export default function ComparePage() {
   const { items, remove, clear } = useCompareStore();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // persisted 스토어 하이드레이션 후에만 렌더 (SSR 불일치 방지) — rAF로 동기 setState 회피
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   if (!mounted) return null;
 
