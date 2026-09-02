@@ -8,19 +8,20 @@ import Link from 'next/link'
 import { ArrowLeft, Sparkles } from 'lucide-react'
 import { requireDealer } from '@/lib/auth/dealer'
 import { createClient } from '@/lib/supabase/server'
-import { getSolutionPreset } from '@/lib/solutions'
+import { getSolutionPreset, applySolutionOptions } from '@/lib/solutions'
 import QuoteRequestForm from '@/components/dealer/quotes/QuoteRequestForm'
 import type { DealerAddress } from '@/types/database'
 
 interface Props {
-  searchParams: Promise<{ product?: string }>
+  searchParams: Promise<{ product?: string; brand?: string; config?: string }>
 }
 
 export default async function NewQuoteRequestPage({ searchParams }: Props) {
   const session = await requireDealer()
   const supabase = await createClient()
-  const { product } = await searchParams
-  const preset = getSolutionPreset(product)
+  const { product, brand, config } = await searchParams
+  const basePreset = getSolutionPreset(product)
+  const preset = basePreset ? applySolutionOptions(basePreset, { brand, config }) : null
 
   // 배송지 목록
   const { data: addresses } = await supabase

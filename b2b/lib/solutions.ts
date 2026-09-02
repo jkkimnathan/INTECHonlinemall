@@ -47,6 +47,17 @@ function gr1xSpec(): StandardPcSpec {
   return spec
 }
 
+function b70Spec(): StandardPcSpec {
+  const spec = createEmptySpec()
+  spec.gpu = { name: 'Intel Arc Pro B70 32GB GDDR6 ECC (256-bit, 608 GB/s, 367 TOPS INT8)', qty: 1 }
+  spec.etc = [
+    { label: '브랜드', name: 'Intel 레퍼런스 / ASRock Creator / ASUS UGen 중 선택', qty: 1 },
+    { label: '구성', name: '단품 GPU 또는 시스템(싱글 32GB · 듀얼 64GB · 멀티 128GB)', qty: 1 },
+    { label: '전력', name: '290W TBP · 2슬롯 풀하이트', qty: 1 },
+  ]
+  return spec
+}
+
 export const SOLUTION_PRESETS: Record<string, SolutionPreset> = {
   'proart-gr1x': {
     slug: 'proart-gr1x',
@@ -68,7 +79,78 @@ export const SOLUTION_PRESETS: Record<string, SolutionPreset> = {
       specJson: gr1xSpec(),
     },
   },
-  // 'arc-pro-b70': 디자인 확정 후 추가 예정 (Intel · ASRock · ASUS / 단품·시스템)
+  'arc-pro-b70': {
+    slug: 'arc-pro-b70',
+    name: 'Intel Arc Pro B70 32GB',
+    tagline: '로컬 AI 워크스테이션 GPU · Intel 레퍼런스 / ASRock Creator / ASUS UGen · 단품·시스템 견적',
+    landingUrl: `${INTECH_MALL}/solutions/arc-pro-b70`,
+    form: {
+      title: 'Intel Arc Pro B70 32GB 견적 요청',
+      purpose: 'development',
+      quantity: 1,
+      requirements: [
+        '[전용관 견적] Intel Arc Pro B70 32GB — 로컬 AI 추론용 워크스테이션 GPU',
+        '',
+        '희망 브랜드(Intel 레퍼런스 / ASRock Creator 32GB / ASUS UGen B70 32G): ',
+        '구성(단품 GPU / 싱글 32GB 시스템 / 듀얼 64GB / 멀티 128GB): ',
+        '희망 수량 / 납품 시기: ',
+        '용도(로컬 LLM 추론·에이전트 동시성·RAG·이미지/영상 생성 등): ',
+        '기타 요청사항: ',
+      ].join('\n'),
+      specJson: b70Spec(),
+    },
+  },
+}
+
+/** 전용관 CTA 에서 함께 넘어오는 선택값 (?brand=, ?config=) 라벨 */
+const OPTION_LABELS: Record<string, Record<string, string>> = {
+  brand: {
+    intel: 'Intel 레퍼런스',
+    asrock: 'ASRock Creator 32GB',
+    asus: 'ASUS UGen B70 32G',
+  },
+  config: {
+    gpu: '단품 GPU',
+    single: '싱글 32GB 시스템',
+    dual: '듀얼 64GB 시스템',
+    multi: '멀티 128GB 시스템',
+  },
+}
+
+/**
+ * ?brand= / ?config= 값이 있으면 프리셋 요구사항의 해당 줄을 채워 넣는다.
+ * 알 수 없는 값은 무시(프리셋 원본 유지). 원본 객체는 변경하지 않는다.
+ */
+export function applySolutionOptions(
+  preset: SolutionPreset,
+  opts: { brand?: string | null; config?: string | null },
+): SolutionPreset {
+  const brand = opts.brand ? OPTION_LABELS.brand[opts.brand] : undefined
+  const config = opts.config ? OPTION_LABELS.config[opts.config] : undefined
+  if (!brand && !config) return preset
+
+  let requirements = preset.form.requirements
+  if (brand) requirements = requirements.replace(/^(희망 브랜드\([^)]*\): ).*$/m, `$1${brand}`)
+  if (config) requirements = requirements.replace(/^(구성\([^)]*\): ).*$/m, `$1${config}`)
+
+  const specJson: StandardPcSpec = {
+    ...preset.form.specJson,
+    etc: preset.form.specJson.etc.map((e) => {
+      if (brand && e.label === '브랜드') return { ...e, name: brand }
+      if (config && e.label === '구성') return { ...e, name: config }
+      return e
+    }),
+  }
+
+  return {
+    ...preset,
+    form: {
+      ...preset.form,
+      title: brand ? `${preset.form.title} — ${brand}` : preset.form.title,
+      requirements,
+      specJson,
+    },
+  }
 }
 
 /** 슬러그로 프리셋 조회 (없거나 형식이 이상하면 null) */
