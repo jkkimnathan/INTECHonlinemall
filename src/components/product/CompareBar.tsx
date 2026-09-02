@@ -13,8 +13,11 @@ export default function CompareBar() {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
-  // persisted 스토어 하이드레이션 후에만 렌더 (SSR 불일치 방지)
-  useEffect(() => setMounted(true), []);
+  // persisted 스토어 하이드레이션 후에만 렌더 (SSR 불일치 방지) — rAF로 동기 setState 회피
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   if (!mounted || items.length === 0) return null;
   // 비교 페이지·관리자에서는 숨김

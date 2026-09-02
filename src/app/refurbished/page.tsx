@@ -37,7 +37,7 @@ export default async function RefurbishedPage() {
           </h3>
           <p className="text-sm text-[#c2410c] mt-1.5 leading-relaxed">
             공식 수입사에서 직접 수거하여 점검, 테스트, 클리닝을 완료한 제품입니다.
-            외관·사용 상태에 따라 S/A/B급으로 분류되며(상품 사양의 "등급" 참고), 모든 제품은 정상 작동이 확인된
+            외관·사용 상태에 따라 S/A/B급으로 분류되며(상품 사양의 &ldquo;등급&rdquo; 참고), 모든 제품은 정상 작동이 확인된
             제품만 판매합니다. 별도의 보증 기간이 제공됩니다.
           </p>
         </div>

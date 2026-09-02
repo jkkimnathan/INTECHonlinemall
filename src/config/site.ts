@@ -66,6 +66,8 @@ export const siteConfig = {
     { title: "iPC", href: "/brand/ipc" },
     { title: "특가", href: "/sale" },
     { title: "리퍼비쉬", href: "/refurbished" },
+    // AI 솔루션 전용관 — 짧은 주소 /PAGR1X 는 next.config redirects 로 이 경로에 연결
+    { title: "ProArt GR1X", href: "/solutions/proart-gr1x" },
     { title: "이벤트", href: "/event" },
     { title: "공지사항", href: "/notice" },
     { title: "커뮤니티", href: "/community" },

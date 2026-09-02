@@ -38,10 +38,21 @@ const PURPOSE_OPTIONS = [
   { value: 'etc', label: '기타' },
 ]
 
+/** 전용관(솔루션) 프리셋 — lib/solutions.ts 의 SolutionPreset['form'] */
+export interface QuotePreset {
+  title: string
+  purpose: string
+  quantity: number
+  requirements: string
+  specJson: StandardPcSpec
+}
+
 interface Props {
   addresses: DealerAddress[]
   dealerId: string
   initialData?: QuoteRequest | null
+  /** ?product= 로 진입한 경우 폼 초기값 (새 작성 시에만 적용) */
+  preset?: QuotePreset | null
 }
 
 // 폼 상태 인터페이스
@@ -86,13 +97,24 @@ function formFromRfq(rfq: QuoteRequest): FormState {
   }
 }
 
-export default function QuoteRequestForm({ addresses, dealerId, initialData }: Props) {
+export default function QuoteRequestForm({ addresses, dealerId, initialData, preset }: Props) {
   const router = useRouter()
   const isEdit = !!initialData
 
-  const [form, setForm] = useState<FormState>(
-    initialData ? formFromRfq(initialData) : getDefaultForm(addresses)
-  )
+  const [form, setForm] = useState<FormState>(() => {
+    if (initialData) return formFromRfq(initialData)
+    const base = getDefaultForm(addresses)
+    if (!preset) return base
+    // 전용관 프리셋: 제목/용도/수량/요구사항/사양을 미리 채운다 (배송지·첨부는 기본값 유지)
+    return {
+      ...base,
+      title: preset.title,
+      purpose: preset.purpose,
+      quantity: String(Math.max(1, preset.quantity)),
+      requirements: preset.requirements,
+      specJson: preset.specJson,
+    }
+  })
   const [activeTab, setActiveTab] = useState(0)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -100,14 +122,14 @@ export default function QuoteRequestForm({ addresses, dealerId, initialData }: P
 
   const tabs = ['기본 정보', '구성 요구사항', '배송 및 첨부']
 
-  // 임시저장 복원 확인 (새 작성 시만)
+  // 임시저장 복원 확인 (새 작성 시만 · 전용관 프리셋 진입 시엔 프리셋이 우선이라 묻지 않음)
   useEffect(() => {
-    if (isEdit) return
+    if (isEdit || preset) return
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) setShowDraft(true)
     } catch { /* localStorage 접근 불가 무시 */ }
-  }, [isEdit])
+  }, [isEdit, preset])
 
   const loadDraft = () => {
     try {

@@ -1,0 +1,400 @@
+/* ProArt GR1X 전용관 — 페이지 스코프 스타일 (골드 팔레트는 이 페이지 전용, 전역 전파 금지) */
+
+.root {
+  --gold: #d9b968;
+  --gold-hover: #e8c87a;
+  --gold-dark: #a8843c;
+  --bg: #0a0908;
+  --bg-alt: #0d0c0a;
+  --card: #14110c;
+  --tx: #f5f2ec;
+  --tx-strong: #e8e4db;
+  --tx-sub: #c9c2b4;
+  --tx-mute: #8a8378;
+  --tx-foot: #5c574e;
+  --px: clamp(16px, 4vw, 48px);
+  --py: clamp(96px, 12vw, 160px);
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  /* 사이트 공통 헤더 높이 (마운트 후 JS가 실측값으로 갱신) */
+  --hdr: 0px;
+  /* --font-onest 는 next/font/google(Onest)이 페이지 루트에 주입. 폴백 Manrope */
+  --font-en-display: var(--font-onest, "Manrope"), "Manrope", "Pretendard Variable", "Pretendard", sans-serif;
+
+  font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  color: var(--tx);
+  background: var(--bg);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+.root a {
+  text-decoration: none;
+}
+
+/* 앵커 이동 시 사이트 헤더 + 서브네비(52px) 아래에 정확히 멈추도록 */
+.root section[id] {
+  scroll-margin-top: calc(var(--hdr) + 52px);
+}
+
+.onest {
+  font-family: var(--font-en-display);
+}
+
+/* 골드 그라데이션 텍스트 */
+.gradGold {
+  background: linear-gradient(96deg, #f0dca4 0%, #d9b968 45%, #a8843c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 스크롤 리빌 */
+.root [data-reveal] {
+  opacity: 0;
+  transform: translateY(36px);
+  transition:
+    opacity 900ms var(--ease),
+    transform 900ms var(--ease);
+}
+.root [data-reveal="scale"] {
+  transform: scale(0.94) translateY(24px);
+}
+.root [data-reveal].in {
+  opacity: 1;
+  transform: none;
+}
+
+/* 성능 바 */
+.bar {
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.barFill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #a8843c, #e8c87a);
+  transition: width 1400ms var(--ease) 250ms;
+}
+.bar.in .barFill {
+  width: var(--w);
+}
+
+/* 버튼 */
+.btnGold {
+  display: inline-block;
+  font-weight: 700;
+  background: var(--gold);
+  color: #141005;
+  border-radius: 999px;
+  transition:
+    background-color 200ms var(--ease),
+    color 200ms var(--ease);
+}
+.btnGold:hover {
+  background: var(--gold-hover);
+  color: #141005;
+}
+.btnOutline {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gold-hover);
+  background: rgba(10, 9, 8, 0.55);
+  border: 1px solid rgba(217, 185, 104, 0.45);
+  padding: 14px 32px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color 200ms var(--ease);
+}
+.btnOutline:hover {
+  background: rgba(217, 185, 104, 0.16);
+  color: var(--gold-hover);
+}
+
+/* 서브네비 */
+.subnav {
+  position: sticky;
+  top: var(--hdr);
+  z-index: 40;
+  background: rgba(10, 9, 8, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(217, 185, 104, 0.18);
+}
+.subnavLink {
+  font-size: 13px;
+  color: var(--tx-sub);
+  transition: color 200ms var(--ease);
+}
+.subnavLink:hover {
+  color: var(--gold-hover);
+}
+
+/* 히어로 */
+.hero {
+  position: relative;
+  min-height: calc(100vh - 52px - var(--hdr));
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* 스크롤 스테이지 */
+.stageWrap {
+  height: 320vh;
+  position: relative;
+}
+.stage {
+  position: sticky;
+  top: var(--hdr);
+  height: calc(100vh - var(--hdr));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #0a0908;
+  will-change: background-color;
+}
+.stageText {
+  position: absolute;
+  margin: 0;
+  padding: 0 var(--px);
+  max-width: 900px;
+  text-align: center;
+  font-size: clamp(28px, 4.5vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  text-wrap: pretty;
+  will-change: opacity, transform;
+  z-index: 2;
+}
+.stageImg {
+  width: min(720px, 80vw);
+  position: relative;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+.stageShadow {
+  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.6));
+}
+.stageCaption {
+  position: absolute;
+  bottom: 9vh;
+  margin: 0;
+  font-size: clamp(13px, 1.4vw, 16px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--tx-sub);
+  opacity: 0;
+  will-change: opacity;
+  z-index: 2;
+}
+
+/* 아이브로우 */
+.eyebrow {
+  font-family: var(--font-en-display);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+/* 스펙 카드 (칩 섹션 4열) */
+.statCard {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  background: rgba(20, 17, 12, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(217, 185, 104, 0.16);
+  border-radius: 16px;
+  padding: 28px 24px;
+}
+.statIcon {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  border: 1px solid rgba(217, 185, 104, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+}
+
+/* CUDA / TensorRT / RTX 카드 */
+.techCard {
+  text-align: center;
+  padding: clamp(40px, 4vw, 56px) clamp(24px, 2.5vw, 36px);
+  border: 1px solid rgba(217, 185, 104, 0.22);
+  border-radius: 24px;
+  background: rgba(13, 12, 10, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* 탭 */
+.tab {
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 12px 4px;
+  font-family: inherit;
+  font-size: clamp(16px, 1.8vw, 21px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--tx-mute);
+  cursor: pointer;
+  transition:
+    color 200ms var(--ease),
+    border-color 200ms var(--ease);
+}
+.tab[aria-selected="true"] {
+  color: var(--tx);
+  border-bottom-color: var(--gold);
+}
+.tab:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* 용도별 카드 */
+.useCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid rgba(217, 185, 104, 0.16);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.pill {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(217, 185, 104, 0.4);
+  border-radius: 999px;
+  padding: 4px 12px;
+  color: var(--gold);
+}
+.pillSm {
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(217, 185, 104, 0.3);
+  border-radius: 999px;
+  padding: 5px 12px;
+  color: var(--gold);
+}
+
+/* 엔지니어링 / 컬러 카드 */
+.engCard {
+  background: var(--card);
+  border: 1px solid rgba(217, 185, 104, 0.14);
+  border-radius: 12px;
+  padding: 40px 32px;
+}
+.colorCard {
+  background: var(--card);
+  border: 1px solid rgba(217, 185, 104, 0.14);
+  border-radius: 20px;
+  padding: 48px 32px;
+}
+.colorShadow {
+  filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.5));
+}
+
+/* 사양 행 */
+.specRow {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  padding: 18px 8px;
+  border-bottom: 1px solid rgba(245, 242, 236, 0.08);
+}
+
+/* 그리드 */
+.g2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.g3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.g4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 900px) {
+  .g2,
+  .specRow {
+    grid-template-columns: 1fr;
+  }
+  .specRow {
+    gap: 6px;
+  }
+  .g3 {
+    grid-template-columns: 1fr;
+  }
+  .g4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .subnavPrice {
+    display: none;
+  }
+}
+
+/* 모션 축소: 리빌·스테이지 변환 없이 최종 상태만 표시 */
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    scroll-behavior: auto;
+  }
+  .root [data-reveal],
+  .root [data-reveal="scale"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .barFill {
+    width: var(--w);
+    transition: none;
+  }
+  .stageWrap {
+    height: auto;
+  }
+  .stage {
+    position: relative;
+    top: auto;
+    height: auto;
+    padding: var(--py) 0;
+    gap: 40px;
+    background: rgb(26, 20, 10);
+  }
+  .stageText {
+    position: static;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .stageImg {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .stageBlack {
+    opacity: 0 !important;
+  }
+  .stageCaption {
+    position: static;
+    opacity: 1 !important;
+  }
+}

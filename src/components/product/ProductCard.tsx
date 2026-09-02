@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
@@ -18,10 +19,19 @@ function getDiscountRate(price: number, salePrice: number) {
   return Math.round(((price - salePrice) / price) * 100);
 }
 
+// 렌더 중 Date.now() 직접 호출(impure)을 피하기 위해 외부 스토어로 "현재 시각(분 단위)"을 읽는다.
+// 분 단위 스냅샷이라 렌더마다 값이 흔들리지 않고, 서버/클라이언트 스냅샷도 동일 규칙을 쓴다.
+const subscribeNoop = () => () => {};
+const nowMinute = () => Math.floor(Date.now() / 60_000);
+function useNowMs() {
+  return useSyncExternalStore(subscribeNoop, nowMinute, nowMinute) * 60_000;
+}
+
 export default function ProductCard({ product }: { product: Product }) {
   const addToCart = useCartStore((s) => s.addItem);
   const compareToggle = useCompareStore((s) => s.toggle);
   const inCompare = useCompareStore((s) => s.items.some((p) => p.id === product.id));
+  const now = useNowMs();
   const finalPrice = product.salePrice ?? product.price;
   const points = Math.floor(finalPrice * 0.01);
   const isFreeShipping = finalPrice >= 50000;
@@ -30,7 +40,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const showNewBadge =
     product.isNew &&
     (!product.createdAt ||
-      Date.now() - new Date(product.createdAt).getTime() <
+      now - new Date(product.createdAt).getTime() <
         NEW_BADGE_DAYS * 24 * 60 * 60 * 1000);
   // 배지와 가격 표시가 동일한 조건 사용 (0원/역할인 방지)
   const hasDiscount =
