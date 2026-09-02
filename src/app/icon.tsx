@@ -1,12 +1,15 @@
 import { ImageResponse } from "next/og";
 
-// 브라우저 탭/주소창 파비콘. 기본 Next/Vercel 아이콘 대체.
-// 작은 크기에선 워드마크가 안 읽히므로 네이비 타일 + "IN" 모노그램을 사용한다.
+// 브라우저 탭/주소창 파비콘 — 인텍 공식 2줄 워드마크(파랑)를 흰 타일에 배치
 export const runtime = "edge";
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
-export default function Icon() {
+export default async function Icon() {
+  const buf = await fetch(new URL("./intech-logo-square.png", import.meta.url)).then((r) =>
+    r.arrayBuffer()
+  );
+  const logo = `data:image/png;base64,${Buffer.from(buf).toString("base64")}`;
   return new ImageResponse(
     (
       <div
@@ -16,16 +19,11 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#0F172A",
-          borderRadius: 7,
-          color: "#FFFFFF",
-          fontSize: 17,
-          fontWeight: 800,
-          letterSpacing: -1,
-          fontFamily: "Arial, Helvetica, sans-serif",
+          background: "#FFFFFF",
+          borderRadius: 6,
         }}
       >
-        IN
+        <img src={logo} alt="" width={26} height={26} style={{ width: 26, height: 26 }} />
       </div>
     ),
     { ...size }
