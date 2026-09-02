@@ -7,7 +7,7 @@ import { solutions } from "@/config/solutions";
 export const metadata: Metadata = {
   title: "AI 솔루션 전용관",
   description:
-    "인텍앤컴퍼니 공식 수입 AI 솔루션 전용관. ASUS ProArt GR1X(NVIDIA RTX Spark), Intel Arc Pro B70 32GB 등 워크스테이션급 AI 솔루션을 만나보세요.",
+    "인텍앤컴퍼니 공식 수입 AI 솔루션 전용관. ASUS ProArt GR1X(NVIDIA RTX Spark), Intel Arc Pro B70 32GB, Windows 11 Pro 기업용 디바이스 등 워크스테이션급 솔루션을 만나보세요.",
   alternates: { canonical: "/solutions" },
 };
 
@@ -32,6 +32,15 @@ const CARDS = [
     image: "/solutions/arc-pro-b70/intel-b70-ref-cut.png",
     status: "견적 문의",
   },
+  {
+    key: "windows-pro",
+    brand: "Microsoft · iPC · ASUS",
+    name: solutions["windows-pro"].name,
+    tagline: "Windows 11 Pro 기업용 데스크톱·노트북 · 라이선스 단품",
+    href: "/solutions/windows-pro",
+    image: "/solutions/windows-pro/laptop-cut.png",
+    status: "견적 문의",
+  },
 ] as const;
 
 export default function SolutionsPage() {
@@ -46,7 +55,7 @@ export default function SolutionsPage() {
           </p>
         </header>
 
-        <ul className="mt-10 grid gap-6 md:grid-cols-2">
+        <ul className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {CARDS.map((c) => {
             const body = (
               <>

@@ -18,7 +18,14 @@ export const solutions = {
     name: "Intel Arc Pro B70 32GB",
     quoteUrl: `${B2B_QUOTE_BASE}/dealer/quotes/new?product=arc-pro-b70`,
   },
+  "windows-pro": {
+    name: "Windows Pro Device",
+    quoteUrl: `${B2B_QUOTE_BASE}/dealer/quotes/new?product=windows-pro`,
+  },
 } as const;
+
+/** B2B몰 거래처(딜러) 등록 화면 */
+export const B2B_REGISTER_URL = `${B2B_QUOTE_BASE}/dealer/signup`;
 
 export type SolutionSlug = keyof typeof solutions;
 
@@ -35,3 +42,12 @@ export const ARC_PRO_B70_QUOTE_URL = solutions["arc-pro-b70"].quoteUrl;
 /** B70 라인업 가격은 확정 전까지 "가격 문의" — 상수/CMS 교체 지점 */
 export const ARC_PRO_B70_PRICE_LABEL = "가격 문의";
 export const ARC_PRO_B70_CTA_LABEL = "견적 요청";
+
+/** Windows Pro Device 견적 요청 링크 */
+export const WINDOWS_PRO_QUOTE_URL = solutions["windows-pro"].quoteUrl;
+
+/** Windows 단품 라이선스 가격은 확정 전까지 "가격 문의" — 상수/CMS 교체 지점 */
+export const WINDOWS_PRO_PRICE_FPP = "가격 문의";
+export const WINDOWS_PRO_PRICE_DSP = "가격 문의";
+export const WINDOWS_PRO_PRICE_VOLUME = "수량별 견적";
+export const WINDOWS_PRO_CTA_LABEL = "견적 문의";
