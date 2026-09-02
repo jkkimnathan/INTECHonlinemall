@@ -1,0 +1,449 @@
+/* Intel Arc Pro B70 전용관 — 페이지 스코프 스타일
+   (Intel 캠페인 블루 팔레트는 이 페이지 전용. 인텍 코어 #1A56DB와 다른 색이며 전역 전파 금지) */
+
+.root {
+  --blue: #0068b5;
+  --blue-key: #3d9be9;
+  --blue-light: #6db6f2;
+  --blue-pale: #bfe3ff;
+  --bg: #0b0c0e;
+  --bg-alt: #0e0f12;
+  --chart: #121316;
+  --card: #17181c;
+  --tile: #f5f6f8;
+  --tx: #f2f3f5;
+  --tx-strong: #e6e8eb;
+  --tx-sub: #b7bac1;
+  --tx-mute: #7c8088;
+  --tx-foot: #4e525a;
+  --hair: rgba(255, 255, 255, 0.08);
+  --hair-strong: rgba(255, 255, 255, 0.14);
+  --px: clamp(16px, 4vw, 48px);
+  --py: clamp(96px, 12vw, 160px);
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  /* 사이트 공통 헤더 높이 (마운트 후 JS가 실측값으로 갱신) */
+  --hdr: 0px;
+  /* --font-onest 는 next/font/google(Onest)이 페이지 루트에 주입. 폴백 Manrope */
+  --font-en-display: var(--font-onest, "Manrope"), "Manrope", "Pretendard Variable", "Pretendard", sans-serif;
+
+  font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  color: var(--tx);
+  background: var(--bg);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+.root a {
+  text-decoration: none;
+}
+
+/* 앵커 이동 시 사이트 헤더 + 서브네비(52px) 아래에 정확히 멈추도록 */
+.root section[id] {
+  scroll-margin-top: calc(var(--hdr) + 52px);
+}
+
+.onest {
+  font-family: var(--font-en-display);
+}
+
+/* 블루 그라데이션 텍스트 */
+.gradBlue {
+  background: linear-gradient(96deg, #bfe3ff 0%, #3d9be9 50%, #0068b5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 스크롤 리빌 */
+.root [data-reveal] {
+  opacity: 0;
+  transform: translateY(36px);
+  transition:
+    opacity 900ms var(--ease),
+    transform 900ms var(--ease);
+}
+.root [data-reveal="scale"] {
+  transform: scale(0.94) translateY(24px);
+}
+.root [data-reveal].in {
+  opacity: 1;
+  transform: none;
+}
+
+/* 바 차트 */
+.bar {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.barLg {
+  height: 14px;
+}
+.barFill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0068b5, #6db6f2);
+  transition: width 1400ms var(--ease) 250ms;
+}
+.bar.in .barFill {
+  width: var(--w);
+}
+
+/* 버튼: 화이트 필 CTA */
+.btnWhite {
+  display: inline-block;
+  font-weight: 700;
+  background: #f2f3f5;
+  color: #0b0c0e;
+  border-radius: 999px;
+  transition:
+    background-color 200ms var(--ease),
+    color 200ms var(--ease);
+}
+.btnWhite:hover {
+  background: #ffffff;
+  color: #0b0c0e;
+}
+.btnOutline {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--tx);
+  background: rgba(11, 12, 14, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 14px 32px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color 200ms var(--ease);
+}
+.btnOutline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--tx);
+}
+
+/* 카드 하단 보조 링크 (모델/구성별 견적) */
+.quoteLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-key);
+  transition: color 200ms var(--ease);
+}
+.quoteLink:hover {
+  color: var(--blue-light);
+}
+
+/* 서브네비 */
+.subnav {
+  position: sticky;
+  top: var(--hdr);
+  z-index: 40;
+  background: rgba(11, 12, 14, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--hair);
+}
+.subnavLink {
+  font-size: 13px;
+  color: var(--tx-sub);
+  transition: color 200ms var(--ease);
+}
+.subnavLink:hover {
+  color: var(--blue-light);
+}
+
+/* 히어로 */
+.hero {
+  position: relative;
+  min-height: calc(100vh - 52px - var(--hdr));
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.heroImg {
+  width: min(720px, 80vw);
+  height: auto;
+  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.7));
+}
+.logoInvert {
+  filter: brightness(0) invert(1);
+}
+
+/* 스크롤 스테이지 (3모델 크로스페이드) */
+.stageWrap {
+  height: 340vh;
+  position: relative;
+}
+.stage {
+  position: sticky;
+  top: var(--hdr);
+  height: calc(100vh - var(--hdr));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #0b0c0e;
+  will-change: background-color;
+}
+.stageText {
+  position: absolute;
+  margin: 0;
+  padding: 0 var(--px);
+  max-width: 960px;
+  text-align: center;
+  font-size: clamp(28px, 4.5vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  text-wrap: pretty;
+  will-change: opacity, transform;
+  z-index: 2;
+}
+.stageImg {
+  width: min(820px, 84vw);
+  position: relative;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+.stageShadow {
+  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.7));
+}
+.stageLayer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  will-change: opacity;
+}
+.stageLayerAsus {
+  top: 12%;
+}
+.stageCaption {
+  position: absolute;
+  bottom: 9vh;
+  margin: 0;
+  font-size: clamp(13px, 1.4vw, 16px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--tx-sub);
+  opacity: 0;
+  will-change: opacity;
+  z-index: 2;
+}
+
+/* 핵심 사양 카드 4열 */
+.statCard {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 16px;
+  padding: 28px 24px;
+}
+.statIcon {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  border: 1px solid rgba(61, 155, 233, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue-key);
+}
+
+/* 차트 카드 (Why 32GB) / 일반 카드 (Performance, ROI) */
+.chartCard {
+  background: var(--chart);
+  border: 1px solid var(--hair);
+  border-radius: 24px;
+  padding: clamp(28px, 3vw, 40px);
+}
+.panelCard {
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 24px;
+  padding: clamp(28px, 3vw, 40px);
+}
+
+/* 기준선 (16GB / 24GB 카드) */
+.refline {
+  position: absolute;
+  transform: translateX(-50%);
+  padding-left: 1px;
+  border-left: 1px dashed rgba(255, 255, 255, 0.3);
+  height: 100%;
+  line-height: 2.2;
+  white-space: nowrap;
+}
+
+/* Performance 숫자 */
+.perfStat {
+  border-top: 1px solid rgba(61, 155, 233, 0.4);
+  padding-top: 24px;
+}
+
+/* 탭 */
+.tab {
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 12px 4px;
+  font-family: inherit;
+  font-size: clamp(15px, 1.7vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--tx-mute);
+  cursor: pointer;
+  transition:
+    color 200ms var(--ease),
+    border-color 200ms var(--ease);
+}
+.tab[aria-selected="true"] {
+  color: var(--tx);
+  border-bottom-color: var(--blue-key);
+}
+.tab:focus-visible {
+  outline: 2px solid var(--blue-key);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* 라인업 / 시스템 카드 */
+.lineCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.lineTile {
+  position: relative;
+  background: var(--tile);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.pill {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(61, 155, 233, 0.5);
+  border-radius: 999px;
+  padding: 4px 12px;
+  color: var(--blue-key);
+}
+
+/* Software 필 */
+.pillFw {
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--hair-strong);
+  border-radius: 999px;
+  padding: 7px 14px;
+}
+.pillModel {
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(61, 155, 233, 0.4);
+  border-radius: 999px;
+  padding: 7px 14px;
+  color: var(--blue-key);
+}
+
+/* 사양 행 */
+.specRow {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  padding: 18px 8px;
+  border-bottom: 1px solid var(--hair);
+}
+
+/* 그리드 */
+.g2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.g3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.g4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 900px) {
+  .g2,
+  .specRow {
+    grid-template-columns: 1fr;
+  }
+  .specRow {
+    gap: 6px;
+  }
+  .g3 {
+    grid-template-columns: 1fr;
+  }
+  .g4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .subnavLinks {
+    display: none;
+  }
+}
+
+/* 모션 축소: 리빌·스테이지 변환 없이 최종 상태만 표시 */
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    scroll-behavior: auto;
+  }
+  .root [data-reveal],
+  .root [data-reveal="scale"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .barFill {
+    width: var(--w);
+    transition: none;
+  }
+  .stageWrap {
+    height: auto;
+  }
+  .stage {
+    position: relative;
+    top: auto;
+    height: auto;
+    padding: var(--py) 0;
+    gap: 40px;
+    background: rgb(14, 18, 26);
+  }
+  .stageText {
+    position: static;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .stageImg {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .stageLayer {
+    opacity: 0 !important;
+  }
+  .stageCaption {
+    position: static;
+    opacity: 1 !important;
+  }
+}
