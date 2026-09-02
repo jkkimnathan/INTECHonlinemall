@@ -230,7 +230,7 @@ export default function ProArtGr1xClient({ fontClassName = "" }: Props) {
         const shrink = seg(p, 0.35, 0.8);
         // 텍스트 구간에 이미지를 40%만 흐리게, 텍스트1이면 아래로(120px)·텍스트2면 위로(80px) 밀어 겹침 방지
         img.style.opacity = String(Math.min(1, grow * 1.6) * (1 - 0.4 * Math.max(t1Op, t2In)));
-        img.style.transform = `scale(${lerp(lerp(0.7, 1.15, grow), 0.55, shrink)}) translateY(${lerp(lerp(80, 0, grow), -40, shrink) + 120 * t1Op - 80 * t2In}px)`;
+        img.style.transform = `scale(${lerp(lerp(0.7, 1.15, grow), 0.55, shrink)}) translateY(${lerp(lerp(80, 0, grow), -40, shrink) + 120 * t1Op - 100 * t2In}px)`;
       }
       // 블랙 모델 크로스페이드 (다크 전환 구간)
       const bk = stageBlackRef.current;
@@ -244,7 +244,8 @@ export default function ProArtGr1xClient({ fontClassName = "" }: Props) {
       }
       if (t2) {
         t2.style.opacity = String(t2In);
-        t2.style.transform = `translateY(${lerp(30, 0, t2In) + off + 10}px)`;
+        // 텍스트2는 이미지 아래·하단 캡션 위에 오도록 오프셋을 별도로 제한
+        t2.style.transform = `translateY(${lerp(30, 0, t2In) + Math.min(150, vh * 0.2) + 10}px)`;
       }
     };
 

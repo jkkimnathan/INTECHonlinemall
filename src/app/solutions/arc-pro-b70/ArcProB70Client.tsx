@@ -327,7 +327,7 @@ export default function ArcProB70Client({ fontClassName = "" }: Props) {
         const shrink = seg(p, 0.35, 0.8);
         // 텍스트가 떠 있는 동안 이미지를 40%만 흐리게 + 아래로 120px 밀어 겹침 방지
         img.style.opacity = String(Math.min(1, grow * 1.6) * (1 - 0.4 * textOp));
-        img.style.transform = `scale(${lerp(lerp(0.7, 1.1, grow), 0.6, shrink)}) translateY(${lerp(lerp(80, 0, grow), -30, shrink) + 120 * textOp}px)`;
+        img.style.transform = `scale(${lerp(lerp(0.7, 1.1, grow), 0.6, shrink)}) translateY(${lerp(lerp(80, 0, grow), -30, shrink) + 150 * textOp}px)`;
       }
       // 레이어 크로스페이드: Intel(base) out(.42→.55) → ASRock in(.42→.55)×out(.66→.78) → ASUS UGen in(.66→.78)
       // (베이스가 사라져야 두 장이 동시에 보이지 않음)
@@ -340,7 +340,7 @@ export default function ArcProB70Client({ fontClassName = "" }: Props) {
       const cap = stageCapRef.current;
       if (cap) cap.style.opacity = String(seg(p, 0.45, 0.6) * (1 - seg(p, 0.9, 0.98)));
       // 텍스트는 서브네비에 가리지 않는 범위에서 충분히 위로
-      const off = Math.min(200, vh * 0.27);
+      const off = Math.min(220, vh * 0.29);
       const t1 = stageText1Ref.current;
       const t2 = stageText2Ref.current;
       if (t1) {
