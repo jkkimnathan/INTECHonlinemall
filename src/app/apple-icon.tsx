@@ -26,7 +26,7 @@ export default async function AppleIcon() {
           padding: 22,
         }}
       >
-        <img src={logo} alt="" style={{ width: "100%", height: "auto" }} />
+        <img src={logo} alt="" width={136} height={61} style={{ width: 136, height: 61 }} />
       </div>
     ),
     { ...size }
