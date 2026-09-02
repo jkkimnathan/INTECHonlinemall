@@ -235,17 +235,38 @@
   will-change: opacity, transform;
   z-index: 2;
 }
+/* 라이트 배경 위 강조 텍스트: 다크 블루 그라데이션(README 라이트 토큰) */
+.gradOnLight {
+  background: linear-gradient(96deg, #004e93 0%, #0067c0 45%, #38a7ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
 .stageText1 {
   color: var(--tx);
+  /* 라이트 배경 위 다크 텍스트: 밝은 헤일로로 이미지와 분리 */
+  text-shadow:
+    0 0 2px rgba(245, 245, 247, 1),
+    0 2px 28px rgba(245, 245, 247, 0.95),
+    0 0 48px rgba(245, 245, 247, 0.9);
 }
 .stageText2 {
   color: var(--dark-tx);
+  /* 다크 배경 위 밝은 텍스트: 어두운 섀도로 이미지와 분리 */
+  text-shadow:
+    0 2px 24px rgba(0, 0, 0, 0.7),
+    0 0 48px rgba(0, 0, 0, 0.6);
 }
 .stageImg {
   width: min(820px, 84vw);
   position: relative;
   will-change: transform, opacity;
   pointer-events: none;
+}
+.stageBaseWrap {
+  will-change: opacity;
 }
 .stageBase {
   filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.25));
@@ -465,6 +486,9 @@
   }
   .stageLayer {
     opacity: 0 !important;
+  }
+  .stageBaseWrap {
+    opacity: 1 !important;
   }
   .stageCaption {
     position: static;
