@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
         hostname: "tamfbsqtrncnmjuzjbjf.supabase.co",
         pathname: "/storage/**",
       },
+      // ASUS 공식 CDN (ProArt GR1X 전용관 제품 이미지)
+      { protocol: "https", hostname: "dlcdnwebimgs.asus.com" },
     ],
   },
 
@@ -44,7 +46,7 @@ const nextConfig: NextConfig = {
               } https://js.tosspayments.com https://t1.daumcdn.net https://ssl.daumcdn.net https://postcode.map.daum.net`,
               // 웹폰트 CSS: Pretendard(jsdelivr) + Manrope(구글폰트)
               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https://tamfbsqtrncnmjuzjbjf.supabase.co https://static.toss.im https://*.tosspayments.com https://t1.daumcdn.net",
+              "img-src 'self' data: blob: https://tamfbsqtrncnmjuzjbjf.supabase.co https://static.toss.im https://*.tosspayments.com https://t1.daumcdn.net https://dlcdnwebimgs.asus.com",
               // 폰트 파일: 구글폰트(gstatic) + jsdelivr + 토스
               "font-src 'self' data: https://static.toss.im https://fonts.gstatic.com https://cdn.jsdelivr.net",
               "connect-src 'self' https://tamfbsqtrncnmjuzjbjf.supabase.co wss://tamfbsqtrncnmjuzjbjf.supabase.co https://api.tosspayments.com https://event.tosspayments.com https://*.tosspayments.com",
