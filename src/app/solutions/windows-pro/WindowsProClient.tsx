@@ -296,11 +296,12 @@ export default function WindowsProClient({ fontClassName = "" }: Props) {
         const grow = seg(p, 0, 0.3);
         const shrink = seg(p, 0.35, 0.8);
         // 텍스트가 떠 있는 동안 이미지를 흐리게(최대 70%) + 아래로 밀어(최대 70px) 겹침 방지
-        img.style.opacity = String(Math.min(1, grow * 1.6) * (1 - 0.75 * textOp));
-        img.style.transform = `scale(${lerp(lerp(0.7, 1.05, grow), 0.62, shrink)}) translateY(${lerp(lerp(80, 0, grow), -20, shrink) + 110 * textOp}px)`;
+        // 텍스트 구간에서도 이미지는 보이게(최대 40%만 흐림) — 겹침 방지는 하강(120px)·헤일로가 담당
+        img.style.opacity = String(Math.min(1, grow * 1.6) * (1 - 0.4 * textOp));
+        img.style.transform = `scale(${lerp(lerp(0.7, 1.05, grow), 0.62, shrink)}) translateY(${lerp(lerp(80, 0, grow), -20, shrink) + 120 * textOp}px)`;
       }
       // 레이어: 태블릿(base) → Surface 2-in-1 크로스페이드 (.5→.66). 두 장이 동시에 보이지 않게 베이스는 사라짐
-      const x = seg(p, 0.5, 0.66);
+      const x = seg(p, 0.48, 0.7); // 크로스페이드를 더 천천히
       const i2 = stageImg2Ref.current;
       if (i2) i2.style.opacity = String(x);
       const base = stageBaseRef.current;
