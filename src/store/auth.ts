@@ -33,6 +33,55 @@ interface AuthStore {
 // onAuthStateChange 리스너는 앱 수명 동안 1회만 등록 (StrictMode 이중 실행/재초기화 대비)
 let authListenerRegistered = false;
 
+// ─── 로그인 요청 보호 ───
+// 인증 요청이 응답 없이 멈추면(사내 프록시가 연결을 잡고 있는 경우, 브라우저 탭 간 락 경합 등)
+// 버튼이 "로그인 중..."에서 멈춘 것처럼 보이므로 제한 시간을 두고 안내 문구를 보여준다.
+const LOGIN_TIMEOUT_MS = 20_000;
+const LOGIN_TIMEOUT_MESSAGE =
+  "인증 서버 응답이 없습니다. 네트워크 상태를 확인한 뒤 페이지를 새로고침하고 다시 시도해주세요.";
+const LOGIN_NETWORK_MESSAGE =
+  "인증 서버에 연결할 수 없습니다. 인터넷 연결과 보안 프로그램(방화벽·광고 차단기·사내 프록시) 설정을 확인한 뒤 다시 시도해주세요.";
+
+class LoginTimeoutError extends Error {}
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new LoginTimeoutError("login timeout")), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      }
+    );
+  });
+}
+
+/** Supabase Auth 오류를 사용자용 한국어 문구로 변환 (영문 원문이 그대로 노출되지 않도록) */
+function describeAuthError(error: { name?: string; message: string; status?: number }): string {
+  const msg = error.message || "";
+  if (/invalid login credentials/i.test(msg)) {
+    return "이메일 또는 비밀번호가 올바르지 않습니다.";
+  }
+  if (/email not confirmed/i.test(msg)) {
+    return "이메일 인증이 필요합니다. 메일함을 확인해주세요.";
+  }
+  if (error.status === 429 || /rate limit|too many requests/i.test(msg)) {
+    return "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해주세요.";
+  }
+  if (
+    error.name === "AuthRetryableFetchError" ||
+    error.status === 0 ||
+    /failed to fetch|network|load failed|fetch/i.test(msg)
+  ) {
+    return LOGIN_NETWORK_MESSAGE;
+  }
+  return msg ? `로그인에 실패했습니다. (${msg})` : "로그인에 실패했습니다.";
+}
+
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   user: null,
   isLoggedIn: false,
@@ -176,19 +225,24 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
   login: async (email, password) => {
     const supabase = createClient();
-    const { data: authData, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+
+    type SignInResult = Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>;
+    let signIn: SignInResult;
+    try {
+      signIn = await withTimeout(
+        supabase.auth.signInWithPassword({ email, password }),
+        LOGIN_TIMEOUT_MS
+      );
+    } catch (err) {
+      return {
+        success: false,
+        error: err instanceof LoginTimeoutError ? LOGIN_TIMEOUT_MESSAGE : LOGIN_NETWORK_MESSAGE,
+      };
+    }
+    const { data: authData, error } = signIn;
 
     if (error) {
-      if (error.message === "Invalid login credentials") {
-        return { success: false, error: "이메일 또는 비밀번호가 올바르지 않습니다." };
-      }
-      if (error.message === "Email not confirmed") {
-        return { success: false, error: "이메일 인증이 필요합니다. 메일함을 확인해주세요." };
-      }
-      return { success: false, error: error.message };
+      return { success: false, error: describeAuthError(error) };
     }
 
     const sessionUser = authData.session?.user || authData.user;

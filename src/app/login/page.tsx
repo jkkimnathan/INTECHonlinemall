@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,16 @@ function safeReturnUrl(raw: string | null): string {
   return "/";
 }
 
+const subscribeNoop = () => () => {};
+/** 서버 HTML 단계(false) → 하이드레이션 완료(true). 클라이언트 JS가 붙기 전 제출을 막는 데 사용 */
+function useHydrated() {
+  return useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false
+  );
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -22,6 +32,7 @@ function LoginForm() {
     searchParams.get("returnUrl") ?? searchParams.get("redirect")
   );
   const { login, isLoggedIn, loading } = useAuthStore();
+  const hydrated = useHydrated();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -35,27 +46,37 @@ function LoginForm() {
     }
   }, [loading, isLoggedIn, router, returnUrl]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
-    if (!email) {
+    // 브라우저 자동완성·비밀번호 관리자가 onChange 없이 값을 채운 경우를 대비해
+    // React 상태보다 실제 입력란(DOM) 값을 우선 사용한다.
+    const form = new FormData(e.currentTarget);
+    const emailValue = (String(form.get("email") ?? "") || email).trim();
+    const passwordValue = String(form.get("password") ?? "") || password;
+
+    if (!emailValue) {
       setError("이메일을 입력해주세요.");
       return;
     }
-    if (!password) {
+    if (!passwordValue) {
       setError("비밀번호를 입력해주세요.");
       return;
     }
 
     setSubmitting(true);
-    const result = await login(email, password);
-    setSubmitting(false);
-
-    if (result.success) {
-      router.push(returnUrl);
-    } else {
+    try {
+      const result = await login(emailValue, passwordValue);
+      if (result.success) {
+        router.push(returnUrl);
+        return;
+      }
       setError(result.error || "로그인에 실패했습니다.");
+    } catch {
+      setError("로그인 처리 중 오류가 발생했습니다. 페이지를 새로고침한 뒤 다시 시도해주세요.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -129,13 +150,15 @@ function LoginForm() {
             </div>
 
             {error && (
-              <p className="text-red-500 text-sm">{error}</p>
+              <p role="alert" className="text-red-500 text-sm">{error}</p>
             )}
 
+            {/* 하이드레이션 전에는 비활성화: JS가 붙기 전 클릭이 일반 POST 새로고침(입력값 초기화)으로
+                이어져 "버튼이 반응 없음"처럼 보이는 것을 방지 */}
             <Button
               type="submit"
               className="w-full h-11 rounded-full bg-[#1A56DB] hover:bg-[#1747b4] text-white"
-              disabled={submitting}
+              disabled={!hydrated || submitting}
             >
               {submitting ? (
                 <>
@@ -146,6 +169,19 @@ function LoginForm() {
                 "로그인"
               )}
             </Button>
+
+            {/* 스크립트 로딩이 늦거나 실패한 경우에만(2.5초 후) 보이는 안내 — 정상 환경에서는 노출되지 않음 */}
+            {!hydrated && (
+              <p className="login-hint text-center text-xs text-[#86868b]" aria-live="polite">
+                화면을 준비하고 있습니다. 잠시 후에도 버튼이 눌리지 않으면 새로고침하거나
+                최신 Chrome·Edge·Safari 브라우저로 접속해주세요.
+              </p>
+            )}
+            <noscript>
+              <p className="text-center text-xs text-red-500">
+                로그인하려면 브라우저에서 JavaScript를 허용해야 합니다.
+              </p>
+            </noscript>
           </form>
 
           {/* 소셜 로그인은 추후 카카오/네이버 OAuth 키 발급 후 활성화 */}
