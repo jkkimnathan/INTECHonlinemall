@@ -7,7 +7,7 @@ import { solutions } from "@/config/solutions";
 export const metadata: Metadata = {
   title: "AI 솔루션 전용관",
   description:
-    "인텍앤컴퍼니 공식 수입 AI 솔루션 전용관. ASUS ProArt GR1X(NVIDIA RTX Spark) 등 워크스테이션급 AI 솔루션을 만나보세요.",
+    "인텍앤컴퍼니 공식 수입 AI 솔루션 전용관. ASUS ProArt GR1X(NVIDIA RTX Spark), Intel Arc Pro B70 32GB 등 워크스테이션급 AI 솔루션을 만나보세요.",
   alternates: { canonical: "/solutions" },
 };
 
@@ -25,12 +25,12 @@ const CARDS = [
   },
   {
     key: "arc-pro-b70",
-    brand: "Intel",
-    name: "Intel Arc Pro B70",
-    tagline: "워크스테이션 그래픽 · AI 추론 가속",
-    href: null,
-    image: null,
-    status: "준비 중",
+    brand: "Intel · ASRock · ASUS",
+    name: solutions["arc-pro-b70"].name,
+    tagline: "32GB · 로컬 AI 워크스테이션 GPU",
+    href: "/solutions/arc-pro-b70",
+    image: "/solutions/arc-pro-b70/intel-b70-ref-cut.png",
+    status: "견적 문의",
   },
 ] as const;
 
