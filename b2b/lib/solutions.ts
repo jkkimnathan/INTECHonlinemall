@@ -58,6 +58,17 @@ function b70Spec(): StandardPcSpec {
   return spec
 }
 
+function windowsProSpec(): StandardPcSpec {
+  const spec = createEmptySpec()
+  spec.os = { name: 'Windows 11 Pro (정품 · 기업용)', qty: 1 }
+  spec.etc = [
+    { label: '디바이스', name: 'iPC 데스크톱(Entry/Mainstream/Performance) 또는 ASUS 비즈니스 노트북 중 선택', qty: 1 },
+    { label: '라이선스', name: '디바이스 탑재 또는 단품(FPP / DSP / 볼륨 라이선스·Pro 업그레이드)', qty: 1 },
+    { label: '배포 지원', name: '요구 사양 상담 → 라이선스 확정 → 조립·사전 설정 → 납품·A/S', qty: 1 },
+  ]
+  return spec
+}
+
 export const SOLUTION_PRESETS: Record<string, SolutionPreset> = {
   'proart-gr1x': {
     slug: 'proart-gr1x',
@@ -100,6 +111,27 @@ export const SOLUTION_PRESETS: Record<string, SolutionPreset> = {
       specJson: b70Spec(),
     },
   },
+  'windows-pro': {
+    slug: 'windows-pro',
+    name: 'Windows Pro Device',
+    tagline: 'Windows 11 Pro 기업용 데스크톱·노트북 + Windows 단품 라이선스(FPP·DSP·볼륨) 견적',
+    landingUrl: `${INTECH_MALL}/solutions/windows-pro`,
+    form: {
+      title: 'Windows 11 Pro 기업용 디바이스 견적 요청',
+      purpose: 'office',
+      quantity: 1,
+      requirements: [
+        '[전용관 견적] Windows Pro Device — Windows 11 Pro 탑재 기업용 디바이스 / 단품 라이선스',
+        '',
+        '희망 디바이스(iPC Entry / iPC Mainstream / iPC Performance / ASUS ExpertBook 14 / ASUS ExpertBook 16 / ASUS ProArt·ExpertBook Pro): ',
+        '라이선스 형태(디바이스 탑재 / FPP / DSP / 볼륨 라이선스·Pro 업그레이드): ',
+        '희망 수량 / 납품 시기: ',
+        '사용 부서·용도(사무 / 개발 / 디자인 등) 및 도메인·MDM 환경: ',
+        '기타 요청사항(사전 설정·이미지 배포·A/S 조건 등): ',
+      ].join('\n'),
+      specJson: windowsProSpec(),
+    },
+  },
 }
 
 /** 전용관 CTA 에서 함께 넘어오는 선택값 (?brand=, ?config=) 라벨 */
@@ -115,6 +147,19 @@ const OPTION_LABELS: Record<string, Record<string, string>> = {
     dual: '듀얼 64GB 시스템',
     multi: '멀티 128GB 시스템',
   },
+  tier: {
+    entry: 'iPC Entry 데스크톱',
+    mainstream: 'iPC Mainstream 데스크톱',
+    performance: 'iPC Performance 데스크톱',
+    expertbook14: 'ASUS ExpertBook 14',
+    expertbook16: 'ASUS ExpertBook 16',
+    proart: 'ASUS ProArt · ExpertBook Pro',
+  },
+  license: {
+    fpp: 'FPP (처음사용자용)',
+    dsp: 'DSP (OEM)',
+    volume: '볼륨 라이선스 · Pro 업그레이드',
+  },
 }
 
 /**
@@ -123,30 +168,37 @@ const OPTION_LABELS: Record<string, Record<string, string>> = {
  */
 export function applySolutionOptions(
   preset: SolutionPreset,
-  opts: { brand?: string | null; config?: string | null },
+  opts: { brand?: string | null; config?: string | null; tier?: string | null; license?: string | null },
 ): SolutionPreset {
   const brand = opts.brand ? OPTION_LABELS.brand[opts.brand] : undefined
   const config = opts.config ? OPTION_LABELS.config[opts.config] : undefined
-  if (!brand && !config) return preset
+  const tier = opts.tier ? OPTION_LABELS.tier[opts.tier] : undefined
+  const license = opts.license ? OPTION_LABELS.license[opts.license] : undefined
+  if (!brand && !config && !tier && !license) return preset
 
   let requirements = preset.form.requirements
   if (brand) requirements = requirements.replace(/^(희망 브랜드\([^)]*\): ).*$/m, `$1${brand}`)
   if (config) requirements = requirements.replace(/^(구성\([^)]*\): ).*$/m, `$1${config}`)
+  if (tier) requirements = requirements.replace(/^(희망 디바이스\([^)]*\): ).*$/m, `$1${tier}`)
+  if (license) requirements = requirements.replace(/^(라이선스 형태\([^)]*\): ).*$/m, `$1${license}`)
 
   const specJson: StandardPcSpec = {
     ...preset.form.specJson,
     etc: preset.form.specJson.etc.map((e) => {
       if (brand && e.label === '브랜드') return { ...e, name: brand }
       if (config && e.label === '구성') return { ...e, name: config }
+      if (tier && e.label === '디바이스') return { ...e, name: tier }
+      if (license && e.label === '라이선스') return { ...e, name: license }
       return e
     }),
   }
 
+  const suffix = brand ?? tier ?? license
   return {
     ...preset,
     form: {
       ...preset.form,
-      title: brand ? `${preset.form.title} — ${brand}` : preset.form.title,
+      title: suffix ? `${preset.form.title} — ${suffix}` : preset.form.title,
       requirements,
       specJson,
     },

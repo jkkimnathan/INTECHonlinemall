@@ -13,15 +13,15 @@ import QuoteRequestForm from '@/components/dealer/quotes/QuoteRequestForm'
 import type { DealerAddress } from '@/types/database'
 
 interface Props {
-  searchParams: Promise<{ product?: string; brand?: string; config?: string }>
+  searchParams: Promise<{ product?: string; brand?: string; config?: string; tier?: string; license?: string }>
 }
 
 export default async function NewQuoteRequestPage({ searchParams }: Props) {
   const session = await requireDealer()
   const supabase = await createClient()
-  const { product, brand, config } = await searchParams
+  const { product, brand, config, tier, license } = await searchParams
   const basePreset = getSolutionPreset(product)
-  const preset = basePreset ? applySolutionOptions(basePreset, { brand, config }) : null
+  const preset = basePreset ? applySolutionOptions(basePreset, { brand, config, tier, license }) : null
 
   // 배송지 목록
   const { data: addresses } = await supabase
