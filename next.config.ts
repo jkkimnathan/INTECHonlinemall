@@ -17,6 +17,14 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  // 짧은 주소 → 전용관 (헤더 메뉴·인쇄물·구두 안내용). 대소문자 모두 허용
+  async redirects() {
+    return [
+      { source: "/PAGR1X", destination: "/solutions/proart-gr1x", permanent: false },
+      { source: "/pagr1x", destination: "/solutions/proart-gr1x", permanent: false },
+    ];
+  },
+
   // 보안 헤더
   async headers() {
     return [
