@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/PAGR1X", destination: "/solutions/proart-gr1x", permanent: false },
       { source: "/pagr1x", destination: "/solutions/proart-gr1x", permanent: false },
+      { source: "/ARCB70", destination: "/solutions/arc-pro-b70", permanent: false },
+      { source: "/arcb70", destination: "/solutions/arc-pro-b70", permanent: false },
     ];
   },
 
