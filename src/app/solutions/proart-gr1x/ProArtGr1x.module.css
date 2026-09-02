@@ -175,6 +175,10 @@
   text-wrap: pretty;
   will-change: opacity, transform;
   z-index: 2;
+  /* 다크 배경 위 텍스트: 어두운 섀도로 제품 이미지와 분리 */
+  text-shadow:
+    0 2px 24px rgba(0, 0, 0, 0.7),
+    0 0 48px rgba(0, 0, 0, 0.6);
 }
 .stageImg {
   width: min(720px, 80vw);

@@ -240,6 +240,7 @@ export default function ArcProB70Client({ fontClassName = "" }: Props) {
   const stageRef = useRef<HTMLElement>(null);
   const stageBgRef = useRef<HTMLDivElement>(null);
   const stageImgRef = useRef<HTMLDivElement>(null);
+  const stageBaseRef = useRef<HTMLDivElement>(null);
   const stageImg2Ref = useRef<HTMLDivElement>(null);
   const stageImg3Ref = useRef<HTMLDivElement>(null);
   const stageText1Ref = useRef<HTMLParagraphElement>(null);
@@ -315,32 +316,40 @@ export default function ArcProB70Client({ fontClassName = "" }: Props) {
       const c = seg(p, 0.35, 0.75);
       if (bg)
         bg.style.backgroundColor = `rgb(${Math.round(lerp(11, 14, c))},${Math.round(lerp(12, 18, c))},${Math.round(lerp(14, 26, c))})`;
+      // 텍스트 가시도 먼저 계산 (이미지 디밍/하강에 사용)
+      const t1In = seg(p, 0.05, 0.2);
+      const t1Out = seg(p, 0.3, 0.45);
+      const t1Op = t1In * (1 - t1Out);
+      const t2In = seg(p, 0.55, 0.72);
+      const textOp = Math.max(t1Op, t2In);
       if (img) {
         const grow = seg(p, 0, 0.3);
         const shrink = seg(p, 0.35, 0.8);
-        img.style.opacity = String(Math.min(1, grow * 1.6));
-        img.style.transform = `scale(${lerp(lerp(0.7, 1.1, grow), 0.6, shrink)}) translateY(${lerp(lerp(80, 0, grow), -30, shrink)}px)`;
+        // 텍스트가 떠 있는 동안 이미지를 40%만 흐리게 + 아래로 120px 밀어 겹침 방지
+        img.style.opacity = String(Math.min(1, grow * 1.6) * (1 - 0.4 * textOp));
+        img.style.transform = `scale(${lerp(lerp(0.7, 1.1, grow), 0.6, shrink)}) translateY(${lerp(lerp(80, 0, grow), -30, shrink) + 150 * textOp}px)`;
       }
-      // 레이어: Intel(base) → ASRock in(.42→.55)×out(.66→.78) → ASUS UGen in(.66→.78)
+      // 레이어 크로스페이드: Intel(base) out(.42→.55) → ASRock in(.42→.55)×out(.66→.78) → ASUS UGen in(.66→.78)
+      // (베이스가 사라져야 두 장이 동시에 보이지 않음)
+      const base = stageBaseRef.current;
+      if (base) base.style.opacity = String(1 - seg(p, 0.42, 0.55));
       const i2 = stageImg2Ref.current;
       const i3 = stageImg3Ref.current;
       if (i2) i2.style.opacity = String(seg(p, 0.42, 0.55) * (1 - seg(p, 0.66, 0.78)));
       if (i3) i3.style.opacity = String(seg(p, 0.66, 0.78));
       const cap = stageCapRef.current;
       if (cap) cap.style.opacity = String(seg(p, 0.45, 0.6) * (1 - seg(p, 0.9, 0.98)));
-      const off = Math.min(200, vh * 0.3);
+      // 텍스트는 서브네비에 가리지 않는 범위에서 충분히 위로
+      const off = Math.min(220, vh * 0.29);
       const t1 = stageText1Ref.current;
       const t2 = stageText2Ref.current;
       if (t1) {
-        const i = seg(p, 0.05, 0.2);
-        const o = seg(p, 0.3, 0.45);
-        t1.style.opacity = String(i * (1 - o));
-        t1.style.transform = `translateY(${lerp(30, 0, i) - o * 30 - off}px)`;
+        t1.style.opacity = String(t1Op);
+        t1.style.transform = `translateY(${lerp(30, 0, t1In) - t1Out * 30 - off}px)`;
       }
       if (t2) {
-        const i = seg(p, 0.55, 0.72);
-        t2.style.opacity = String(i);
-        t2.style.transform = `translateY(${lerp(30, 0, i) - off}px)`;
+        t2.style.opacity = String(t2In);
+        t2.style.transform = `translateY(${lerp(30, 0, t2In) - off}px)`;
       }
     };
 
@@ -487,14 +496,16 @@ export default function ArcProB70Client({ fontClassName = "" }: Props) {
             세 가지 선택.
           </p>
           <div ref={stageImgRef} className={s.stageImg} style={{ opacity: 0 }}>
-            <Image
-              src={`${ASSET}/intel-b70-ref-cut.png`}
-              alt="Intel Arc Pro B70 레퍼런스"
-              width={1024}
-              height={1024}
-              sizes="(max-width: 900px) 84vw, 820px"
-              className={`${s.stageShadow} block h-auto w-full`}
-            />
+            <div ref={stageBaseRef} style={{ willChange: "opacity" }}>
+              <Image
+                src={`${ASSET}/intel-b70-ref-cut.png`}
+                alt="Intel Arc Pro B70 레퍼런스"
+                width={1024}
+                height={1024}
+                sizes="(max-width: 900px) 84vw, 820px"
+                className={`${s.stageShadow} block h-auto w-full`}
+              />
+            </div>
             <div ref={stageImg2Ref} className={s.stageLayer}>
               <Image
                 src={`${ASSET}/asrock-creator-2-cut.png`}
