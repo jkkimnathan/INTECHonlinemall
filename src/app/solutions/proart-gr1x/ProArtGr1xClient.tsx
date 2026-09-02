@@ -220,28 +220,31 @@ export default function ProArtGr1xClient({ fontClassName = "" }: Props) {
       const c = seg(p, 0.35, 0.75);
       if (bg)
         bg.style.backgroundColor = `rgb(${Math.round(lerp(10, 26, c))},${Math.round(lerp(9, 20, c))},${Math.round(lerp(8, 10, c))})`;
+      // 텍스트 가시도 (텍스트1은 이미지 위, 텍스트2는 이미지 아래에 뜸)
+      const t1In = seg(p, 0.05, 0.2);
+      const t1Out = seg(p, 0.3, 0.45);
+      const t1Op = t1In * (1 - t1Out);
+      const t2In = seg(p, 0.6, 0.8);
       if (img) {
         const grow = seg(p, 0, 0.3);
         const shrink = seg(p, 0.35, 0.8);
-        img.style.opacity = String(Math.min(1, grow * 1.6));
-        img.style.transform = `scale(${lerp(lerp(0.7, 1.15, grow), 0.55, shrink)}) translateY(${lerp(lerp(80, 0, grow), -40, shrink)}px)`;
+        // 텍스트 구간에 이미지를 40%만 흐리게, 텍스트1이면 아래로(120px)·텍스트2면 위로(80px) 밀어 겹침 방지
+        img.style.opacity = String(Math.min(1, grow * 1.6) * (1 - 0.4 * Math.max(t1Op, t2In)));
+        img.style.transform = `scale(${lerp(lerp(0.7, 1.15, grow), 0.55, shrink)}) translateY(${lerp(lerp(80, 0, grow), -40, shrink) + 120 * t1Op - 80 * t2In}px)`;
       }
       // 블랙 모델 크로스페이드 (다크 전환 구간)
       const bk = stageBlackRef.current;
       if (bk) bk.style.opacity = String(seg(p, 0.45, 0.62));
       const cl = stageColorRef.current;
       if (cl) cl.style.opacity = String(seg(p, 0.5, 0.65) * (1 - seg(p, 0.85, 0.95)));
-      const off = Math.min(190, vh * 0.3);
+      const off = Math.min(190, vh * 0.27);
       if (t1) {
-        const i = seg(p, 0.05, 0.2);
-        const o = seg(p, 0.3, 0.45);
-        t1.style.opacity = String(i * (1 - o));
-        t1.style.transform = `translateY(${lerp(30, 0, i) - o * 30 - off}px)`;
+        t1.style.opacity = String(t1Op);
+        t1.style.transform = `translateY(${lerp(30, 0, t1In) - t1Out * 30 - off}px)`;
       }
       if (t2) {
-        const i = seg(p, 0.6, 0.8);
-        t2.style.opacity = String(i);
-        t2.style.transform = `translateY(${lerp(30, 0, i) + off + 10}px)`;
+        t2.style.opacity = String(t2In);
+        t2.style.transform = `translateY(${lerp(30, 0, t2In) + off + 10}px)`;
       }
     };
 
