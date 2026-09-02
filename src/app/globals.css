@@ -363,3 +363,14 @@
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
 }
+
+/* 로그인 버튼 활성화(하이드레이션) 지연 안내 — 2.5초 이상 걸릴 때만 노출 */
+.login-hint {
+  opacity: 0;
+  animation: login-hint-appear 0s linear 2.5s forwards;
+}
+@keyframes login-hint-appear {
+  to {
+    opacity: 1;
+  }
+}
