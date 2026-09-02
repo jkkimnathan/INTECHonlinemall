@@ -1,0 +1,473 @@
+/* Windows Pro Device 전용관 — 페이지 스코프 스타일
+   (라이트 베이스 + 다크 섹션 교차. Windows 블루 #0067C0 계열은 이 캠페인 전용 —
+   인텍 코어 #1A56DB와 다른 색이며 전역 전파 금지) */
+
+.root {
+  --win: #0067c0;
+  --win-hover: #004e93;
+  --win-light: #38a7ff;
+  --win-tint: #eef4ff;
+  --bg: #ffffff;
+  --surface: #f5f5f7;
+  --tx: #1d1d1f;
+  --tx-2: #424245;
+  --tx-sub: #6e6e73;
+  --tx-mute: #a1a1a6;
+  --hair: #e5e5ea;
+  --hair-strong: #c7c7cc;
+  --dark: #0b1220;
+  --dark-card: #2c2c2e;
+  --dark-tx: #f5f5f7;
+  --dark-tx-sub: #c7c7cc;
+  --dark-tx-mute: #a1a1a6;
+  --px: clamp(16px, 4vw, 48px);
+  --py: clamp(96px, 12vw, 160px);
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  /* 사이트 공통 헤더 높이 (마운트 후 JS가 실측값으로 갱신) */
+  --hdr: 0px;
+  /* --font-onest 는 next/font/google(Onest)이 페이지 루트에 주입. 폴백 Manrope */
+  --font-en-display: var(--font-onest, "Manrope"), "Manrope", "Pretendard Variable", "Pretendard", sans-serif;
+
+  font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  color: var(--tx);
+  background: var(--bg);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+.root a {
+  text-decoration: none;
+}
+
+/* 앵커 이동 시 사이트 헤더 + 서브네비(52px) 아래에 정확히 멈추도록 */
+.root section[id] {
+  scroll-margin-top: calc(var(--hdr) + 52px);
+}
+
+.onest {
+  font-family: var(--font-en-display);
+}
+
+/* 그라데이션 텍스트 — 라이트 섹션용 / 다크 섹션용 / 히어로 서브 */
+.gradLight {
+  background: linear-gradient(96deg, #004e93 0%, #0067c0 45%, #38a7ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.gradDark {
+  background: linear-gradient(96deg, #9ccbff 0%, #38a7ff 50%, #0067c0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.gradHero {
+  background: linear-gradient(96deg, #dcebff 0%, #8fc3ff 50%, #38a7ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 다크 섹션 공통 */
+.darkSection {
+  position: relative;
+  background: var(--dark);
+  color: var(--dark-tx);
+  overflow: hidden;
+}
+
+/* 스크롤 리빌 */
+.root [data-reveal] {
+  opacity: 0;
+  transform: translateY(36px);
+  transition:
+    opacity 900ms var(--ease),
+    transform 900ms var(--ease);
+}
+.root [data-reveal="scale"] {
+  transform: scale(0.94) translateY(24px);
+}
+.root [data-reveal].in {
+  opacity: 1;
+  transform: none;
+}
+
+/* 버튼: 라이트 구간 블랙 필 CTA */
+.btnBlack {
+  display: inline-block;
+  font-weight: 700;
+  background: #1d1d1f;
+  color: #ffffff;
+  border-radius: 999px;
+  transition: background-color 200ms var(--ease);
+}
+.btnBlack:hover {
+  background: #000000;
+  color: #ffffff;
+}
+/* 버튼: 다크 구간 화이트 필 CTA */
+.btnWhite {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  background: #f5f5f7;
+  color: #0b1220;
+  border-radius: 999px;
+  transition: background-color 200ms var(--ease);
+}
+.btnWhite:hover {
+  background: #ffffff;
+  color: #0b1220;
+}
+/* 히어로 아웃라인 (블러 배경) */
+.btnOutline {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dark-tx);
+  background: rgba(11, 18, 32, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 14px 32px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color 200ms var(--ease);
+}
+.btnOutline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--dark-tx);
+}
+/* CTA 섹션 아웃라인 (거래처 등록) */
+.btnOutlineCta {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dark-tx);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 14px 32px;
+  border-radius: 999px;
+  transition: background-color 200ms var(--ease);
+}
+.btnOutlineCta:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--dark-tx);
+}
+
+/* 인라인 텍스트 링크 (Windows 블루) */
+.linkWin {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--win);
+  transition: color 200ms var(--ease);
+}
+.linkWin:hover {
+  color: var(--win-hover);
+}
+
+/* 서브네비 (라이트) */
+.subnav {
+  position: sticky;
+  top: var(--hdr);
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+.subnavLink {
+  font-size: 13px;
+  color: var(--tx-2);
+  transition: color 200ms var(--ease);
+}
+.subnavLink:hover {
+  color: var(--win);
+}
+
+/* 히어로 (다크, 풀블리드) */
+.hero {
+  position: relative;
+  min-height: calc(100vh - 52px - var(--hdr));
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--dark);
+  color: var(--dark-tx);
+}
+.heroImg {
+  width: min(920px, 90vw);
+  height: auto;
+  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.55));
+}
+
+/* 스크롤 스테이지 (라이트 → 다크) */
+.stageWrap {
+  height: 320vh;
+  position: relative;
+}
+.stage {
+  position: sticky;
+  top: var(--hdr);
+  height: calc(100vh - var(--hdr));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f5f5f7;
+  will-change: background-color;
+}
+.stageText {
+  position: absolute;
+  margin: 0;
+  padding: 0 var(--px);
+  max-width: 960px;
+  text-align: center;
+  font-size: clamp(28px, 4.5vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  text-wrap: pretty;
+  will-change: opacity, transform;
+  z-index: 2;
+}
+.stageText1 {
+  color: var(--tx);
+}
+.stageText2 {
+  color: var(--dark-tx);
+}
+.stageImg {
+  width: min(820px, 84vw);
+  position: relative;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+.stageBase {
+  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.25));
+}
+.stageLayer {
+  position: absolute;
+  left: 8%;
+  top: -10%;
+  width: 84%;
+  opacity: 0;
+  will-change: opacity;
+}
+.stageLayerImg {
+  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.45));
+}
+.stageCaption {
+  position: absolute;
+  bottom: 9vh;
+  margin: 0;
+  padding: 0 var(--px);
+  text-align: center;
+  font-size: clamp(13px, 1.4vw, 16px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--tx-mute);
+  opacity: 0;
+  will-change: opacity;
+  z-index: 2;
+}
+
+/* Why Pro 카드 (다크) */
+.proCard {
+  background: var(--dark-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 32px;
+}
+.proIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(56, 167, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--win-light);
+}
+.proMini {
+  border-top: 1px solid rgba(56, 167, 255, 0.4);
+  padding-top: 20px;
+}
+
+/* 탭 */
+.tab {
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 12px 4px;
+  margin-right: 24px;
+  font-family: inherit;
+  font-size: clamp(15px, 1.7vw, 19px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--tx-mute);
+  cursor: pointer;
+  transition:
+    color 200ms var(--ease),
+    border-color 200ms var(--ease);
+}
+.tab[aria-selected="true"] {
+  color: var(--tx);
+  border-bottom-color: var(--tx);
+}
+.tab:focus-visible {
+  outline: 2px solid var(--win);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* 디바이스 카드 (라이트) */
+.devCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.devTile {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  flex: none;
+  overflow: hidden;
+  background: #e5e5ea;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--tx-sub);
+}
+.devTileCaption {
+  font-size: 12px;
+  color: var(--tx-sub);
+}
+.pill {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--win);
+  border-radius: 999px;
+  padding: 4px 12px;
+  color: var(--win);
+}
+
+/* Deployment 카드 */
+.stepCard {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px;
+}
+
+/* Windows 단품 라이선스 카드 */
+.licCard {
+  border: 1px solid var(--hair);
+  border-radius: 16px;
+  padding: 28px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.licIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--win-tint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--win);
+}
+.licLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--win);
+  transition: color 200ms var(--ease);
+}
+.licLink:hover {
+  color: var(--win-hover);
+}
+
+/* 그리드 */
+.g2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.g3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.g4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 900px) {
+  .g2,
+  .g3 {
+    grid-template-columns: 1fr;
+  }
+  .g4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .subnavLinks {
+    display: none;
+  }
+}
+
+/* 모션 축소: 리빌·스테이지 변환 없이 최종 상태만 표시 */
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    scroll-behavior: auto;
+  }
+  .root [data-reveal],
+  .root [data-reveal="scale"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .stageWrap {
+    height: auto;
+  }
+  .stage {
+    position: relative;
+    top: auto;
+    height: auto;
+    padding: var(--py) 0;
+    gap: 40px;
+    background: #f5f5f7;
+  }
+  .stageText {
+    position: static;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .stageText2 {
+    color: var(--tx);
+  }
+  .stageImg {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .stageLayer {
+    opacity: 0 !important;
+  }
+  .stageCaption {
+    position: static;
+    opacity: 1 !important;
+  }
+}

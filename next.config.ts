@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
       { source: "/pagr1x", destination: "/solutions/proart-gr1x", permanent: false },
       { source: "/ARCB70", destination: "/solutions/arc-pro-b70", permanent: false },
       { source: "/arcb70", destination: "/solutions/arc-pro-b70", permanent: false },
+      { source: "/WINPRO", destination: "/solutions/windows-pro", permanent: false },
+      { source: "/winpro", destination: "/solutions/windows-pro", permanent: false },
     ];
   },
 

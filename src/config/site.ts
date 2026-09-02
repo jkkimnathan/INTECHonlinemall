@@ -70,6 +70,8 @@ export const siteConfig = {
     { title: "ProArt GR1X", href: "/solutions/proart-gr1x" },
     // 짧은 주소 /ARCB70 → next.config redirects
     { title: "Arc Pro B70", href: "/solutions/arc-pro-b70" },
+    // 짧은 주소 /WINPRO → next.config redirects
+    { title: "Windows Pro", href: "/solutions/windows-pro" },
     { title: "이벤트", href: "/event" },
     { title: "공지사항", href: "/notice" },
     { title: "커뮤니티", href: "/community" },
