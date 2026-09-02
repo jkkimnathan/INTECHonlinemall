@@ -87,7 +87,7 @@ export default function IpcShowcase({ content }: { content?: IpcContent | null }
 
           <Link
             href={c.ctaHref || "/brand/ipc"}
-            className="inline-flex items-center gap-1.5 mt-1.5 text-[13px] font-semibold text-[#1d1d1f]"
+            className="inline-flex items-center gap-1.5 mt-1.5 py-2.5 -my-1 text-[13px] font-semibold text-[#1d1d1f]"
           >
             {c.ctaLabel} <span className="text-[#86868b]">→</span>
           </Link>

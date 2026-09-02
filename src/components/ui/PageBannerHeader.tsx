@@ -1,4 +1,4 @@
-import Image from "next/image";
+import BannerImage from "@/components/ui/BannerImage";
 
 interface Props {
   title: string;
@@ -22,15 +22,9 @@ export default function PageBannerHeader({
 }: Props) {
   if (imageUrl) {
     return (
-      <div className="relative h-[200px] md:h-[300px] overflow-hidden">
-        <Image
-          src={imageUrl}
-          alt={title}
-          fill
-          className="object-cover"
-          sizes="100vw"
-          priority
-        />
+      // 이미지 로딩 중엔 브랜드 그라데이션이 먼저 보이고, 로드되면 페이드인
+      <div className={`relative h-[200px] md:h-[300px] overflow-hidden bg-gradient-to-r ${gradientClass}`}>
+        <BannerImage src={imageUrl} alt={title} />
         <div className="absolute inset-0 flex items-center">
           <div className="container mx-auto px-4">
             {eyebrow && (

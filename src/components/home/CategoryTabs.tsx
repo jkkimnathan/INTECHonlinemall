@@ -79,7 +79,7 @@ export default function CategoryTabs({
             <button
               key={cat.value}
               onClick={() => setActive(cat.value)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-4 py-2 pointer-coarse:min-h-11 rounded-full text-sm font-medium transition-colors ${
                 active === cat.value
                   ? "bg-[#1A56DB] text-white"
                   : "bg-[#f5f5f7] text-[#3f3f46] hover:bg-[#EEF4FF] hover:text-[#1A56DB]"

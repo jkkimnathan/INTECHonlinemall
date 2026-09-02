@@ -4,8 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/types/product";
-import { ShoppingCart, Truck } from "lucide-react";
+import { ShoppingCart, Truck, GitCompareArrows } from "lucide-react";
 import { useCartStore } from "@/store/cart";
+import { useCompareStore } from "@/store/compare";
 import { showToast } from "@/components/ui/toast";
 
 function formatPrice(price: number) {
@@ -19,9 +20,18 @@ function getDiscountRate(price: number, salePrice: number) {
 
 export default function ProductCard({ product }: { product: Product }) {
   const addToCart = useCartStore((s) => s.addItem);
+  const compareToggle = useCompareStore((s) => s.toggle);
+  const inCompare = useCompareStore((s) => s.items.some((p) => p.id === product.id));
   const finalPrice = product.salePrice ?? product.price;
   const points = Math.floor(finalPrice * 0.01);
   const isFreeShipping = finalPrice >= 50000;
+  // NEW 배지 자동 만료: 등록 60일 경과 시 수동 플래그가 켜져 있어도 표시하지 않음
+  const NEW_BADGE_DAYS = 60;
+  const showNewBadge =
+    product.isNew &&
+    (!product.createdAt ||
+      Date.now() - new Date(product.createdAt).getTime() <
+        NEW_BADGE_DAYS * 24 * 60 * 60 * 1000);
   // 배지와 가격 표시가 동일한 조건 사용 (0원/역할인 방지)
   const hasDiscount =
     !!product.isSale &&
@@ -44,6 +54,25 @@ export default function ProductCard({ product }: { product: Product }) {
             <p className="text-[#3f3f46] text-sm mt-1 line-clamp-2">{product.name}</p>
           </div>
         )}
+
+        {/* 비교 담기 토글 */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const r = compareToggle(product);
+            showToast(r.message);
+          }}
+          aria-label={inCompare ? "비교에서 제거" : "비교에 담기"}
+          title="상품 비교"
+          className={`absolute top-2 right-2 z-10 rounded-full min-w-9 min-h-9 flex items-center justify-center border transition-colors ${
+            inCompare
+              ? "bg-[#1A56DB] text-white border-transparent"
+              : "bg-white/90 text-[#a1a1aa] border-[#e5e7eb] hover:text-[#1A56DB] hover:border-[#1A56DB]"
+          }`}
+        >
+          <GitCompareArrows className="h-4 w-4" />
+        </button>
 
         {product.stock <= 3 && product.stock > 0 && (
           <div className="absolute bottom-3 right-3">
@@ -69,7 +98,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 addToCart(product, 1);
                 showToast("상품이 장바구니에 담겼습니다.");
               }}
-              className="bg-white text-[#1d1d1f] px-4 py-2 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-[#1A56DB] hover:text-white transition-colors shadow-lg"
+              className="bg-white text-[#1d1d1f] px-4 py-2 pointer-coarse:min-h-11 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-[#1A56DB] hover:text-white transition-colors shadow-lg"
             >
               <ShoppingCart className="h-4 w-4" />
               장바구니 담기
@@ -86,12 +115,14 @@ export default function ProductCard({ product }: { product: Product }) {
         </h3>
 
         {/* 배지 — 모델명 아래 (이미지를 가리지 않도록) */}
-        {(product.condition === "refurbished" || product.isNew || hasDiscount || isFreeShipping) && (
+        {(product.condition === "refurbished" || showNewBadge || hasDiscount || isFreeShipping) && (
           <div className="flex flex-wrap gap-1 mt-2">
             {product.condition === "refurbished" && (
-              <Badge className="rounded-full bg-[#fff7ed] text-[#c2410c] text-[11px] font-semibold border-transparent">리퍼</Badge>
+              <Badge className="rounded-full bg-[#fff7ed] text-[#c2410c] text-[11px] font-semibold border-transparent">
+                리퍼{product.specs?.["등급"] ? ` ${product.specs["등급"]}급`.replace("급급", "급") : ""}
+              </Badge>
             )}
-            {product.isNew && (
+            {showNewBadge && (
               <Badge className="rounded-full bg-[#eef4ff] text-[#1d4ed8] text-[11px] font-semibold border-transparent">NEW</Badge>
             )}
             {hasDiscount && product.salePrice != null && (

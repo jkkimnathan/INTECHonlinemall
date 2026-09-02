@@ -79,13 +79,16 @@ function LoginForm() {
           </div>
 
           {/* 로그인 폼 */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form method="post" onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 이메일
               </label>
               <Input
                 type="email"
+                name="email"
+                autoComplete="email"
+                required
                 placeholder="example@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -101,6 +104,9 @@ function LoginForm() {
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
+                  name="password"
+                  autoComplete="current-password"
+                  required
                   placeholder="비밀번호 입력"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -110,7 +116,8 @@ function LoginForm() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a1a1aa] hover:text-[#3f3f46]"
+                  aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 표시"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-11 min-h-11 flex items-center justify-center text-[#a1a1aa] hover:text-[#3f3f46]"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Loader2, ChevronRight } from "lucide-react";
 import { getEvents, SiteEvent } from "@/lib/supabase/events";
 import Link from "next/link";
-import Image from "next/image";
+import BannerImage from "@/components/ui/BannerImage";
 
 interface BannerData {
   title: string;
@@ -30,8 +30,8 @@ export default function EventClient({ banner }: { banner: BannerData | null }) {
   return (
     <div className="bg-[#fbfbfd] min-h-screen">
       {banner?.imageUrl ? (
-        <div className="relative h-[200px] md:h-[300px] overflow-hidden">
-          <Image src={banner.imageUrl} alt={bannerTitle} fill className="object-cover" sizes="100vw" priority />
+        <div className="relative h-[200px] md:h-[300px] overflow-hidden bg-gradient-to-r from-[#0F172A] to-[#1E293B]">
+          <BannerImage src={banner.imageUrl} alt={bannerTitle} />
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-4">
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.025em] [text-shadow:0_2px_12px_rgba(0,0,0,0.7)]">{bannerTitle}</h1>

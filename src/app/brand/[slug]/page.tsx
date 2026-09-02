@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import BannerImage from "@/components/ui/BannerImage";
 import ProductGrid from "@/components/product/ProductGrid";
 import { getProducts } from "@/lib/supabase/products.server";
 import { getPageBannerServer } from "@/lib/supabase/page-banners.server";
@@ -56,8 +57,8 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
       {/* 브랜드 인트로 히어로 */}
       {banner?.imageUrl ? (
         // 관리자에서 등록한 배경 이미지 배너
-        <div className="relative h-[200px] md:h-[260px] overflow-hidden border-b border-[#f1f1f3]">
-          <Image src={banner.imageUrl} alt={heroTitle} fill className="object-cover" sizes="100vw" priority />
+        <div className="relative h-[200px] md:h-[260px] overflow-hidden border-b border-[#f1f1f3] bg-gradient-to-r from-[#0F172A] to-[#1E293B]">
+          <BannerImage src={banner.imageUrl} alt={heroTitle} />
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-4">
               <div className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">

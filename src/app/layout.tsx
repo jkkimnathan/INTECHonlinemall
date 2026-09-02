@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import CompareBar from "@/components/product/CompareBar";
 import { siteConfig } from "@/config/site";
 import { getOrganizationJsonLd, jsonLdString } from "@/lib/jsonld";
 import FloatingActions from "@/components/floating/FloatingActions";
@@ -79,6 +80,7 @@ export default async function RootLayout({
             <Header activeBrandSlugs={activeBrandSlugs} />
             <main className="min-h-screen">{children}</main>
             <Footer />
+            <CompareBar />
             <FloatingActions />
           </ToastProvider>
         </AuthProvider>

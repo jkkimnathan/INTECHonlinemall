@@ -49,6 +49,7 @@ export default async function Home() {
 
   return (
     <>
+      <h1 className="sr-only">인텍앤컴퍼니몰 — 공식 수입사 직영 IT 하드웨어 쇼핑몰</h1>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

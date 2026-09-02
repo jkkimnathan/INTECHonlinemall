@@ -65,7 +65,7 @@ export const DEFAULT_REFURB: RefurbContent = {
   cta2Label: "검수 기준 알아보기",
   cta2Href: "/refurbished",
   grades: [
-    { g: "S", color: "#34d399", name: "단순 개봉", desc: "박스 개봉만 된 미사용 상품 · 신품과 동일" },
+    { g: "S", color: "#34d399", name: "단순 개봉", desc: "박스 개봉만 된 미사용 상품 · 외관/사용 상태 기준 신품 수준 (보증은 리퍼 기준)" },
     { g: "A", color: "#60a5fa", name: "구성품 누락 · 미세 스크래치", desc: "본품 정상 동작 확인 · 동봉품 누락 또는 외관 흠집" },
     { g: "B", color: "#fbbf24", name: "중고에 가까움", desc: "사용감 있음 · 가격 메리트로 보상 · 정상 동작 확인" },
   ],

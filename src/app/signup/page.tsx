@@ -128,13 +128,16 @@ export default function SignupPage() {
             <p className="text-[#86868b] text-sm mt-2">회원가입</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form method="post" onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[#3f3f46] mb-1">
                 이름 <span className="text-red-500">*</span>
               </label>
               <Input
                 type="text"
+                name="name"
+                autoComplete="name"
+                required
                 placeholder="홍길동"
                 value={form.name}
                 onChange={(e) => updateField("name", e.target.value)}
@@ -149,6 +152,9 @@ export default function SignupPage() {
               </label>
               <Input
                 type="email"
+                name="email"
+                autoComplete="email"
+                required
                 placeholder="example@email.com"
                 value={form.email}
                 onChange={(e) => updateField("email", e.target.value)}
@@ -163,6 +169,9 @@ export default function SignupPage() {
               </label>
               <Input
                 type="tel"
+                name="phone"
+                autoComplete="tel"
+                required
                 placeholder="010-0000-0000"
                 value={form.phone}
                 onChange={(e) => updateField("phone", e.target.value)}
@@ -178,6 +187,9 @@ export default function SignupPage() {
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
+                  name="password"
+                  autoComplete="new-password"
+                  required
                   placeholder="영문+숫자+특수문자 8자 이상"
                   value={form.password}
                   onChange={(e) => updateField("password", e.target.value)}
@@ -187,7 +199,8 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a1a1aa] hover:text-[#3f3f46]"
+                  aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 표시"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-11 min-h-11 flex items-center justify-center text-[#a1a1aa] hover:text-[#3f3f46]"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -204,6 +217,9 @@ export default function SignupPage() {
               </label>
               <Input
                 type="password"
+                name="passwordConfirm"
+                autoComplete="new-password"
+                required
                 placeholder="비밀번호 재입력"
                 value={form.passwordConfirm}
                 onChange={(e) => updateField("passwordConfirm", e.target.value)}
@@ -219,48 +235,48 @@ export default function SignupPage() {
 
             {/* 약관 동의 */}
             <div className="space-y-2 pt-2">
-              <label className="flex items-start gap-2 cursor-pointer">
+              <label className="flex items-start gap-2.5 cursor-pointer py-1.5">
                 <input
                   type="checkbox"
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="mt-0.5"
+                  className="mt-0.5 h-[18px] w-[18px] accent-[#1A56DB]"
                   disabled={submitting}
                 />
                 <span className="text-sm text-[#3f3f46]">
                   <Link
                     href="/terms"
-                    className="text-[#1A56DB] hover:underline"
+                    className="text-[#1A56DB] hover:underline inline-block py-1"
                   >
                     이용약관
                   </Link>
                   에 동의합니다 (필수)
                 </span>
               </label>
-              <label className="flex items-start gap-2 cursor-pointer">
+              <label className="flex items-start gap-2.5 cursor-pointer py-1.5">
                 <input
                   type="checkbox"
                   checked={agreePrivacy}
                   onChange={(e) => setAgreePrivacy(e.target.checked)}
-                  className="mt-0.5"
+                  className="mt-0.5 h-[18px] w-[18px] accent-[#1A56DB]"
                   disabled={submitting}
                 />
                 <span className="text-sm text-[#3f3f46]">
                   <Link
                     href="/privacy"
-                    className="text-[#1A56DB] hover:underline"
+                    className="text-[#1A56DB] hover:underline inline-block py-1"
                   >
                     개인정보처리방침
                   </Link>
                   에 동의합니다 (필수)
                 </span>
               </label>
-              <label className="flex items-start gap-2 cursor-pointer">
+              <label className="flex items-start gap-2.5 cursor-pointer py-1.5">
                 <input
                   type="checkbox"
                   checked={agreeMarketing}
                   onChange={(e) => setAgreeMarketing(e.target.checked)}
-                  className="mt-0.5"
+                  className="mt-0.5 h-[18px] w-[18px] accent-[#1A56DB]"
                   disabled={submitting}
                 />
                 <span className="text-sm text-[#3f3f46]">
@@ -295,7 +311,7 @@ export default function SignupPage() {
             이미 회원이신가요?{" "}
             <Link
               href="/login"
-              className="text-[#1A56DB] font-medium hover:underline"
+              className="text-[#1A56DB] font-medium hover:underline inline-block py-1"
             >
               로그인
             </Link>

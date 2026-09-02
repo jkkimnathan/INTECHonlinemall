@@ -8,6 +8,7 @@ const quickLinks = [
   { title: "1:1 문의", href: "/community" },
   { title: "배송안내", href: "/shipping" },
   { title: "교환/반품 안내", href: "/returns" },
+  { title: "기업·대량구매 (B2B)", href: "https://ipcb2bmall.com" },
 ];
 
 export default function Footer() {
@@ -23,7 +24,7 @@ export default function Footer() {
               <Link
                 key={brand.slug}
                 href={`/brand/${brand.slug}`}
-                className="text-xs font-semibold text-[#94A3B8] hover:text-white transition-colors tracking-[0.05em]"
+                className="text-xs font-semibold text-[#94A3B8] hover:text-white transition-colors tracking-[0.05em] inline-flex items-center justify-center py-2.5 px-2 min-w-11"
               >
                 {brand.name}
               </Link>
@@ -60,7 +61,7 @@ export default function Footer() {
                   href={`https://www.ftc.go.kr/bizCommPop.do?wrkr_no=${contact.businessNumber.replace(/-/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 rounded border border-[#334155] px-2 py-1 text-[11px] text-[#94A3B8] hover:text-white hover:border-[#475569] transition-colors"
+                  className="inline-flex items-center gap-1 min-h-10 rounded border border-[#334155] px-2 py-1 text-[11px] text-[#94A3B8] hover:text-white hover:border-[#475569] transition-colors"
                 >
                   사업자정보확인
                 </a>
@@ -73,7 +74,7 @@ export default function Footer() {
                 <Mail className="h-4 w-4 text-[#64748B] shrink-0" />
                 <a
                   href={`mailto:${contact.email}`}
-                  className="hover:text-white transition-colors"
+                  className="inline-flex items-center py-2 -my-1 hover:text-white transition-colors"
                 >
                   {contact.email}
                 </a>
@@ -113,7 +114,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[13px] text-[#94A3B8] hover:text-white transition-colors"
+                    className="inline-flex items-center py-2.5 -my-1 text-[13px] text-[#94A3B8] hover:text-white transition-colors"
                   >
                     {link.title}
                   </Link>
@@ -132,10 +133,10 @@ export default function Footer() {
               &copy; {new Date().getFullYear()} {contact.companyName}. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-[11px] text-[#64748B]">
-              <Link href="/terms" className="hover:text-[#cbd5e1] transition-colors">
+              <Link href="/terms" className="inline-flex items-center py-2 -my-1 hover:text-[#cbd5e1] transition-colors">
                 이용약관
               </Link>
-              <Link href="/privacy" className="hover:text-[#cbd5e1] transition-colors font-semibold">
+              <Link href="/privacy" className="inline-flex items-center py-2 -my-1 hover:text-[#cbd5e1] transition-colors font-semibold">
                 개인정보처리방침
               </Link>
             </div>

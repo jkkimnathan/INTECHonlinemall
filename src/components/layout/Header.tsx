@@ -17,6 +17,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { siteConfig, isHiddenBrand } from "@/config/site";
 import { BRAND_SUBCATEGORIES, SubcategoryNode } from "@/config/brand-subcategories";
 import { useCartStore } from "@/store/cart";
+import { useSearchSuggestions } from "@/lib/hooks/useSearchSuggestions";
 import { useAuthStore } from "@/store/auth";
 import { Heart } from "lucide-react";
 
@@ -137,6 +138,8 @@ export default function Header({
   const [mobileSubBrand, setMobileSubBrand] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [showSuggest, setShowSuggest] = useState(false);
+  const suggestions = useSearchSuggestions(searchQuery);
   const [mounted, setMounted] = useState(false);
   const cartItemCount = useCartStore((s) => s.getTotalItems());
   const { isLoggedIn, user, logout } = useAuthStore();
@@ -153,8 +156,55 @@ export default function Header({
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setMobileSearchOpen(false);
+      setShowSuggest(false);
     }
   };
+
+  const goToProduct = (slug: string) => {
+    setShowSuggest(false);
+    setMobileSearchOpen(false);
+    setSearchQuery("");
+    router.push(`/products/${slug}`);
+  };
+
+  // 검색 자동완성 드롭다운 (데스크탑/모바일 공용)
+  const suggestDropdown = showSuggest && suggestions.length > 0 && (
+    <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#e5e7eb] rounded-2xl shadow-[0_12px_32px_-8px_rgba(15,23,42,.18)] overflow-hidden z-50">
+      <ul>
+        {suggestions.map((sg) => (
+          <li key={sg.slug}>
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                goToProduct(sg.slug);
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-[#fbfbfd] transition-colors"
+            >
+              <Search className="h-3.5 w-3.5 text-[#a1a1aa] flex-shrink-0" />
+              <span className="flex-1 min-w-0">
+                <span className="block text-[13px] text-[#1d1d1f] truncate">{sg.name}</span>
+                <span className="block text-[11px] text-[#86868b]">{sg.brand}</span>
+              </span>
+              <span className="text-[12px] font-semibold text-[#1d1d1f] tabular-nums flex-shrink-0">
+                {(sg.salePrice ?? sg.price).toLocaleString("ko-KR")}원
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        onMouseDown={(e) => {
+          e.preventDefault();
+          handleSearch();
+        }}
+        className="w-full px-4 py-2.5 text-[12px] text-[#1A56DB] font-medium bg-[#fbfbfd] hover:bg-[#EEF4FF] text-left transition-colors"
+      >
+        &quot;{searchQuery.trim()}&quot; 전체 검색 결과 보기 →
+      </button>
+    </div>
+  );
 
   // 브랜드 메뉴와 일반 메뉴 분리 (상품 0개 브랜드는 자동 숨김)
   const activeSet = activeBrandSlugs ? new Set(activeBrandSlugs) : null;
@@ -219,10 +269,10 @@ export default function Header({
 
       {/* 메인 헤더 - 로고, 검색, 장바구니 */}
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           {/* 모바일 메뉴 버튼 */}
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <SheetTrigger
+            <SheetTrigger aria-label="메뉴 열기"
               render={<Button variant="ghost" size="icon" className="lg:hidden h-11 w-11" />}
             >
               <Menu className="h-5 w-5" />
@@ -326,12 +376,19 @@ export default function Header({
                 >
                   마이페이지
                 </Link>
+                <Link
+                  href="/wishlist"
+                  onClick={closeMenu}
+                  className="px-3 py-3 text-base font-medium rounded-lg hover:bg-[#f5f5f7]"
+                >
+                  위시리스트
+                </Link>
               </nav>
             </SheetContent>
           </Sheet>
 
           {/* 로고 */}
-          <Link href="/" className="flex-shrink-0">
+          <Link href="/" className="flex-shrink-0 inline-flex items-center min-h-11">
             <span className="text-xl font-bold text-[#1d1d1f] tracking-[-0.02em]">
               {siteConfig.name}
             </span>
@@ -350,17 +407,21 @@ export default function Header({
                 type="text"
                 placeholder="상품명, 브랜드, 모델명 검색"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => { setSearchQuery(e.target.value); setShowSuggest(true); }}
+                onFocus={() => setShowSuggest(true)}
+                onBlur={() => setShowSuggest(false)}
                 className="pr-10 h-10 rounded-full border-[#D1D5DB] focus:border-[#1A56DB] focus:shadow-[0_0_0_3px_rgba(26,86,219,.18)]"
               />
               <Button
                 type="submit"
                 variant="ghost"
                 size="icon"
+                aria-label="검색"
                 className="absolute right-0 top-0 h-10 w-10 rounded-full"
               >
                 <Search className="h-4 w-4" />
               </Button>
+              {suggestDropdown}
             </form>
           </div>
 
@@ -375,12 +436,12 @@ export default function Header({
             >
               <Search className="h-5 w-5" />
             </Button>
-            <Link href="/mypage" aria-label="마이페이지">
+            <Link href="/mypage" aria-label="마이페이지" className="hidden sm:block">
               <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9">
                 <User className="h-5 w-5" />
               </Button>
             </Link>
-            <Link href="/wishlist" aria-label="위시리스트">
+            <Link href="/wishlist" aria-label="위시리스트" className="hidden sm:block">
               <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9">
                 <Heart className="h-5 w-5" />
               </Button>
@@ -413,7 +474,9 @@ export default function Header({
                 autoFocus
                 placeholder="상품명, 브랜드, 모델명 검색"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => { setSearchQuery(e.target.value); setShowSuggest(true); }}
+                onFocus={() => setShowSuggest(true)}
+                onBlur={() => setShowSuggest(false)}
                 className="pr-11 h-11 rounded-full border-[#D1D5DB] focus:border-[#1A56DB] focus:shadow-[0_0_0_3px_rgba(26,86,219,.18)]"
               />
               <Button
@@ -425,6 +488,7 @@ export default function Header({
               >
                 <Search className="h-5 w-5" />
               </Button>
+              {suggestDropdown}
             </form>
           </div>
         )}

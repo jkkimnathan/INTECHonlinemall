@@ -69,6 +69,8 @@ export const siteConfig = {
     { title: "이벤트", href: "/event" },
     { title: "공지사항", href: "/notice" },
     { title: "커뮤니티", href: "/community" },
+    // 외부 B2B몰 — 기업·기관·대량 구매 및 거래처 전용 (같은 회사 공식 서비스)
+    { title: "기업·대량구매", href: "https://ipcb2bmall.com" },
   ],
 
   // ─── 푸터 메뉴 ───
