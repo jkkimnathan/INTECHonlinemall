@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -27,14 +27,35 @@ import ProductReviews from "@/components/product/ProductReviews";
 import { Product } from "@/types/product";
 import { useRecentlyViewedStore } from "@/store/recentlyViewed";
 
+// 접힘 상태 최대 높이(px). 이 높이를 넘는 콘텐츠만 접고, 펼침 버튼을 제공한다.
+const DETAIL_COLLAPSED_MAX = 600;
+// 접힘 상태에서는 앞 3장만 렌더 → 초기 로딩 이미지 수 대폭 감소
+// (상세 이미지가 20장 넘는 상품이 많아, 펼치기 전까지 나머지는 아예 요청하지 않음)
+const DETAIL_PREVIEW_COUNT = 3;
+
 function DetailImageSection({ images, productName }: { images: string[]; productName: string }) {
   const [expanded, setExpanded] = useState(false);
+  // 미리보기 이미지(1~3장)만으로도 접힘 높이를 넘는지 — 세로로 긴 상세 이미지 한 장짜리 상품 대응
+  const [overflowing, setOverflowing] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  // 접힘 상태에서는 앞 3장만 렌더 → 초기 로딩 이미지 수 대폭 감소
-  // (상세 이미지가 20장 넘는 상품이 많아, 펼치기 전까지 나머지는 아예 요청하지 않음)
-  const PREVIEW_COUNT = 3;
-  const shownImages = expanded ? images : images.slice(0, PREVIEW_COUNT);
-  const hasMore = images.length > PREVIEW_COUNT;
+  const shownImages = expanded ? images : images.slice(0, DETAIL_PREVIEW_COUNT);
+  const hasMore = images.length > DETAIL_PREVIEW_COUNT;
+
+  // 이미지가 로드되며 콘텐츠 높이가 바뀔 때마다 재측정 (안쪽 컨테이너는 max-height 제한이 없어 실제 높이를 반영)
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el || expanded) return;
+    const ro = new ResizeObserver(() => {
+      setOverflowing(el.offsetHeight > DETAIL_COLLAPSED_MAX + 1);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [expanded, shownImages.length]);
+
+  // 접힘 적용 조건: 펼치지 않았고, 더 보여줄 이미지가 있거나 미리보기 자체가 제한 높이를 넘는 경우
+  const collapsed = !expanded && (hasMore || overflowing);
+  const showToggle = hasMore || overflowing || expanded;
 
   return (
     <div className="bg-white rounded-lg border mt-6 overflow-hidden">
@@ -42,33 +63,42 @@ function DetailImageSection({ images, productName }: { images: string[]; product
         <h2 className="text-lg font-bold text-[#1d1d1f]">상세 정보</h2>
       </div>
       {/* 상세 이미지는 가운데 정렬 + 최대 860px 폭으로 제한 (데스크탑에서 과대 표시 방지) */}
-      <div className={`mt-4 relative mx-auto w-full max-w-[860px] ${!expanded ? "max-h-[600px] overflow-hidden" : ""}`}>
-        {shownImages.map((img, i) => (
-          <Image
-            key={i}
-            src={img}
-            alt={`${productName} 상세 ${i + 1}`}
-            width={0}
-            height={0}
-            sizes="(max-width: 860px) 100vw, 860px"
-            className="w-full h-auto"
-            loading={i === 0 ? undefined : "lazy"}
-          />
-        ))}
-        {!expanded && hasMore && (
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
+      <div
+        className={`mt-4 relative mx-auto w-full max-w-[860px] ${collapsed ? "overflow-hidden" : ""}`}
+        style={collapsed ? { maxHeight: DETAIL_COLLAPSED_MAX } : undefined}
+      >
+        <div ref={contentRef}>
+          {shownImages.map((img, i) => (
+            <Image
+              key={i}
+              src={img}
+              alt={`${productName} 상세 ${i + 1}`}
+              width={0}
+              height={0}
+              sizes="(max-width: 860px) 100vw, 860px"
+              className="w-full h-auto"
+              loading={i === 0 ? undefined : "lazy"}
+            />
+          ))}
+        </div>
+        {collapsed && (
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
         )}
       </div>
-      {hasMore && (
+      {showToggle && (
         <div className="p-4 text-center border-t">
           <button
+            type="button"
             onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
             className="inline-flex items-center gap-1 px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
           >
             {expanded ? (
               <>상세정보 접기 <ChevronUp className="h-4 w-4" /></>
-            ) : (
+            ) : hasMore ? (
               <>상세정보 더보기 ({images.length}장) <ChevronDown className="h-4 w-4" /></>
+            ) : (
+              <>상세정보 전체 보기 <ChevronDown className="h-4 w-4" /></>
             )}
           </button>
         </div>
