@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { getProductById, updateProduct, uploadProductImage, ProductInput } from "@/lib/supabase/products";
+import DetailHtmlEditor from "@/components/admin/DetailHtmlEditor";
 import { Product } from "@/types/product";
 import { ArrowLeft, Upload, X, Loader2, ImageIcon, Star, ToggleLeft, ToggleRight } from "lucide-react";
 import Link from "next/link";
@@ -43,6 +44,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [detailImages, setDetailImages] = useState<string[]>([]);
+  const [detailHtml, setDetailHtml] = useState("");
+  const [initialDetailHtml, setInitialDetailHtml] = useState("");
   const [uploading, setUploading] = useState<"thumbnail" | "additional" | "detail" | null>(null);
   const [isFeatured, setIsFeatured] = useState(false);
   const [subcategory, setSubcategory] = useState<string | null>(null);
@@ -64,6 +67,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         setAdditionalImages(p.images.slice(1));
       }
       setDetailImages(p.detailImages || []);
+      setDetailHtml(p.detailHtml || "");
+      setInitialDetailHtml(p.detailHtml || "");
       setIsFeatured(p.isFeatured);
       setSubcategory(p.subcategory || null);
       setLoading(false);
@@ -114,6 +119,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       sale_price: hasSale ? Number(salePrice) : null,
       images: allImages,
       detail_images: detailImages,
+      // HTML 을 입력했거나 기존 HTML 을 비운 경우에만 컬럼을 보낸다
+      // (detail_html 마이그레이션 전 DB 에서도 일반 수정이 막히지 않도록)
+      ...(detailHtml.trim() || initialDetailHtml ? { detail_html: detailHtml.trim() || null } : {}),
       stock: Number(stock),
       is_sale: hasSale,
       is_featured: isFeatured,
@@ -311,6 +319,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 ))}
               </div>
             )}
+
+            <DetailHtmlEditor value={detailHtml} onChange={setDetailHtml} />
           </div>
 
           {/* 저장 버튼 */}

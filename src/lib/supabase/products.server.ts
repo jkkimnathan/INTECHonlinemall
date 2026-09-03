@@ -1,6 +1,6 @@
 import { createPublicClient } from "@/lib/supabase/server-public";
 import { Product } from "@/types/product";
-import { toProduct } from "./product-utils";
+import { toProduct, toProductDetail } from "./product-utils";
 import { isHiddenBrand } from "@/config/site";
 import { sanitizeSearchTerm } from "@/lib/security";
 
@@ -76,7 +76,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     .single();
 
   if (error || !data) return null;
-  const product = toProduct(data);
+  const product = toProductDetail(data);
   // 숨김 브랜드 상품은 직접 slug 접근으로도 노출 금지
   if (isHiddenBrand(product.brand)) return null;
   return product;

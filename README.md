@@ -49,6 +49,7 @@ Supabase Dashboard → SQL Editor에서 아래 파일을 **순서대로** 실행
 5. `payment_hardening_migration.sql` — 결제 안정화 (취소처리중/환불확인필요/만료 상태, 멱등키, payment_events)
 6. `constraints_migration.sql` — 데이터 무결성 제약 + 비밀글 열람 시도 제한
 7. `reviews_verified_migration.sql` — 실구매자만 리뷰 작성
+8. `detail_html_migration.sql` — 상품 상세페이지 HTML 등록 컬럼(`products.detail_html`)
 
 **검증**: `payment_hardening_verify.sql`을 실행해 결과에 `FAIL` 행이 없으면 정상입니다.
 

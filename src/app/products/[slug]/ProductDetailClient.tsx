@@ -33,9 +33,21 @@ const DETAIL_COLLAPSED_MAX = 600;
 // (상세 이미지가 20장 넘는 상품이 많아, 펼치기 전까지 나머지는 아예 요청하지 않음)
 const DETAIL_PREVIEW_COUNT = 3;
 
-function DetailImageSection({ images, productName }: { images: string[]; productName: string }) {
+/**
+ * 상세 정보 영역 — HTML(관리자 붙여넣기, 서버에서 sanitize 완료)과 상세 이미지를 병행 표시.
+ * HTML 이 먼저, 이미지가 그 아래에 이어진다.
+ */
+function DetailSection({
+  html,
+  images,
+  productName,
+}: {
+  html: string;
+  images: string[];
+  productName: string;
+}) {
   const [expanded, setExpanded] = useState(false);
-  // 미리보기 이미지(1~3장)만으로도 접힘 높이를 넘는지 — 세로로 긴 상세 이미지 한 장짜리 상품 대응
+  // 미리보기(HTML + 이미지 1~3장)만으로도 접힘 높이를 넘는지 — 세로로 긴 상세 한 장짜리 상품 대응
   const [overflowing, setOverflowing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -62,12 +74,16 @@ function DetailImageSection({ images, productName }: { images: string[]; product
       <div className="p-6 pb-0">
         <h2 className="text-lg font-bold text-[#1d1d1f]">상세 정보</h2>
       </div>
-      {/* 상세 이미지는 가운데 정렬 + 최대 860px 폭으로 제한 (데스크탑에서 과대 표시 방지) */}
+      {/* 상세 콘텐츠는 가운데 정렬 + 최대 860px 폭으로 제한 (데스크탑에서 과대 표시 방지) */}
       <div
         className={`mt-4 relative mx-auto w-full max-w-[860px] ${collapsed ? "overflow-hidden" : ""}`}
         style={collapsed ? { maxHeight: DETAIL_COLLAPSED_MAX } : undefined}
       >
         <div ref={contentRef}>
+          {html && (
+            // 서버(page.tsx)에서 sanitizeDetailHtml 을 거친 HTML 만 전달됨
+            <div className="detail-html" dangerouslySetInnerHTML={{ __html: html }} />
+          )}
           {shownImages.map((img, i) => (
             <Image
               key={i}
@@ -352,8 +368,12 @@ export default function ProductDetailClient({
         </div>
 
         {/* 상세페이지 이미지 */}
-        {product.detailImages && product.detailImages.length > 0 && (
-          <DetailImageSection images={product.detailImages} productName={product.name} />
+        {(product.detailHtml || (product.detailImages && product.detailImages.length > 0)) && (
+          <DetailSection
+            html={product.detailHtml || ""}
+            images={product.detailImages || []}
+            productName={product.name}
+          />
         )}
 
         {/* 상품 설명 & 스펙 - 내용이 있을 때만 표시 */}

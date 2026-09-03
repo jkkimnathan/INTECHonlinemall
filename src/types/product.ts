@@ -32,6 +32,8 @@ export interface Product {
   salePrice: number | null;
   images: string[];
   detailImages: string[];
+  /** 상세페이지 HTML (관리자 붙여넣기). 표시 시 서버에서 sanitize 됨. 없으면 "" */
+  detailHtml: string;
   stock: number;
   isNew: boolean;
   isSale: boolean;

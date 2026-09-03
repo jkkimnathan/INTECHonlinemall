@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getProductBySlug, getProducts } from "@/lib/supabase/products.server";
 import { getProductJsonLd, getBreadcrumbJsonLd, jsonLdString } from "@/lib/jsonld";
 import { siteConfig } from "@/config/site";
+import { sanitizeDetailHtml } from "@/lib/detail-html.server";
 import ProductDetailClient from "./ProductDetailClient";
 
 // 상품 정보 ISR 캐싱 (60초) — 재고/가격 표시는 주문 시 서버(RPC)에서 재검증됨
@@ -47,9 +48,9 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = await getProductBySlug(decodeURIComponent(slug));
+  const rawProduct = await getProductBySlug(decodeURIComponent(slug));
 
-  if (!product) {
+  if (!rawProduct) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-2xl font-bold text-gray-900">
@@ -61,6 +62,9 @@ export default async function ProductDetailPage({
       </div>
     );
   }
+
+  // 관리자가 붙여넣은 상세 HTML 은 서버에서 정화한 뒤에만 클라이언트로 내려보낸다
+  const product = { ...rawProduct, detailHtml: sanitizeDetailHtml(rawProduct.detailHtml) };
 
   const related = (await getProducts({ brand: product.brand }))
     .filter((r) => r.id !== product.id)
