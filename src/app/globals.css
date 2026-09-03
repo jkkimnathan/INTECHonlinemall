@@ -374,3 +374,28 @@
     opacity: 1;
   }
 }
+
+/* 상품 상세 HTML(관리자 붙여넣기) — 벤더 마크업이 레이아웃을 깨지 않도록 폭 제한 */
+.detail-html {
+  overflow-x: hidden;
+  line-height: 1.6;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.detail-html * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.detail-html img {
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.detail-html table {
+  border-collapse: collapse;
+}
+.detail-html a {
+  color: #1a56db;
+  text-decoration: underline;
+}

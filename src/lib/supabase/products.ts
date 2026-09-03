@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { compressImage } from "@/lib/image-compress";
 import { Product } from "@/types/product";
-import { toProduct } from "./product-utils";
+import { toProduct, toProductDetail } from "./product-utils";
 import { sanitizeSearchTerm, escapeLikePattern, getSafeImageExtension } from "@/lib/security";
 
 export { toProduct };
@@ -80,7 +80,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     .single();
 
   if (error || !data) return null;
-  return toProduct(data);
+  return toProductDetail(data);
 }
 
 /** 단일 상품 조회 (id) */
@@ -93,7 +93,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     .single();
 
   if (error || !data) return null;
-  return toProduct(data);
+  return toProductDetail(data);
 }
 
 /** 카테고리 목록 */
@@ -148,6 +148,8 @@ export interface ProductInput {
   sale_price: number | null;
   images: string[];
   detail_images: string[];
+  /** 상세 HTML 원문 (없으면 null) */
+  detail_html?: string | null;
   stock: number;
   is_new: boolean;
   is_sale: boolean;

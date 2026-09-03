@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { createProduct, uploadProductImage, ProductInput } from "@/lib/supabase/products";
+import DetailHtmlEditor from "@/components/admin/DetailHtmlEditor";
 import { Product } from "@/types/product";
 import { ArrowLeft, Upload, X, Loader2, ImageIcon, Star, ToggleLeft, ToggleRight } from "lucide-react";
 import Link from "next/link";
@@ -56,6 +57,7 @@ export default function NewProductPage() {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [detailImages, setDetailImages] = useState<string[]>([]);
+  const [detailHtml, setDetailHtml] = useState("");
   const [uploading, setUploading] = useState<"thumbnail" | "additional" | "detail" | null>(null);
 
   const finalBrand = brand === "__custom__" ? customBrand : brand;
@@ -127,6 +129,8 @@ export default function NewProductPage() {
       sale_price: hasSale ? Number(salePrice) : null,
       images: allImages,
       detail_images: detailImages,
+      // HTML 을 입력한 경우에만 컬럼을 보낸다 (detail_html 마이그레이션 전 DB 에서도 일반 등록이 막히지 않도록)
+      ...(detailHtml.trim() ? { detail_html: detailHtml.trim() } : {}),
       stock: Number(stock),
       is_new: true,
       is_sale: hasSale,
@@ -475,9 +479,11 @@ export default function NewProductPage() {
             {detailImages.length === 0 && (
               <div className="flex items-center gap-2 text-xs text-gray-400">
                 <ImageIcon className="h-4 w-4" />
-                <span>상세 이미지가 없으면 상품 설명 텍스트만 표시됩니다.</span>
+                <span>상세 이미지·HTML 이 모두 없으면 상품 설명 텍스트만 표시됩니다.</span>
               </div>
             )}
+
+            <DetailHtmlEditor value={detailHtml} onChange={setDetailHtml} />
           </div>
 
           {/* 등록 버튼 */}
