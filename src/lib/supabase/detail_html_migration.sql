@@ -12,9 +12,9 @@ ALTER TABLE public.products
 COMMENT ON COLUMN public.products.detail_html IS
   '상세페이지 HTML 원문 (관리자 붙여넣기). 표시 시 서버에서 sanitize 후 렌더. detail_images 와 병행 — HTML 이 먼저, 이미지가 그 아래 표시됨';
 
--- 과도한 크기 방지 (벤더 상세 HTML 은 보통 수십 KB, 이미지 data URI 포함 시에도 2MB 이내)
+-- 과도한 크기 방지 (벤더 상세 HTML 은 보통 수십 KB. 이미지 data URI 포함 시를 고려해 5MB 까지 허용)
 ALTER TABLE public.products
   DROP CONSTRAINT IF EXISTS products_detail_html_size;
 ALTER TABLE public.products
   ADD CONSTRAINT products_detail_html_size
-  CHECK (detail_html IS NULL OR length(detail_html) <= 2000000);
+  CHECK (detail_html IS NULL OR length(detail_html) <= 5000000);

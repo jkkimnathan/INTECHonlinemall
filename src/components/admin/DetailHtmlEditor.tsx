@@ -87,7 +87,7 @@ export default function DetailHtmlEditor({
         <span>
           저장 후 표시 시 script·iframe·이벤트 속성은 자동 제거되며, 외부 이미지(https)는 허용됩니다.
         </span>
-        <span>{value ? `${sizeKb} KB` : ""}{value && sizeKb > 1500 ? " · 2,000KB 를 넘으면 저장되지 않습니다" : ""}</span>
+        <span>{value ? `${sizeKb} KB` : ""}{value && sizeKb > 4000 ? " · 5,000KB 를 넘으면 저장되지 않습니다" : ""}</span>
       </div>
       {value.trim() && (
         <button
