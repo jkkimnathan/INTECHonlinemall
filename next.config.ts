@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
       },
       // ASUS 공식 CDN (ProArt GR1X 전용관 제품 이미지)
       { protocol: "https", hostname: "dlcdnwebimgs.asus.com" },
+      // 관리자가 "URL로 추가"한 외부 참조 이미지(복사 실패 시 원본 주소 유지) — https 전체 허용
+      { protocol: "https", hostname: "**" },
     ],
   },
 
