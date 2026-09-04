@@ -39,6 +39,7 @@ export default function NewProductPage() {
 
   // 기본 정보
   const [name, setName] = useState("");
+  const [ecoName, setEcoName] = useState("");
   const [brand, setBrand] = useState(BRANDS[0]);
   const [customBrand, setCustomBrand] = useState("");
   const [category, setCategory] = useState<Product["category"]>("CPU");
@@ -121,6 +122,8 @@ export default function NewProductPage() {
 
     const input: ProductInput = {
       name: name.trim(),
+      // 입력한 경우에만 컬럼을 보낸다 (eco_name 마이그레이션 전 DB 에서도 등록이 막히지 않도록)
+      ...(ecoName.trim() ? { eco_name: ecoName.trim() } : {}),
       slug: condition === "refurbished" ? `${slugify(name)}-refurbished` : slugify(name),
       brand: finalBrand.trim(),
       category,
@@ -184,6 +187,21 @@ export default function NewProductPage() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="예: Intel Core i7-14700K"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ECO명 <span className="text-xs font-normal text-gray-400">(ERP 품목명 · 관리자 전용)</span>
+                </label>
+                <Input
+                  value={ecoName}
+                  onChange={(e) => setEcoName(e.target.value)}
+                  placeholder="ERP에 등록된 품목명을 그대로 입력"
+                  maxLength={200}
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  고객 화면에는 표시되지 않으며, 관리자 상품 목록 검색에 사용됩니다.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
