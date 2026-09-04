@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { getProductById, updateProduct, uploadProductImage, ProductInput } from "@/lib/supabase/products";
 import DetailHtmlEditor from "@/components/admin/DetailHtmlEditor";
+import ImageUrlAdder from "@/components/admin/ImageUrlAdder";
+import { isExternalImage } from "@/lib/image-import";
 import { Product } from "@/types/product";
 import { ArrowLeft, Upload, X, Loader2, ImageIcon, Star, ToggleLeft, ToggleRight } from "lucide-react";
 import Link from "next/link";
@@ -260,6 +262,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={thumbnail} alt="대표" className="w-48 h-48 object-cover rounded-lg border" />
                 <Badge className="absolute top-2 left-2 bg-yellow-500 text-white text-[10px]">대표</Badge>
+                {isExternalImage(thumbnail) && (
+                  <span title="외부 서버 이미지를 참조 중 (원본이 삭제되면 표시되지 않음)" className="absolute bottom-2 left-2 rounded bg-amber-500/90 px-1.5 py-0.5 text-[10px] font-medium text-white">외부 참조</span>
+                )}
                 <button type="button" onClick={() => setThumbnail(null)} className="absolute top-2 right-2 bg-black/60 rounded-full p-1 hover:bg-black/80">
                   <X className="h-3 w-3 text-white" />
                 </button>
@@ -270,6 +275,12 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 {uploading === "thumbnail" ? <Loader2 className="h-8 w-8 text-blue-500 animate-spin" /> : <><Upload className="h-8 w-8 text-gray-300 mb-2" /><span className="text-xs text-gray-500">클릭하여 업로드</span></>}
               </label>
             )}
+            <ImageUrlAdder
+              multiple={false}
+              remaining={thumbnail ? 0 : 1}
+              disabled={uploading !== null}
+              onAdd={(urls) => setThumbnail(urls[0])}
+            />
           </div>
 
           {/* 추가 이미지 */}
@@ -281,6 +292,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 <div key={url} className="relative group aspect-square">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={url} alt={`추가 ${i + 1}`} className="w-full h-full object-cover rounded-lg border" />
+                  {isExternalImage(url) && (
+                    <span title="외부 서버 이미지를 참조 중 (원본이 삭제되면 표시되지 않음)" className="absolute bottom-1 left-1 rounded bg-amber-500/90 px-1 text-[9px] font-medium text-white">외부</span>
+                  )}
                   <button type="button" onClick={() => setAdditionalImages(additionalImages.filter((u) => u !== url))} className="absolute top-1 right-1 bg-black/60 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <X className="h-3 w-3 text-white" />
                   </button>
@@ -293,6 +307,14 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 </label>
               )}
             </div>
+            <ImageUrlAdder
+              multiple
+              remaining={9 - additionalImages.length}
+              disabled={uploading !== null}
+              onAdd={(urls) =>
+                setAdditionalImages((prev) => [...prev, ...urls.filter((u) => !prev.includes(u))].slice(0, 9))
+              }
+            />
             {additionalImages.length === 0 && <div className="flex items-center gap-2 mt-3 text-xs text-gray-400"><ImageIcon className="h-4 w-4" /><span>추가 이미지 없이 등록 가능</span></div>}
           </div>
 
