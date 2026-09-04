@@ -17,6 +17,7 @@ export function toProduct(row: Record<string, unknown>): Product {
     detailImages: (row.detail_images as string[]) || [],
     // 목록 조회에서는 상세 HTML(수십~수백 KB)을 클라이언트 페이로드에 싣지 않는다 → toProductDetail 사용
     detailHtml: "",
+    ecoName: (row.eco_name as string) || "",
     stock: (row.stock as number) || 0,
     isNew: (row.is_new as boolean) || false,
     isSale: (row.is_sale as boolean) || false,

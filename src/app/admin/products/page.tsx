@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { getProducts, deleteProduct } from "@/lib/supabase/products";
 import { Product } from "@/types/product";
-import { Search, Plus, Pencil, Trash2 } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, ExternalLink } from "lucide-react";
 import { showToast } from "@/components/ui/toast";
 
 function formatPrice(price: number) {
@@ -24,15 +24,16 @@ export default function AdminProductsPage() {
     getProducts({}).then(setAllProducts);
   }, []);
 
-  const products = useMemo(
-    () =>
-      allProducts.filter(
-        (p) =>
-          p.name.toLowerCase().includes(search.toLowerCase()) ||
-          p.brand.toLowerCase().includes(search.toLowerCase())
-      ),
-    [allProducts, search]
-  );
+  const products = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return allProducts;
+    return allProducts.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.brand.toLowerCase().includes(q) ||
+        (p.ecoName && p.ecoName.toLowerCase().includes(q))
+    );
+  }, [allProducts, search]);
 
   async function handleDelete(product: Product) {
     if (!confirm(`"${product.name}"을(를) 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return;
@@ -62,7 +63,7 @@ export default function AdminProductsPage() {
       {/* 검색 */}
       <div className="relative max-w-sm mb-4">
         <Input
-          placeholder="상품명 또는 브랜드 검색..."
+          placeholder="상품명 · 브랜드 · ECO명 검색..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pr-10"
@@ -89,9 +90,22 @@ export default function AdminProductsPage() {
               {products.map((product) => (
                 <tr key={product.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
-                    <p className="font-medium text-[#1d1d1f] truncate max-w-[250px]">
-                      {product.name}
-                    </p>
+                    {/* 상품명 클릭 → 고객 화면 상세페이지를 새 창으로 */}
+                    <a
+                      href={`/products/${product.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="상품 페이지 새 창으로 열기"
+                      className="group/name inline-flex max-w-[250px] items-center gap-1 font-medium text-[#1d1d1f] hover:text-[#1A56DB] hover:underline"
+                    >
+                      <span className="truncate">{product.name}</span>
+                      <ExternalLink className="h-3 w-3 shrink-0 text-[#a1a1aa] opacity-0 transition-opacity group-hover/name:opacity-100" />
+                    </a>
+                    {product.ecoName && (
+                      <p className="text-xs text-[#86868b] truncate max-w-[250px]" title={product.ecoName}>
+                        ECO: {product.ecoName}
+                      </p>
+                    )}
                     <p className="text-xs text-[#a1a1aa] md:hidden">
                       {product.brand} | {product.category}
                     </p>

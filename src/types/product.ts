@@ -34,6 +34,8 @@ export interface Product {
   detailImages: string[];
   /** 상세페이지 HTML (관리자 붙여넣기). 표시 시 서버에서 sanitize 됨. 없으면 "" */
   detailHtml: string;
+  /** ERP(ECO) 품목명 — 관리자 전용, 고객 화면 미노출. 없으면 "" */
+  ecoName: string;
   stock: number;
   isNew: boolean;
   isSale: boolean;

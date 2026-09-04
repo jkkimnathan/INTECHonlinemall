@@ -150,6 +150,8 @@ export interface ProductInput {
   detail_images: string[];
   /** 상세 HTML 원문 (없으면 null) */
   detail_html?: string | null;
+  /** ERP(ECO) 품목명 (없으면 null) */
+  eco_name?: string | null;
   stock: number;
   is_new: boolean;
   is_sale: boolean;
