@@ -70,14 +70,20 @@ export default function IpcShowcase({ content }: { content?: IpcContent | null }
                   <div className="text-sm font-bold text-[#1d1d1f] mt-0.5 tracking-[-0.01em]">
                     {t.title}
                   </div>
-                  <div className="text-[11.5px] text-[#86868b] mt-0.5">{t.spec}</div>
+                  {/* 사양 미입력 시 줄 자체를 숨김 */}
+                  {t.spec?.trim() && (
+                    <div className="text-[11.5px] text-[#86868b] mt-0.5">{t.spec}</div>
+                  )}
                 </div>
-                <div className="text-right flex-shrink-0">
-                  <div className="font-en text-[9.5px] text-[#a1a1aa] tracking-[0.08em]">FROM</div>
-                  <div className="text-base font-bold text-[#1d1d1f] tabular-nums tracking-[-0.01em]">
-                    {formatPrice(t.price)}
+                {/* 가격 미입력(0 이하) 시 FROM/금액 블록 숨김 */}
+                {Number(t.price) > 0 && (
+                  <div className="text-right flex-shrink-0">
+                    <div className="font-en text-[9.5px] text-[#a1a1aa] tracking-[0.08em]">FROM</div>
+                    <div className="text-base font-bold text-[#1d1d1f] tabular-nums tracking-[-0.01em]">
+                      {formatPrice(t.price)}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="flex-shrink-0 text-[12.5px] font-semibold text-[#1d1d1f] px-3.5 py-2 border border-[#e5e5ea] rounded-full">
                   선택
                 </div>
